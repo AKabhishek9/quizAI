@@ -91,18 +91,29 @@ export const getUserDashboard = async (
 
     // 4. Calculate globals
     let avg = 0;
+    const totalScore = attempts.reduce((acc, curr) => acc + curr.score, 0);
+    
     if (attempts.length > 0) {
-      const sum = attempts.reduce((acc, curr) => acc + curr.score, 0);
-      avg = Math.round(sum / attempts.length);
+      avg = Math.round(totalScore / attempts.length);
     }
 
     const totalCorrect = Array.from(user.conceptStats.values()).reduce((sum, stat) => sum + stat.correct, 0);
+
+    // Calculate actual global rank dynamically
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const rankAggregation = await QuizAttemptModel.aggregate([
+      { $match: { createdAt: { $gte: thirtyDaysAgo } } },
+      { $group: { _id: "$userId", userScore: { $sum: "$score" } } },
+      { $match: { userScore: { $gt: totalScore } } },
+      { $count: "higherRanked" }
+    ]);
+    const rank = rankAggregation.length > 0 ? rankAggregation[0].higherRanked + 1 : 1;
 
     const stats: UserStatsResponse = {
       totalQuizzes: attempts.length,
       averageScore: avg,
       currentStreak: 0, 
-      rank: 1, 
+      rank: rank, 
       totalQuestions: user.attemptedQuestions.length,
       totalCorrect,
       weeklyScores: weeklyScores.length ? weeklyScores : [{ day: "Start", score: 0 }],
