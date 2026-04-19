@@ -26,7 +26,7 @@ export function PerformanceChart({ data }: PerformanceChartProps) {
   const primaryColor = "#4648d4"; 
 
   return (
-    <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950/20 p-8 shadow-sm h-full">
+    <div className="rounded-2xl border border-border bg-card p-8 shadow-sm h-full">
       <div className="flex items-center justify-between mb-10">
         <div>
           <h3 className="text-xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">Performance Trend</h3>
@@ -75,11 +75,11 @@ export function PerformanceChart({ data }: PerformanceChartProps) {
               content={({ active, payload, label }) => {
                 if (active && payload && payload.length) {
                   return (
-                    <div className="bg-white/80 dark:bg-slate-900/80 border border-slate-100 dark:border-slate-800 rounded-xl p-3 shadow-xl backdrop-blur-md">
-                      <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">{label}</p>
+                    <div className="bg-card border border-border rounded-xl p-3 shadow-xl backdrop-blur-md">
+                      <p className="text-[10px] font-bold text-foreground/50 uppercase mb-1">{label}</p>
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full bg-primary"></div>
-                        <p className="text-sm font-semibold text-slate-900 dark:text-white">{payload[0].value}%</p>
+                        <p className="text-sm font-semibold text-foreground">{payload[0].value}%</p>
                       </div>
                     </div>
                   );

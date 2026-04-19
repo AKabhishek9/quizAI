@@ -342,20 +342,36 @@
     box-shadow: 0 0 20px -5px var(--color-primary);
   }
   .bg-glass {
-    @apply bg-white/70 dark:bg-slate-950/70 backdrop-blur-xl border border-white/20 dark:border-white/10;
+    @apply bg-background/70 dark:bg-background/70 backdrop-blur-xl border border-border/20 dark:border-border/20;
   }
 
   /* Stats Gradients (Subtle & High Contrast) */
-  .bg-grad-blue { background: linear-gradient(135deg, rgba(70, 72, 212, 0.08) 0%, rgba(70, 72, 212, 0.02) 100%); }
-  .bg-grad-green { background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(16, 185, 129, 0.02) 100%); }
-  .bg-grad-yellow { background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(245, 158, 11, 0.02) 100%); }
-  .bg-grad-orange { background: linear-gradient(135deg, rgba(249, 115, 22, 0.08) 0%, rgba(249, 115, 22, 0.02) 100%); }
+  .bg-grad-blue { 
+    background: linear-gradient(135deg, oklch(0.55 0.18 264 / 0.08) 0%, oklch(0.55 0.18 264 / 0.02) 100%); 
+  }
+  .bg-grad-green { 
+    background: linear-gradient(135deg, oklch(0.55 0.16 155 / 0.08) 0%, oklch(0.55 0.16 155 / 0.02) 100%); 
+  }
+  .bg-grad-yellow { 
+    background: linear-gradient(135deg, oklch(0.72 0.16 70 / 0.08) 0%, oklch(0.72 0.16 70 / 0.02) 100%); 
+  }
+  .bg-grad-orange { 
+    background: linear-gradient(135deg, oklch(0.68 0.15 35 / 0.08) 0%, oklch(0.68 0.15 35 / 0.02) 100%); 
+  }
 
-  /* Dark mode overrides - even more subtle */
-  .dark .bg-grad-blue { background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(30, 41, 59, 0.5) 100%); }
-  .dark .bg-grad-green { background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(30, 41, 59, 0.5) 100%); }
-  .dark .bg-grad-yellow { background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(30, 41, 59, 0.5) 100%); }
-  .dark .bg-grad-orange { background: linear-gradient(135deg, rgba(249, 115, 22, 0.12) 0%, rgba(30, 41, 59, 0.5) 100%); }
+  /* Dark mode overrides - lifted and more visible */
+  .dark .bg-grad-blue { 
+    background: linear-gradient(135deg, oklch(0.68 0.17 264 / 0.15) 0%, oklch(0.115 0.005 260 / 0.5) 100%); 
+  }
+  .dark .bg-grad-green { 
+    background: linear-gradient(135deg, oklch(0.62 0.15 155 / 0.15) 0%, oklch(0.115 0.005 260 / 0.5) 100%); 
+  }
+  .dark .bg-grad-yellow { 
+    background: linear-gradient(135deg, oklch(0.78 0.14 70 / 0.15) 0%, oklch(0.115 0.005 260 / 0.5) 100%); 
+  }
+  .dark .bg-grad-orange { 
+    background: linear-gradient(135deg, oklch(0.72 0.16 35 / 0.15) 0%, oklch(0.115 0.005 260 / 0.5) 100%); 
+  }
 
   .border-glass {
     @apply border border-white/20 dark:border-white/10;
@@ -363,14 +379,23 @@
 
   /* Stitch Specific Classes */
   .mesh-gradient-stitch {
-    background-image: radial-gradient(at 0% 0%, hsla(238, 64%, 55%, 0.05) 0, transparent 50%), 
-                      radial-gradient(at 50% 0%, hsla(262, 70%, 60%, 0.05) 0, transparent 50%);
+    background-image: radial-gradient(at 0% 0%, oklch(0.55 0.18 264 / 0.08) 0, transparent 50%), 
+                      radial-gradient(at 50% 0%, oklch(0.55 0.20 310 / 0.06) 0, transparent 50%);
+  }
+  .dark .mesh-gradient-stitch {
+    background-image: radial-gradient(at 0% 0%, oklch(0.68 0.17 264 / 0.12) 0, transparent 50%), 
+                      radial-gradient(at 50% 0%, oklch(0.65 0.20 310 / 0.08) 0, transparent 50%);
   }
   .glass-nav {
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
   }
   .whisper-shadow {
-    box-shadow: 0 16px 32px -12px hsla(225, 37%, 12%, 0.08);
+    box-shadow: 0 16px 32px -12px oklch(0 0 0 / 0.08);
   }
-}
+  .gradient-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, oklch(0.55 0.20 310 / 0.9) 100%);
+  }
+  .dark .gradient-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, oklch(0.65 0.20 310 / 0.9) 100%);
+  }

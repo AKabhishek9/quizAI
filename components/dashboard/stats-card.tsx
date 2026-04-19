@@ -60,7 +60,7 @@ export function StatsCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
       className={cn(
-        "relative overflow-hidden rounded-2xl border border-outline-variant/15 p-6 transition-all duration-300 shadow-sm hover:shadow-md cursor-default bg-white/50 dark:bg-slate-950/20 backdrop-blur-sm",
+        "relative overflow-hidden rounded-2xl border border-border p-6 transition-all duration-300 shadow-sm hover:shadow-md cursor-default bg-card",
         v.bg,
         className
       )}
@@ -85,15 +85,15 @@ export function StatsCard({
         </div>
 
         <div>
-          <p className="text-[11px] font-bold tracking-[0.05em] text-on-surface-variant uppercase mb-1 opacity-80">
+          <p className="text-[11px] font-bold tracking-[0.05em] text-foreground/70 uppercase mb-1 opacity-80">
             {title}
           </p>
           <div className="flex items-baseline gap-1">
-            <h4 className="text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+            <h4 className="text-3xl font-semibold tracking-tight text-foreground">
               {value}
             </h4>
             {total && (
-              <span className="text-xs text-on-surface-variant/60 font-medium">
+              <span className="text-xs text-foreground/50 font-medium">
                 / {total}
               </span>
             )}

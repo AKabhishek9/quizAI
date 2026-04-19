@@ -21,17 +21,17 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "hidden lg:flex flex-col border-r border-outline-variant/10 bg-surface-container-lowest transition-[width] duration-300 ease-[0.25, 0.1, 0.25, 1] relative z-20",
+        "hidden lg:flex flex-col border-r border-border bg-card transition-[width] duration-300 ease-[0.25, 0.1, 0.25, 1] relative z-20",
         collapsed ? "w-[68px]" : "w-[240px]"
       )}
     >
       {/* Brand Logo */}
       <div className="flex h-16 items-center gap-3 px-5">
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary shadow-glow-primary">
-          <span className="material-symbols-outlined text-[20px] text-white">bolt</span>
+          <span className="material-symbols-outlined text-[20px] text-primary-foreground">bolt</span>
         </div>
         {!collapsed && (
-          <span className="text-[16px] font-black tracking-tighter text-on-surface">
+          <span className="text-[16px] font-black tracking-tighter text-foreground">
             QuizAI.
           </span>
         )}
@@ -50,7 +50,7 @@ export function Sidebar() {
                 "group relative flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200",
                 isActive 
                   ? "bg-primary/10 text-primary shadow-[inset_0_0_0_1px_rgba(70,72,212,0.1)]" 
-                  : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low"
+                  : "text-foreground/70 hover:text-foreground hover:bg-muted"
               )}
             >
               <span className={cn(
@@ -79,10 +79,10 @@ export function Sidebar() {
       </nav>
 
       {/* Bottom Actions */}
-      <div className="p-3 border-t border-outline-variant/10 space-y-1 bg-surface-container-lowest/50">
+      <div className="p-3 border-t border-border space-y-1 bg-card">
         <Link
           href="/profile"
-          className="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low rounded-xl transition-all"
+          className="flex items-center gap-3 px-3 py-2.5 text-foreground/70 hover:text-foreground hover:bg-muted rounded-xl transition-all"
         >
           <span className="material-symbols-outlined text-[22px]">settings</span>
           {!collapsed && <span className="text-[13px] font-bold tracking-tight">Settings</span>}
@@ -90,7 +90,7 @@ export function Sidebar() {
 
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="w-full flex items-center gap-3 px-3 py-2.5 text-on-surface-variant/60 hover:text-on-surface hover:bg-surface-container-low rounded-xl transition-all cursor-pointer"
+          className="w-full flex items-center gap-3 px-3 py-2.5 text-foreground/50 hover:text-foreground hover:bg-muted rounded-xl transition-all cursor-pointer"
         >
           <span className={cn(
             "material-symbols-outlined text-[22px] transition-transform duration-300",

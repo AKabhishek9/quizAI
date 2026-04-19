@@ -38,7 +38,7 @@ export function Navbar() {
       className={cn(
         "fixed top-0 w-full z-50 transition-all duration-300",
         scrolled 
-          ? "bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-outline-variant/15 py-3" 
+          ? "bg-background/80 dark:bg-background/80 backdrop-blur-xl border-b border-border py-3" 
           : "bg-transparent py-5"
       )}
     >
@@ -46,9 +46,9 @@ export function Navbar() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group">
           <div className="w-8 h-8 bg-primary rounded flex items-center justify-center transition-transform group-hover:scale-105">
-            <span className="material-symbols-outlined text-white text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>terminal</span>
+            <span className="material-symbols-outlined text-primary-foreground text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>terminal</span>
           </div>
-          <span className="text-2xl font-black tracking-tighter text-on-surface font-headline">QuizAI</span>
+          <span className="text-2xl font-black tracking-tighter text-foreground font-headline">QuizAI</span>
         </Link>
 
         {/* Desktop Nav */}
@@ -63,7 +63,7 @@ export function Navbar() {
                   "text-sm transition-all duration-200 relative pb-1",
                   isActive 
                     ? "text-primary border-b-2 border-primary" 
-                    : "text-on-surface-variant/70 hover:text-primary"
+                    : "text-foreground/70 hover:text-primary"
                 )}
               >
                 {link.label}
@@ -93,7 +93,7 @@ export function Navbar() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-full sm:w-[350px] border-l border-outline-variant/15">
-              <SheetTitle className="text-xl font-headline font-bold mb-8 text-on-surface">Navigation</SheetTitle>
+              <SheetTitle className="text-xl font-headline font-bold mb-8 text-foreground">Navigation</SheetTitle>
               <div className="flex flex-col gap-4">
                 {navLinks.map((link) => (
                   <Link
@@ -102,7 +102,7 @@ export function Navbar() {
                     onClick={() => setMobileOpen(false)}
                     className={cn(
                       "text-lg font-headline font-semibold py-2 px-4 rounded-xl transition-colors",
-                      pathname === link.href ? "bg-primary/10 text-primary" : "text-on-surface-variant hover:bg-secondary/50"
+                      pathname === link.href ? "bg-primary/10 text-primary" : "text-foreground/70 hover:bg-muted/50"
                     )}
                   >
                     {link.label}

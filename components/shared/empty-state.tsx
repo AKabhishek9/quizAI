@@ -33,7 +33,7 @@ export function EmptyState({
         {description}
       </p>
       {actionLabel && onAction && (
-        <Button onClick={onAction} className="cursor-pointer gradient-primary text-white border-0">
+        <Button onClick={onAction} className="cursor-pointer bg-primary hover:bg-primary/90 text-primary-foreground border-0">
           {actionLabel}
         </Button>
       )}

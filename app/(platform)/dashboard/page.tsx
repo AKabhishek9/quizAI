@@ -34,12 +34,12 @@ export default function DashboardPage() {
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] pt-12">
-        <div className="rounded-3xl border border-slate-100 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 p-10 text-center max-w-md shadow-sm backdrop-blur-sm">
-          <div className="w-14 h-14 rounded-2xl bg-rose-500/10 flex items-center justify-center mx-auto mb-6">
-            <span className="material-symbols-outlined text-rose-500 text-3xl">error</span>
+        <div className="rounded-3xl border border-border bg-card/50 p-10 text-center max-w-md shadow-sm backdrop-blur-sm">
+          <div className="w-14 h-14 rounded-2xl bg-destructive/10 flex items-center justify-center mx-auto mb-6">
+            <span className="material-symbols-outlined text-destructive text-3xl">error</span>
           </div>
-          <h2 className="text-xl font-semibold tracking-tight text-slate-900 dark:text-white mb-2">Could not load dashboard</h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground mb-2">Could not load dashboard</h2>
+          <p className="text-sm text-foreground/60 mb-6 leading-relaxed">
             {error instanceof Error ? error.message : "We encountered an issue fetching your data."}
           </p>
           <div className="flex flex-col gap-3">
@@ -67,10 +67,10 @@ export default function DashboardPage() {
         className="flex flex-col md:flex-row md:items-end justify-between gap-6 pt-8 mt-4"
       >
         <div className="space-y-1.5">
-          <h1 className="text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+          <h1 className="text-3xl font-semibold tracking-tight text-foreground">
             {profile ? `Welcome back, ${profile.name.split(" ")[0]} 👋` : "Dashboard"}
           </h1>
-          <p className="text-[15px] font-medium text-slate-500 dark:text-slate-400">
+          <p className="text-[15px] font-medium text-foreground/60">
             Keep up the momentum! You're doing great.
           </p>
         </div>
@@ -88,14 +88,14 @@ export default function DashboardPage() {
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.1 }}
-          className="relative overflow-hidden rounded-2xl border border-outline-variant/15 bg-white shadow-sm dark:bg-slate-950/20"
+          className="relative overflow-hidden rounded-2xl border border-border bg-card/50 p-10 shadow-sm backdrop-blur-sm"
         >
           <div className="p-6 lg:p-8 flex flex-col md:flex-row items-center gap-6">
             <div className="flex-shrink-0 relative">
-              <div className="w-14 h-14 rounded-2xl bg-amber-500/10 flex items-center justify-center border border-amber-500/20 shadow-sm">
-                <span className="material-symbols-outlined text-amber-500 text-2xl">military_tech</span>
+              <div className="w-14 h-14 rounded-2xl bg-warning/10 flex items-center justify-center border border-warning/20 shadow-sm">
+                <span className="material-symbols-outlined text-warning text-2xl">military_tech</span>
               </div>
-              <div className="absolute -bottom-1 -right-1 bg-primary text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white dark:border-slate-900 shadow-sm">
+              <div className="absolute -bottom-1 -right-1 bg-primary text-primary-foreground text-[9px] font-bold px-1.5 py-0.5 rounded-full border-2 border-background shadow-sm">
                 Lv. {profile.level}
               </div>
             </div>
@@ -103,31 +103,31 @@ export default function DashboardPage() {
             <div className="flex-1 w-full space-y-3">
               <div className="flex items-center justify-between gap-2">
                 <div>
-                  <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Learning Path Progress</h4>
-                  <p className="text-[12px] text-slate-500 font-medium">{profile.xpToNextLevel - profile.xp} XP to next level</p>
+                  <h4 className="text-sm font-semibold text-foreground">Learning Path Progress</h4>
+                  <p className="text-[12px] text-foreground/60 font-medium">{profile.xpToNextLevel - profile.xp} XP to next level</p>
                 </div>
                 <div className="text-right">
                   <span className="text-sm font-bold text-primary">{profile.xp}</span>
-                  <span className="text-[11px] font-semibold text-slate-400"> / {profile.xpToNextLevel} XP</span>
+                  <span className="text-[11px] font-semibold text-foreground/50"> / {profile.xpToNextLevel} XP</span>
                 </div>
               </div>
               <ProgressBar
                 value={(profile.xp / profile.xpToNextLevel) * 100}
                 showPercentage={false}
                 size="md"
-                className="bg-slate-100 dark:bg-slate-800 h-2 rounded-full"
+                className="bg-muted h-2 rounded-full"
               />
             </div>
 
-            <div className="hidden md:block w-px h-10 bg-slate-200 dark:bg-slate-800" />
+            <div className="hidden md:block w-px h-10 bg-border" />
 
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center">
-                <span className="material-symbols-outlined text-orange-600 text-[20px] fill-1">local_fire_department</span>
+              <div className="w-10 h-10 rounded-full bg-warning/10 flex items-center justify-center">
+                <span className="material-symbols-outlined text-warning text-[20px] fill-1">local_fire_department</span>
               </div>
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 leading-none mb-1">Weekly Streak</p>
-                <p className="text-base font-bold text-slate-900 dark:text-slate-100 leading-none">4 Days</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-foreground/60 leading-none mb-1">Weekly Streak</p>
+                <p className="text-base font-bold text-foreground leading-none">4 Days</p>
               </div>
             </div>
           </div>
@@ -187,7 +187,7 @@ export default function DashboardPage() {
             { title: "TypeScript Generics", time: "10 min", xp: "180 XP", cat: "Types" },
             { title: "Next.js 15 Internals", time: "20 min", xp: "300 XP", cat: "Fullstack" },
           ].map((quiz) => (
-            <div key={quiz.title} className="group p-6 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950/20 hover:border-primary/20 hover:shadow-md transition-all cursor-pointer">
+            <div key={quiz.title} className="group p-6 rounded-2xl border border-border bg-card hover:border-primary/20 hover:shadow-md transition-all cursor-pointer">
               <span className="text-[10px] font-bold text-primary uppercase tracking-widest bg-primary/5 px-2 py-0.5 rounded mb-4 inline-block">
                 {quiz.cat}
               </span>
@@ -207,7 +207,7 @@ export default function DashboardPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950/20 p-8 shadow-sm"
+          className="rounded-2xl border border-border bg-card p-8 shadow-sm"
         >
           <div className="flex items-center justify-between mb-10">
             <div>
