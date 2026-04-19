@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { QuizCard } from "@/components/quiz/quiz-card";
 import { SkeletonCard } from "@/components/shared/skeleton-loader";
 import { EmptyState } from "@/components/shared/empty-state";
-import { getQuizzes } from "@/lib/api";
+import { getQuizzes } from "@/lib/api-client";
 import type { Quiz, Difficulty } from "@/lib/types";
 import { cn } from "@/lib/utils";
 

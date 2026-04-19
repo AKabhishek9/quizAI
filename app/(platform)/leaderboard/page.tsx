@@ -12,7 +12,7 @@ import {
   Zap,
   ChevronRight
 } from "lucide-react";
-import { getLeaderboard } from "@/lib/api";
+import { getLeaderboard } from "@/lib/api-client";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/components/providers/auth-provider";
 

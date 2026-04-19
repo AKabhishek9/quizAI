@@ -39,9 +39,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     if (!auth) return;
-    await signOut(auth as unknown as Auth);
-    // Force a full page reload to clear all React state, query cache, and redirect to landing page
-    window.location.href = "/";
+    try {
+      await signOut(auth as unknown as Auth);
+      // Clear all local and session storage
+      localStorage.clear();
+      sessionStorage.clear();
+      // Force a full page reload to clear all React state, query cache, and redirect to landing page
+      window.location.href = "/";
+    } catch (err) {
+      console.error("Logout failed:", err);
+      // Fallback redirect
+      window.location.href = "/";
+    }
   };
 
   const getToken = async () => {

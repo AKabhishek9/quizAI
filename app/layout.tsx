@@ -4,6 +4,7 @@ import {  } from "@tanstack/react-query";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AuthProvider } from "@/components/providers/auth-provider";
 import "./globals.css";
 
 const inter = Inter({
@@ -58,7 +59,9 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <TooltipProvider>
-              {children}
+              <AuthProvider>
+                {children}
+              </AuthProvider>
             </TooltipProvider>
           </ThemeProvider>
         </QueryProvider>

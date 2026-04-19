@@ -23,7 +23,7 @@ import {
   SkeletonChart,
   SkeletonCard,
 } from "@/components/shared/skeleton-loader";
-import { getUserDashboard } from "@/lib/api";
+import { getUserDashboard } from "@/lib/api-client";
 import { useAuth } from "@/components/providers/auth-provider";
 import { cn } from "@/lib/utils";
 
@@ -78,10 +78,10 @@ export default function DashboardPage() {
             <span className="text-[10px] font-black tracking-[0.2em] text-primary uppercase">Telemetry Active</span>
           </div>
           <h1 className="text-6xl font-black tracking-tighter text-foreground font-heading">
-            {profile ? `Good Evening, ${profile.name.split(" ")[0]}` : "Scholar Dashboard"}
+            {profile ? `Welcome back, ${profile.name.split(" ")[0]} 👋` : "Welcome back, Scholar 👋"}
           </h1>
           <p className="text-[17px] font-bold text-muted-foreground/60 tracking-tight max-w-xl leading-relaxed">
-            You're currently outperforming <span className="text-primary">96% of scholars</span> in conceptual mastery this week.
+            You{"'"}re currently outperforming <span className="text-primary">96% of scholars</span> in conceptual mastery this week.
           </p>
         </div>
         

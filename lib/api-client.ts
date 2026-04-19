@@ -1,4 +1,5 @@
 import type { Auth } from "firebase/auth";
+import type { Quiz, QuizAttempt, UserProfile, UserStats } from "./types";
 // ──────────────────────────────────────────────
 // API Client — connects to the Express backend
 // ──────────────────────────────────────────────
@@ -72,20 +73,20 @@ export interface ApiSubmitResponse {
 
 /* ── API methods ── */
 
-export async function getQuiz(stream: string, topics: string[], difficulty?: number): Promise<ApiQuizResponse> {
-  const response = await fetch(`${API_BASE}/get-quiz`, {
+/**
+ * Adaptive mixed quiz generation.
+ * Previously named 'getQuiz', now 'generateQuiz' to avoid naming collisions.
+ */
+export async function generateQuiz(
+  stream: string,
+  topics: string[],
+  difficulty: number = 3
+): Promise<ApiQuizResponse> {
+  return request<ApiQuizResponse>("/get-quiz", {
     method: "POST",
-    headers: await getAuthHeaders(),
     body: JSON.stringify({ stream, topics, difficulty }),
     cache: "no-store",
   });
-
-  if (!response.ok) {
-    const errorBody = await response.json().catch(() => ({}));
-    throw new Error(errorBody.error || `Failed to fetch quiz: ${response.statusText}`);
-  }
-
-  return response.json();
 }
 
 export async function submitQuizAnswers(payload: ApiSubmitPayload): Promise<ApiSubmitResponse> {
@@ -97,4 +98,41 @@ export async function submitQuizAnswers(payload: ApiSubmitPayload): Promise<ApiS
 
 export async function checkHealth(): Promise<{ status: string }> {
   return request<{ status: string }>("/health");
+}
+
+/* ── Unified Dashboard & Activity ── */
+
+/**
+ * Unified fetch for all dashboard components.
+ * Solves the triple-fetch problem where Profile, Stats, and History 
+ * previously made separate API calls to the same endpoint.
+ */
+export async function getUserDashboard(): Promise<{ 
+  profile: UserProfile; 
+  stats: UserStats; 
+  history: QuizAttempt[] 
+}> {
+  return request<{
+    profile: UserProfile;
+    stats: UserStats;
+    history: QuizAttempt[];
+  }>("/user/dashboard");
+}
+
+export async function getQuizAttemptById(id: string): Promise<Record<string, unknown> | null> {
+  return request<Record<string, unknown> | null>(`/quiz-attempt/${id}`);
+}
+
+export async function getLeaderboard(): Promise<Record<string, unknown>[]> {
+  return request<Record<string, unknown>[]>("/leaderboard");
+}
+
+export async function getQuizzes(): Promise<Quiz[]> {
+  // Return empty until a global Quiz Library/Browser is implemented
+  return [];
+}
+
+export async function getQuizById(id: string): Promise<Quiz | null> {
+  // Dynamic fetching by ID is not yet implemented on backend
+  return null;
 }

@@ -11,7 +11,7 @@ import { DifficultyBadge } from "@/components/quiz/difficulty-badge";
 import { ProgressBar } from "@/components/dashboard/progress-bar";
 import { useQuiz } from "@/hooks/use-quiz";
 import { useTimer } from "@/hooks/use-timer";
-import { getQuiz } from "@/lib/api";
+import { getQuizById } from "@/lib/api-client";
 import type { Quiz } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -49,7 +49,7 @@ export default function QuizPlayPage({
 
   useEffect(() => {
     async function load() {
-      const data = await getQuiz(id);
+      const data = await getQuizById(id);
       setQuiz(data);
       setLoading(false);
     }

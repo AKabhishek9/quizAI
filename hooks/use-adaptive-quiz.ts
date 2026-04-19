@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef } from "react";
-import { getQuiz, submitQuizAnswers } from "@/lib/api-client";
+import { generateQuiz, submitQuizAnswers } from "@/lib/api-client";
 import type { ApiSubmitResponse, ApiQuestion } from "@/lib/api-client";
 import { toPlayableQuestion, optionIdToIndex } from "@/lib/transforms";
 import type { Question } from "@/lib/types";
@@ -50,7 +50,7 @@ export function useAdaptiveQuiz(): UseAdaptiveQuizReturn {
     let delayMs = 3000;
 
     try {
-      let response = await getQuiz(stream, topics);
+      let response = await generateQuiz(stream, topics);
 
       // Poll if the backend scheduled a background job and returned empty
       while (
@@ -59,7 +59,7 @@ export function useAdaptiveQuiz(): UseAdaptiveQuizReturn {
       ) {
         maxRetries--;
         await new Promise((resolve) => setTimeout(resolve, delayMs));
-        response = await getQuiz(stream, topics);
+        response = await generateQuiz(stream, topics);
       }
 
       if (!response.questions || response.questions.length === 0) {

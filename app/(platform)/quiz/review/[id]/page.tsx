@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { ChevronLeft, CheckCircle2, XCircle, AlertCircle, Loader2, Award, BookOpen, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getQuizAttemptById } from "@/lib/api";
+import { getQuizAttemptById } from "@/lib/api-client";
 import { cn } from "@/lib/utils";
 import { DifficultyBadge } from "@/components/quiz/difficulty-badge";
 

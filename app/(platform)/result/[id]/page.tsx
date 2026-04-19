@@ -7,7 +7,7 @@ import { ArrowRight, RotateCcw, Check, X, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DifficultyBadge } from "@/components/quiz/difficulty-badge";
 import { ProgressBar } from "@/components/dashboard/progress-bar";
-import { getUserDashboard, getQuizAttemptById } from "@/lib/api";
+import { getUserDashboard, getQuizAttemptById } from "@/lib/api-client";
 import type { QuizAttempt } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
