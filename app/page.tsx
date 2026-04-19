@@ -1,5 +1,8 @@
 "use client";
 
+// Rebuild trigger for Vercel route detection
+
+
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Hero } from "@/components/landing/hero";
