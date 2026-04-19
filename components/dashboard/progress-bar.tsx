@@ -8,7 +8,7 @@ interface ProgressBarProps {
   label?: string;
   showPercentage?: boolean;
   size?: "sm" | "md" | "lg";
-  color?: "primary" | "success" | "warning" | "destructive";
+  color?: "primary" | "success" | "warning" | "destructive" | "neutral";
   className?: string;
 }
 
@@ -23,6 +23,7 @@ const colorMap = {
   success: "bg-success",
   warning: "bg-warning",
   destructive: "bg-destructive",
+  neutral: "bg-on-surface-variant/20",
 };
 
 export function ProgressBar({

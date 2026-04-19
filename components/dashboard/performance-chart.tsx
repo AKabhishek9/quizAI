@@ -17,26 +17,23 @@ interface PerformanceChartProps {
 }
 
 export function PerformanceChart({ data }: PerformanceChartProps) {
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
-
-  const gridColor = isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)";
-  const textColor = isDark ? "#64748b" : "#94a3b8";
-  // Updated primary to match Stitch primary if possible, or use standard
-  const primaryColor = "#4648d4"; 
+  // Use CSS variables for Recharts components
+  const gridColor = "var(--border)";
+  const textColor = "var(--muted-foreground)";
+  const primaryColor = "var(--primary)"; 
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-8 shadow-sm h-full">
-      <div className="flex items-center justify-between mb-10">
-        <div>
-          <h3 className="text-xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">Performance Trend</h3>
-          <p className="text-[13px] text-slate-400 font-medium">
-            Weekly assessment progress
+    <div className="rounded-[32px] border border-border/10 bg-card/30 p-10 whisper-shadow h-full backdrop-blur-sm">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+        <div className="space-y-1">
+          <h3 className="text-2xl font-black tracking-tighter text-foreground font-heading">Performance Trend</h3>
+          <p className="text-[13px] text-muted-foreground font-bold tracking-tight opacity-60">
+            High-fidelity assessment progress
           </p>
         </div>
-        <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-100 dark:border-slate-800">
-          <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">Last 7 Days</span>
-          <span className="material-symbols-outlined text-[16px] text-slate-400">expand_more</span>
+        <div className="flex items-center gap-2 bg-muted/30 px-4 py-2 rounded-full border border-border/40 group cursor-pointer hover:bg-muted/50 transition-colors">
+          <span className="text-[11px] font-black text-muted-foreground uppercase tracking-widest">Global Index</span>
+          <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
         </div>
       </div>
 
@@ -48,38 +45,39 @@ export function PerformanceChart({ data }: PerformanceChartProps) {
           >
             <defs>
               <linearGradient id="scoreGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={primaryColor} stopOpacity={0.15} />
-                <stop offset="95%" stopColor={primaryColor} stopOpacity={0.01} />
+                <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.2} />
+                <stop offset="95%" stopColor="var(--primary)" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid
               strokeDasharray="4 4"
               stroke={gridColor}
               vertical={false}
+              opacity={0.1}
             />
             <XAxis
               dataKey="week"
-              tick={{ fill: textColor, fontSize: 10, fontWeight: 600 }}
+              tick={{ fill: textColor, fontSize: 10, fontWeight: 900 }}
               axisLine={false}
               tickLine={false}
-              dy={10}
+              dy={15}
             />
             <YAxis
-              tick={{ fill: textColor, fontSize: 10, fontWeight: 600 }}
+              tick={{ fill: textColor, fontSize: 10, fontWeight: 900 }}
               axisLine={false}
               tickLine={false}
               domain={[0, 100]}
-              dx={-5}
+              dx={-10}
             />
             <Tooltip
               content={({ active, payload, label }) => {
                 if (active && payload && payload.length) {
                   return (
-                    <div className="bg-card border border-border rounded-xl p-3 shadow-xl backdrop-blur-md">
-                      <p className="text-[10px] font-bold text-foreground/50 uppercase mb-1">{label}</p>
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-primary"></div>
-                        <p className="text-sm font-semibold text-foreground">{payload[0].value}%</p>
+                    <div className="bg-card/90 border border-border/40 rounded-2xl p-4 shadow-2xl backdrop-blur-xl">
+                      <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2">{label}</p>
+                      <div className="flex items-center gap-3">
+                        <div className="w-2.5 h-2.5 rounded-full bg-primary shadow-glow-primary"></div>
+                        <p className="text-lg font-black tracking-tighter text-foreground font-heading">{payload[0].value}%</p>
                       </div>
                     </div>
                   );
@@ -96,8 +94,8 @@ export function PerformanceChart({ data }: PerformanceChartProps) {
               fill="url(#scoreGradient)"
               activeDot={{
                 r: 6,
-                fill: "#fff",
-                stroke: primaryColor,
+                fill: "var(--background)",
+                stroke: "var(--primary)",
                 strokeWidth: 3,
               }}
             />

@@ -85,12 +85,17 @@ export function Navbar() {
             </Link>
           )}
 
-          {/* Mobile Toggle */}
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-            <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="icon" className="h-9 w-9">
-                <Menu className="h-5 w-5" />
-              </Button>
+            <SheetTrigger
+              render={
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9 md:hidden"
+                />
+              }
+            >
+              <Menu className="h-5 w-5" />
             </SheetTrigger>
             <SheetContent side="right" className="w-full sm:w-[350px] border-l border-outline-variant/15">
               <SheetTitle className="text-xl font-headline font-bold mb-8 text-foreground">Navigation</SheetTitle>
