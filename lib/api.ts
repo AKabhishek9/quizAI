@@ -10,7 +10,7 @@ export async function getQuizzes(): Promise<Quiz[]> {
   return [];
 }
 
-export async function getQuiz(id: string): Promise<Quiz | null> {
+export async function getQuiz(_id: string): Promise<Quiz | null> {
   // Dynamic fetching by ID is not yet implemented on backend
   return null;
 }
@@ -36,7 +36,7 @@ export async function getUserDashboard(): Promise<{
   }>("/user/dashboard");
 }
 
-export async function getQuizAttemptById(id: string): Promise<Record<string, unknown> | null> {
+export async function getQuizAttemptById(_id: string): Promise<Record<string, unknown> | null> {
   return request<Record<string, unknown> | null>(`/quiz-attempt/${id}`);
 }
 

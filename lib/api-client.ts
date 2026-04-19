@@ -1,3 +1,4 @@
+import type { Auth } from "firebase/auth";
 // ──────────────────────────────────────────────
 // API Client — connects to the Express backend
 // ──────────────────────────────────────────────
@@ -11,10 +12,8 @@ export async function getAuthHeaders() {
     "Content-Type": "application/json",
   };
   
-import type { Auth } from "firebase/auth";
-
-  if (auth && (auth as Auth).currentUser) {
-    const token = await (auth as Auth).currentUser!.getIdToken();
+  if (auth && (auth as any).currentUser) {
+    const token = await (auth as any).currentUser.getIdToken();
     headers["Authorization"] = `Bearer ${token}`;
   }
   return headers;

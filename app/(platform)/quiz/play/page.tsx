@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, Suspense, useMemo, useRef } from "react";
+import { useEffect, Suspense, useMemo, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, AlertCircle, Loader2, TrendingUp, TrendingDown, Minus, Cpu } from "lucide-react";

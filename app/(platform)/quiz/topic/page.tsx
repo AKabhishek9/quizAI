@@ -23,7 +23,7 @@ function TopicSelectionEngine() {
   
   const [topics, setTopics] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState("");
-  const [suggestions, setSuggestions] = useState<string[]>(SUGGESTIONS[stream] || SUGGESTIONS["Tech & Software"]);
+  const [suggestions, _setSuggestions] = useState<string[]>(SUGGESTIONS[stream] || SUGGESTIONS["Tech & Software"]);
 
   // Filter out suggestions that are already picked
   const availableSuggestions = suggestions.filter(s => !topics.includes(s));

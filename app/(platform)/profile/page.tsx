@@ -12,7 +12,7 @@ import { DifficultyBadge } from "@/components/quiz/difficulty-badge";
 import { PerformanceChart } from "@/components/dashboard/performance-chart";
 import { SkeletonStatsGrid, SkeletonCard } from "@/components/shared/skeleton-loader";
 import { getUserDashboard } from "@/lib/api";
-import type { UserProfile, UserStats, QuizAttempt } from "@/lib/types";
+import type {  } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
 import { useAuth } from "@/components/providers/auth-provider";
 import { cn } from "@/lib/utils";
