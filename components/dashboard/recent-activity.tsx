@@ -10,51 +10,74 @@ interface RecentActivityProps {
   attempts: QuizAttempt[];
 }
 
+const statusColors = (score: number) => {
+  if (score >= 80) return "bg-emerald-500 text-white";
+  if (score >= 60) return "bg-amber-500 text-white";
+  return "bg-rose-500 text-white";
+};
+
+const iconMapping = (category: string = "") => {
+  const cat = category.toLowerCase();
+  if (cat.includes("react")) return "layers";
+  if (cat.includes("css") || cat.includes("layout")) return "palette";
+  if (cat.includes("js") || cat.includes("script")) return "javascript";
+  if (cat.includes("ts") || cat.includes("type")) return "code";
+  return "terminal";
+};
+
 export function RecentActivity({ attempts }: RecentActivityProps) {
   return (
-    <div className="rounded-xl border border-border bg-card p-5">
-      <div className="flex items-center justify-between mb-5">
-        <h3 className="text-sm font-semibold">Recent activity</h3>
+    <div className="rounded-2xl border border-outline-variant/10 bg-surface-container-lowest p-6 shadow-soft h-full">
+      <div className="flex items-center justify-between mb-8">
+        <h3 className="text-[15px] font-bold text-on-surface">Recent Activity</h3>
         <Link
           href="/profile"
-          className="text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+          className="text-xs font-bold text-primary hover:underline transition-all"
         >
           View all
         </Link>
       </div>
 
-      <div className="space-y-1">
-        {attempts.slice(0, 5).map((attempt, index) => (
+      <div className="relative space-y-8 before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-outline-variant/20 before:via-outline-variant/20 before:to-transparent">
+        {attempts.slice(0, 4).map((attempt, index) => (
           <motion.div
             key={attempt.id}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: index * 0.04, duration: 0.25 }}
-            className="flex items-center justify-between py-2.5 px-2 -mx-2 rounded-md hover:bg-secondary/50 transition-colors cursor-pointer"
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: index * 0.1 }}
+            className="relative flex items-center justify-between group"
           >
-            <div className="flex items-center gap-3 min-w-0">
-              <span
-                className={cn(
-                  "text-xs font-semibold tabular-nums w-8 text-center",
-                  attempt.score >= 80
-                    ? "text-success"
-                    : attempt.score >= 50
-                    ? "text-warning"
-                    : "text-destructive"
-                )}
-              >
-                {attempt.score}%
-              </span>
-              <div className="min-w-0">
-                <p className="text-[13px] font-medium truncate">
-                  {attempt.quizTitle}
-                </p>
-                <p className="text-[11px] text-muted-foreground">
-                  {attempt.date}
-                </p>
+            <div className="flex items-center w-full">
+              {/* Timeline dot/icon */}
+              <div className="flex items-center justify-center w-10 h-10 rounded-full border border-surface-container-lowest bg-surface-container-low text-on-surface-variant group-hover:scale-110 group-hover:text-primary transition-all z-10 shadow-sm overflow-hidden">
+                <span className="material-symbols-outlined text-[18px]">
+                  {iconMapping(attempt.quizTitle)}
+                </span>
+              </div>
+
+              {/* Content */}
+              <div className="ml-4 flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-[13px] font-bold text-on-surface truncate group-hover:text-primary transition-colors">
+                    {attempt.quizTitle}
+                  </p>
+                  <span className={cn(
+                    "px-2 py-0.5 rounded-full text-[10px] font-black tracking-tight shrink-0",
+                    statusColors(attempt.score)
+                  )}>
+                    {attempt.score}%
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-[11px] text-on-surface-variant/50 font-medium">
+                    {attempt.date}
+                  </span>
+                  <span className="text-[10px] py-0.5 px-1.5 rounded-md bg-surface-container-low text-on-surface-variant/70 border border-outline-variant/10 font-bold uppercase tracking-wider">
+                    {attempt.difficulty}
+                  </span>
+                </div>
               </div>
             </div>
-            <DifficultyBadge difficulty={attempt.difficulty} />
           </motion.div>
         ))}
       </div>

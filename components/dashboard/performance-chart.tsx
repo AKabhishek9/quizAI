@@ -20,76 +20,86 @@ export function PerformanceChart({ data }: PerformanceChartProps) {
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
-  const gridColor = isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)";
-  const textColor = isDark ? "#6b7280" : "#9ca3af";
-  const strokeColor = isDark
-    ? "oklch(0.68 0.17 264)"
-    : "oklch(0.55 0.18 264)";
+  const gridColor = isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)";
+  const textColor = isDark ? "#64748b" : "#94a3b8";
+  // Updated primary to match Stitch primary if possible, or use standard
+  const primaryColor = "#4648d4"; 
 
   return (
-    <div className="rounded-xl border border-border bg-card p-5">
-      <div className="mb-5">
-        <h3 className="text-sm font-semibold">Performance trend</h3>
-        <p className="text-xs text-muted-foreground mt-0.5">
-          Average score per week
-        </p>
+    <div className="rounded-2xl border border-outline-variant/10 bg-surface-container-lowest p-6 shadow-soft">
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h3 className="text-[15px] font-bold text-on-surface">Performance Trend</h3>
+          <p className="text-[12px] text-on-surface-variant/60 mt-0.5 font-medium">
+            Weekly assessment progress
+          </p>
+        </div>
+        <div className="flex items-center gap-1 bg-surface-container-low px-2 py-1 rounded-lg border border-outline-variant/10">
+          <span className="text-[10px] font-bold text-on-surface-variant/70">Last 7 Days</span>
+          <span className="material-symbols-outlined text-[14px] text-on-surface-variant/50">expand_more</span>
+        </div>
       </div>
 
-      <div className="h-56 w-full">
+      <div className="h-64 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={data}
-            margin={{ top: 4, right: 4, left: -24, bottom: 0 }}
+            margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
           >
             <defs>
-              <linearGradient id="scoreGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={strokeColor} stopOpacity={0.12} />
-                <stop offset="95%" stopColor={strokeColor} stopOpacity={0} />
+              <linearGradient id="scoreGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor={primaryColor} stopOpacity={0.15} />
+                <stop offset="95%" stopColor={primaryColor} stopOpacity={0.01} />
               </linearGradient>
             </defs>
             <CartesianGrid
-              strokeDasharray="3 3"
+              strokeDasharray="4 4"
               stroke={gridColor}
               vertical={false}
             />
             <XAxis
               dataKey="week"
-              tick={{ fill: textColor, fontSize: 11 }}
+              tick={{ fill: textColor, fontSize: 10, fontWeight: 500 }}
               axisLine={false}
               tickLine={false}
+              dy={10}
             />
             <YAxis
-              tick={{ fill: textColor, fontSize: 11 }}
+              tick={{ fill: textColor, fontSize: 10, fontWeight: 500 }}
               axisLine={false}
               tickLine={false}
               domain={[0, 100]}
+              dx={-5}
             />
             <Tooltip
-              contentStyle={{
-                backgroundColor: isDark ? "#1c1c22" : "#ffffff",
-                border: `1px solid ${isDark ? "#2a2a32" : "#e5e7eb"}`,
-                borderRadius: "8px",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-                fontSize: "12px",
-                padding: "8px 12px",
-              }}
-              labelStyle={{
-                color: isDark ? "#f3f4f6" : "#111827",
-                fontWeight: 500,
-                marginBottom: 2,
+              content={({ active, payload, label }) => {
+                if (active && payload && payload.length) {
+                  return (
+                    <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-xl p-3 shadow-xl backdrop-blur-md">
+                      <p className="text-[10px] font-bold text-outline uppercase mb-1">{label}</p>
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-primary"></div>
+                        <p className="text-sm font-black text-on-surface">{payload[0].value}%</p>
+                      </div>
+                    </div>
+                  );
+                }
+                return null;
               }}
             />
             <Area
               type="monotone"
               dataKey="score"
-              stroke={strokeColor}
-              strokeWidth={1.5}
-              fill="url(#scoreGrad)"
-              dot={false}
+              stroke={primaryColor}
+              strokeWidth={3}
+              fillOpacity={1}
+              fill="url(#scoreGradient)"
               activeDot={{
-                r: 4,
-                fill: strokeColor,
-                strokeWidth: 0,
+                r: 5,
+                fill: "#fff",
+                stroke: primaryColor,
+                strokeWidth: 2,
+                className: "shadow-lg",
               }}
             />
           </AreaChart>

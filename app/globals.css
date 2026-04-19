@@ -333,6 +333,32 @@
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background;
   }
 
+  /* Premium UI Utilities */
+  .shadow-soft {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02), 0 8px 16px rgba(0,0,0,0.04);
+  }
+  .shadow-soft-hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.04), 0 16px 32px rgba(0,0,0,0.08);
+  }
+  .shadow-glow-primary {
+    box-shadow: 0 0 20px -5px var(--color-primary);
+  }
+  .bg-glass {
+    @apply bg-white/70 dark:bg-slate-950/70 backdrop-blur-xl border border-white/20 dark:border-white/10;
+  }
+
+  /* Stats Gradients (Light) */
+  .bg-grad-blue { background: linear-gradient(135deg, #f0f4ff 0%, #e0eaff 100%); }
+  .bg-grad-green { background: linear-gradient(135deg, #f0fff4 0%, #dcffe4 100%); }
+  .bg-grad-yellow { background: linear-gradient(135deg, #fffcf0 0%, #fff9e0 100%); }
+  .bg-grad-orange { background: linear-gradient(135deg, #fff5f0 0%, #ffe8e0 100%); }
+
+  /* Dark mode overrides for gradients */
+  .dark .bg-grad-blue { background: linear-gradient(135deg, #1a2238 0%, #1e293b 100%); }
+  .dark .bg-grad-green { background: linear-gradient(135deg, #162c21 0%, #1e293b 100%); }
+  .dark .bg-grad-yellow { background: linear-gradient(135deg, #2d2a1a 0%, #1e293b 100%); }
+  .dark .bg-grad-orange { background: linear-gradient(135deg, #2d1f1a 0%, #1e293b 100%); }
+
   /* Stitch Specific Classes */
   .mesh-gradient-stitch {
     background-image: radial-gradient(at 0% 0%, hsla(238, 64%, 55%, 0.05) 0, transparent 50%), 

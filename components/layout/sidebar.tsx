@@ -3,24 +3,15 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import {
-  LayoutDashboard,
-  BookOpen,
-  Trophy,
-  User,
-  Settings,
-  ChevronLeft,
-  Zap,
-} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
 const sidebarLinks = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/quiz", label: "Quizzes", icon: BookOpen },
-  { href: "/leaderboard", label: "Leaderboard", icon: Trophy },
-  { href: "/profile", label: "Profile", icon: User },
+  { href: "/dashboard", label: "Dashboard", icon: "grid_view" },
+  { href: "/quiz", label: "Quizzes", icon: "book_4" },
+  { href: "/leaderboard", label: "Leaderboard", icon: "military_tech" },
+  { href: "/profile", label: "Profile", icon: "person" },
 ];
 
 export function Sidebar() {
@@ -30,59 +21,56 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "hidden lg:flex flex-col border-r border-border bg-sidebar transition-[width] duration-200 ease-in-out",
-        collapsed ? "w-[60px]" : "w-[220px]"
+        "hidden lg:flex flex-col border-r border-outline-variant/10 bg-surface-container-lowest transition-[width] duration-300 ease-[0.25, 0.1, 0.25, 1] relative z-20",
+        collapsed ? "w-[68px]" : "w-[240px]"
       )}
     >
-      {/* Logo */}
-      <div className="flex h-14 items-center gap-2.5 px-4 border-b border-border">
-        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary">
-          <Zap className="h-3.5 w-3.5 text-primary-foreground" />
+      {/* Brand Logo */}
+      <div className="flex h-16 items-center gap-3 px-5">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary shadow-glow-primary">
+          <span className="material-symbols-outlined text-[20px] text-white">bolt</span>
         </div>
         {!collapsed && (
-          <span className="text-[15px] font-semibold tracking-tight overflow-hidden whitespace-nowrap">
-            QuizAI
+          <span className="text-[16px] font-black tracking-tighter text-on-surface">
+            QuizAI.
           </span>
         )}
       </div>
 
-      {/* Nav */}
-      <nav
-        className="flex-1 p-2 space-y-0.5"
-        role="navigation"
-        aria-label="Sidebar"
-      >
+      {/* Navigation */}
+      <nav className="flex-1 px-3 py-4 space-y-1">
         {sidebarLinks.map((link) => {
-          const isActive =
-            link.href === "/"
-              ? pathname === "/"
-              : pathname.startsWith(link.href);
-          const Icon = link.icon;
-
+          const isActive = pathname.startsWith(link.href);
+          
           return (
             <Link
               key={link.href}
               href={link.href}
               className={cn(
-                "relative flex items-center gap-2.5 px-2.5 py-2 text-[13px] font-medium rounded-md transition-colors duration-150 cursor-pointer",
-                isActive
-                  ? "bg-secondary text-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
+                "group relative flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200",
+                isActive 
+                  ? "bg-primary/10 text-primary shadow-[inset_0_0_0_1px_rgba(70,72,212,0.1)]" 
+                  : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low"
               )}
             >
-              <Icon className="h-4 w-4 shrink-0" />
+              <span className={cn(
+                "material-symbols-outlined text-[22px] transition-transform duration-200 group-hover:scale-110",
+                isActive ? "fill-1" : ""
+              )}>
+                {link.icon}
+              </span>
+              
               {!collapsed && (
-                <span className="truncate">{link.label}</span>
+                <span className="text-[13px] font-bold tracking-tight truncate">
+                  {link.label}
+                </span>
               )}
+
               {isActive && (
-                <motion.span
-                  layoutId="sidebar-pill"
-                  className="absolute left-0 top-1.5 bottom-1.5 w-[2px] rounded-full bg-primary"
-                  transition={{
-                    type: "spring",
-                    stiffness: 400,
-                    damping: 28,
-                  }}
+                <motion.div
+                  layoutId="sidebar-active-glow"
+                  className="absolute inset-0 rounded-xl bg-primary/5 shadow-glow-primary -z-10"
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 />
               )}
             </Link>
@@ -90,31 +78,28 @@ export function Sidebar() {
         })}
       </nav>
 
-      {/* Bottom */}
-      <div className="p-2 space-y-0.5 border-t border-border">
+      {/* Bottom Actions */}
+      <div className="p-3 border-t border-outline-variant/10 space-y-1 bg-surface-container-lowest/50">
         <Link
           href="/profile"
-          className="flex items-center gap-2.5 px-2.5 py-2 text-[13px] font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/60 rounded-md transition-colors cursor-pointer"
+          className="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low rounded-xl transition-all"
         >
-          <Settings className="h-4 w-4 shrink-0" />
-          {!collapsed && <span className="truncate">Settings</span>}
+          <span className="material-symbols-outlined text-[22px]">settings</span>
+          {!collapsed && <span className="text-[13px] font-bold tracking-tight">Settings</span>}
         </Link>
 
-        <Button
-          variant="ghost"
-          size="sm"
+        <button
           onClick={() => setCollapsed(!collapsed)}
-          className="w-full justify-start gap-2.5 px-2.5 h-8 text-[13px] font-medium text-muted-foreground cursor-pointer"
-          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          className="w-full flex items-center gap-3 px-3 py-2.5 text-on-surface-variant/60 hover:text-on-surface hover:bg-surface-container-low rounded-xl transition-all cursor-pointer"
         >
-          <ChevronLeft
-            className={cn(
-              "h-4 w-4 shrink-0 transition-transform duration-200",
-              collapsed && "rotate-180"
-            )}
-          />
-          {!collapsed && <span className="truncate">Collapse</span>}
-        </Button>
+          <span className={cn(
+            "material-symbols-outlined text-[22px] transition-transform duration-300",
+            collapsed && "rotate-180"
+          )}>
+            first_page
+          </span>
+          {!collapsed && <span className="text-[13px] font-bold tracking-tight">Collapse</span>}
+        </button>
       </div>
     </aside>
   );
