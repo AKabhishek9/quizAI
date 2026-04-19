@@ -2,41 +2,36 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 export function CtaSection() {
   return (
-    <section className="py-24 sm:py-32 border-t border-border">
-      <div className="mx-auto max-w-6xl px-5 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="relative overflow-hidden rounded-xl border border-border bg-card p-10 sm:p-14 text-center"
-        >
-          {/* Subtle mesh behind */}
-          <div className="pointer-events-none absolute inset-0 -z-0 mesh-gradient opacity-50" />
-
-          <div className="relative z-10">
-            <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-              Ready to level up?
-            </h2>
-            <p className="mt-3 text-sm text-muted-foreground max-w-md mx-auto">
-              Join thousands of developers who use QuizAI to sharpen their
-              skills every day. Free to start.
-            </p>
-            <div className="mt-7">
-              <Link href="/login">
-                <Button className="cursor-pointer h-10 px-5 text-sm font-medium glow">
-                  Get started
-                  <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
-                </Button>
-              </Link>
-            </div>
+    <section className="py-24 px-8">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.98 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        className="max-w-5xl mx-auto bg-on-surface rounded-[32px] sm:rounded-[48px] p-12 sm:p-20 text-center relative overflow-hidden whisper-shadow"
+      >
+        <div className="absolute inset-0 mesh-gradient-stitch opacity-10"></div>
+        <div className="relative z-10 max-w-2xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-headline font-extrabold tracking-tight text-white mb-6">
+            Ready to master your <br/>next challenge?
+          </h2>
+          <p className="text-white/60 text-lg mb-10 leading-relaxed">
+            Join 2,000+ developers sharpening their skills daily. <br className="hidden sm:block"/>
+            Free to start, no credit card required.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link href="/login" className="w-full sm:w-auto">
+              <button className="w-full px-8 py-4 bg-white text-on-surface rounded-xl font-bold hover:bg-white/90 transition-all flex items-center justify-center gap-2">
+                Get started for free
+                <span className="material-symbols-outlined text-sm">arrow_forward</span>
+              </button>
+            </Link>
           </div>
-        </motion.div>
-      </div>
+        </div>
+      </motion.div>
     </section>
   );
 }

@@ -1,95 +1,83 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Brain, BarChart3, Target, Clock, Shield, Zap } from "lucide-react";
 
 const features = [
   {
-    icon: Brain,
+    icon: "psychology",
     title: "Adaptive questions",
-    description:
-      "Questions calibrate to your level automatically.",
+    description: "Questions evolve based on your accuracy, pushing your limits without frustration.",
   },
   {
-    icon: BarChart3,
+    icon: "analytics",
     title: "Performance analytics",
-    description:
-      "Track scores, trends, and category breakdowns.",
+    description: "Granular breakdowns of your speed, accuracy, and improvement over time.",
   },
   {
-    icon: Target,
+    icon: "target",
     title: "Weak spot detection",
-    description:
-      "Surface the topics that need the most attention.",
+    description: "Our engine pinpoints exactly which sub-topics need more of your attention.",
   },
   {
-    icon: Clock,
+    icon: "timer",
     title: "Timed challenges",
-    description:
-      "Simulate real exam pressure with configurable timers.",
+    description: "Simulate real interview pressure with timed mock exams and technical screens.",
   },
   {
-    icon: Shield,
+    icon: "layers",
     title: "Difficulty levels",
-    description:
-      "Easy, medium, and hard — progress at your pace.",
+    description: "From Junior to Staff Engineer. Choose your path and master the stack.",
   },
   {
-    icon: Zap,
+    icon: "bolt",
     title: "Instant feedback",
-    description:
-      "Explanations after every answer, not just a score.",
+    description: "Don't just see the answer. Get detailed technical explanations for every choice.",
   },
 ];
 
 export function Features() {
   return (
-    <section className="py-24 sm:py-32 border-t border-border" id="features">
-      <div className="mx-auto max-w-6xl px-5 lg:px-8">
-        {/* Header */}
-        <div className="max-w-md mb-14">
-          <motion.p
+    <section className="py-24 border-t border-outline-variant/15" id="features">
+      <div className="max-w-7xl mx-auto px-8">
+        <div className="mb-16">
+          <motion.span 
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="text-xs font-medium text-primary tracking-widest uppercase mb-2"
+            className="text-[11px] font-bold tracking-[0.2em] text-primary mb-4 block"
           >
-            Features
-          </motion.p>
-          <motion.h2
-            initial={{ opacity: 0, y: 8 }}
+            FEATURES
+          </motion.span>
+          <motion.h2 
+            initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.05 }}
-            className="text-2xl font-semibold tracking-tight sm:text-3xl"
+            transition={{ delay: 0.1 }}
+            className="text-4xl font-headline font-extrabold tracking-tight text-on-surface"
           >
-            Everything you need to learn smarter
+            Everything you need to <br/>learn smarter.
           </motion.h2>
         </div>
-
-        {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border rounded-xl overflow-hidden border border-border">
-          {features.map((feature, index) => {
-            const Icon = feature.icon;
-            return (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.06, duration: 0.4 }}
-                className="bg-card p-7 sm:p-8 group cursor-pointer transition-colors duration-200 hover:bg-secondary/40"
-              >
-                <Icon className="h-5 w-5 text-muted-foreground mb-4 group-hover:text-primary transition-colors duration-200" />
-                <h3 className="text-sm font-semibold mb-1.5">
-                  {feature.title}
-                </h3>
-                <p className="text-[13px] text-muted-foreground leading-relaxed">
-                  {feature.description}
-                </p>
-              </motion.div>
-            );
-          })}
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 border border-outline-variant/15 bg-outline-variant/15 gap-px overflow-hidden rounded-2xl">
+          {features.map((feature, idx) => (
+            <motion.div
+              key={feature.title}
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: idx * 0.05 + 0.2 }}
+              className="bg-background p-10 group hover:bg-surface-container-lowest transition-colors cursor-default"
+            >
+              <div className="w-10 h-10 flex items-center justify-center text-outline group-hover:text-primary transition-colors mb-6">
+                <span className="material-symbols-outlined text-3xl">{feature.icon}</span>
+              </div>
+              <h3 className="text-[15px] font-bold mb-2 text-on-surface">{feature.title}</h3>
+              <p className="text-[13px] text-on-surface-variant leading-relaxed">
+                {feature.description}
+              </p>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>

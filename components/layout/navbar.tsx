@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { Menu, X, Zap } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Menu, X, Zap, Moon, Sun, Monitor, Terminal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -33,149 +33,90 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const isLanding = pathname === "/";
-
   return (
-    <header
+    <nav 
       className={cn(
-        "fixed inset-x-0 top-0 z-50 transition-[background,border,box-shadow] duration-300",
-        scrolled
-          ? "glass border-b border-border/60 elevated"
-          : isLanding
-          ? "bg-transparent"
-          : "border-b border-border bg-background/80 backdrop-blur-sm"
+        "fixed top-0 w-full z-50 transition-all duration-300",
+        scrolled 
+          ? "bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-outline-variant/15 py-3" 
+          : "bg-transparent py-5"
       )}
     >
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-5 lg:px-8">
+      <div className="flex justify-between items-center h-16 px-8 max-w-7xl mx-auto">
         {/* Logo */}
-        <Link
-          href="/"
-          className="flex items-center gap-2 cursor-pointer"
-        >
-          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary">
-            <Zap className="h-3.5 w-3.5 text-primary-foreground" />
+        <Link href="/" className="flex items-center gap-2 group">
+          <div className="w-8 h-8 bg-primary rounded flex items-center justify-center transition-transform group-hover:scale-105">
+            <span className="material-symbols-outlined text-white text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>terminal</span>
           </div>
-          <span className="text-[15px] font-semibold tracking-tight">
-            QuizAI
-          </span>
+          <span className="text-2xl font-black tracking-tighter text-on-surface font-headline">QuizAI</span>
         </Link>
 
-        {/* Desktop nav */}
-        <nav
-          className="hidden md:flex items-center gap-0.5"
-          role="navigation"
-          aria-label="Main navigation"
-        >
+        {/* Desktop Nav */}
+        <div className="hidden md:flex items-center gap-8 font-headline tracking-tight font-semibold">
           {navLinks.map((link) => {
-            const isActive =
-              link.href === "/"
-                ? pathname === "/"
-                : pathname.startsWith(link.href);
+            const isActive = link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
             return (
               <Link
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "relative px-3 py-1.5 text-[13px] font-medium rounded-md transition-colors duration-150 cursor-pointer",
-                  isActive
-                    ? "text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
+                  "text-sm transition-all duration-200 relative pb-1",
+                  isActive 
+                    ? "text-primary border-b-2 border-primary" 
+                    : "text-on-surface-variant/70 hover:text-primary"
                 )}
               >
                 {link.label}
-                {isActive && (
-                  <motion.span
-                    layoutId="nav-active"
-                    className="absolute inset-x-1 -bottom-[13px] h-px bg-foreground"
-                    transition={{
-                      type: "spring",
-                      stiffness: 380,
-                      damping: 30,
-                    }}
-                  />
-                )}
               </Link>
             );
           })}
-        </nav>
+        </div>
 
-        {/* Right */}
-        <div className="flex items-center gap-1.5">
+        {/* Actions */}
+        <div className="flex items-center gap-4">
           <ThemeToggle />
+          
+          <Link href="/login" className="hidden sm:block">
+            <button className="bg-primary text-on-primary px-5 py-2 rounded-lg font-semibold text-sm whisper-shadow active:scale-95 transition-all hover:bg-primary-container">
+              Get Started
+            </button>
+          </Link>
 
-          {isLanding && (
-            <Link href="/login" className="hidden md:block">
-              <Button
-                size="sm"
-                className="cursor-pointer h-8 px-3.5 text-xs font-medium"
-              >
-                Get Started
-              </Button>
-            </Link>
-          )}
-
-          {/* Mobile */}
+          {/* Mobile Toggle */}
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-            <SheetTrigger
-              className="md:hidden"
-              render={
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 cursor-pointer"
-                  aria-label="Open menu"
-                />
-              }
-            >
-              {mobileOpen ? (
-                <X className="h-4 w-4" />
-              ) : (
-                <Menu className="h-4 w-4" />
-              )}
+            <SheetTrigger asChild className="md:hidden">
+              <Button variant="ghost" size="icon" className="h-9 w-9">
+                <Menu className="h-5 w-5" />
+              </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-64 pt-10">
-              <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-              <nav
-                className="flex flex-col gap-0.5"
-                role="navigation"
-                aria-label="Mobile navigation"
-              >
-                {navLinks.map((link) => {
-                  const isActive =
-                    link.href === "/"
-                      ? pathname === "/"
-                      : pathname.startsWith(link.href);
-                  return (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      onClick={() => setMobileOpen(false)}
-                      className={cn(
-                        "px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer",
-                        isActive
-                          ? "bg-secondary text-foreground"
-                          : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
-                      )}
-                    >
-                      {link.label}
-                    </Link>
-                  );
-                })}
-                <div className="mt-3 px-3">
+            <SheetContent side="right" className="w-full sm:w-[350px] border-l border-outline-variant/15">
+              <SheetTitle className="text-xl font-headline font-bold mb-8">Navigation</SheetTitle>
+              <div className="flex flex-col gap-4">
+                {navLinks.map((link) => (
                   <Link
-                    href="/login"
+                    key={link.href}
+                    href={link.href}
                     onClick={() => setMobileOpen(false)}
+                    className={cn(
+                      "text-lg font-headline font-semibold py-2 px-4 rounded-xl transition-colors",
+                      pathname === link.href ? "bg-primary/10 text-primary" : "text-on-surface-variant hover:bg-secondary/50"
+                    )}
                   >
-                    <Button className="w-full cursor-pointer h-9 text-sm">
+                    {link.label}
+                  </Link>
+                ))}
+                <div className="pt-4 border-t border-outline-variant/15 mt-4">
+                  <Link href="/login" onClick={() => setMobileOpen(false)}>
+                    <Button className="w-full py-6 text-base font-headline font-bold rounded-xl bg-primary hover:bg-primary-container">
                       Get Started
                     </Button>
                   </Link>
                 </div>
-              </nav>
+              </div>
             </SheetContent>
           </Sheet>
         </div>
       </div>
-    </header>
+    </nav>
   );
 }
