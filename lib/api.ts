@@ -36,7 +36,7 @@ export async function getUserDashboard(): Promise<{
   }>("/user/dashboard");
 }
 
-export async function getQuizAttemptById(_id: string): Promise<Record<string, unknown> | null> {
+export async function getQuizAttemptById(id: string): Promise<Record<string, unknown> | null> {
   return request<Record<string, unknown> | null>(`/quiz-attempt/${id}`);
 }
 
