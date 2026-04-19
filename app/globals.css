@@ -347,17 +347,21 @@
     @apply bg-white/70 dark:bg-slate-950/70 backdrop-blur-xl border border-white/20 dark:border-white/10;
   }
 
-  /* Stats Gradients (Light) */
-  .bg-grad-blue { background: linear-gradient(135deg, #f0f4ff 0%, #e0eaff 100%); }
-  .bg-grad-green { background: linear-gradient(135deg, #f0fff4 0%, #dcffe4 100%); }
-  .bg-grad-yellow { background: linear-gradient(135deg, #fffcf0 0%, #fff9e0 100%); }
-  .bg-grad-orange { background: linear-gradient(135deg, #fff5f0 0%, #ffe8e0 100%); }
+  /* Stats Gradients (Subtle & High Contrast) */
+  .bg-grad-blue { background: linear-gradient(135deg, rgba(70, 72, 212, 0.08) 0%, rgba(70, 72, 212, 0.02) 100%); }
+  .bg-grad-green { background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(16, 185, 129, 0.02) 100%); }
+  .bg-grad-yellow { background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(245, 158, 11, 0.02) 100%); }
+  .bg-grad-orange { background: linear-gradient(135deg, rgba(249, 115, 22, 0.08) 0%, rgba(249, 115, 22, 0.02) 100%); }
 
-  /* Dark mode overrides for gradients */
-  .dark .bg-grad-blue { background: linear-gradient(135deg, #1a2238 0%, #1e293b 100%); }
-  .dark .bg-grad-green { background: linear-gradient(135deg, #162c21 0%, #1e293b 100%); }
-  .dark .bg-grad-yellow { background: linear-gradient(135deg, #2d2a1a 0%, #1e293b 100%); }
-  .dark .bg-grad-orange { background: linear-gradient(135deg, #2d1f1a 0%, #1e293b 100%); }
+  /* Dark mode overrides - even more subtle */
+  .dark .bg-grad-blue { background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(30, 41, 59, 0.5) 100%); }
+  .dark .bg-grad-green { background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(30, 41, 59, 0.5) 100%); }
+  .dark .bg-grad-yellow { background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(30, 41, 59, 0.5) 100%); }
+  .dark .bg-grad-orange { background: linear-gradient(135deg, rgba(249, 115, 22, 0.12) 0%, rgba(30, 41, 59, 0.5) 100%); }
+
+  .border-glass {
+    @apply border border-white/20 dark:border-white/10;
+  }
 
   /* Stitch Specific Classes */
   .mesh-gradient-stitch {

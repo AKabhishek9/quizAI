@@ -76,11 +76,14 @@ export function Navbar() {
         <div className="flex items-center gap-4">
           <ThemeToggle />
           
-          <Link href="/login" className="hidden sm:block">
-            <button className="bg-primary text-on-primary px-5 py-2 rounded-lg font-semibold text-sm whisper-shadow active:scale-95 transition-all hover:bg-primary-container">
-              Get Started
-            </button>
-          </Link>
+          {/* Only show Get Started if not authenticated or not on platform pages */}
+          {!pathname.startsWith("/dashboard") && !pathname.startsWith("/quiz") && !pathname.startsWith("/profile") && (
+            <Link href="/login" className="hidden sm:block">
+              <button className="bg-primary text-on-primary px-5 py-2 rounded-lg font-bold text-sm whisper-shadow active:scale-95 transition-all hover:bg-primary-container">
+                Get Started
+              </button>
+            </Link>
+          )}
 
           {/* Mobile Toggle */}
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
@@ -90,7 +93,7 @@ export function Navbar() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-full sm:w-[350px] border-l border-outline-variant/15">
-              <SheetTitle className="text-xl font-headline font-bold mb-8">Navigation</SheetTitle>
+              <SheetTitle className="text-xl font-headline font-bold mb-8 text-on-surface">Navigation</SheetTitle>
               <div className="flex flex-col gap-4">
                 {navLinks.map((link) => (
                   <Link
@@ -105,13 +108,15 @@ export function Navbar() {
                     {link.label}
                   </Link>
                 ))}
-                <div className="pt-4 border-t border-outline-variant/15 mt-4">
-                  <Link href="/login" onClick={() => setMobileOpen(false)}>
-                    <Button className="w-full py-6 text-base font-headline font-bold rounded-xl bg-primary hover:bg-primary-container">
-                      Get Started
-                    </Button>
-                  </Link>
-                </div>
+                {!pathname.startsWith("/dashboard") && (
+                  <div className="pt-4 border-t border-outline-variant/15 mt-4">
+                    <Link href="/login" onClick={() => setMobileOpen(false)}>
+                      <Button className="w-full py-6 text-base font-headline font-bold rounded-xl bg-primary hover:bg-primary-container">
+                        Get Started
+                      </Button>
+                    </Link>
+                  </div>
+                )}
               </div>
             </SheetContent>
           </Sheet>

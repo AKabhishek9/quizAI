@@ -55,12 +55,12 @@ export function StatsCard({
 
   return (
     <motion.div
-      whileHover={{ y: -4, scale: 1.01 }}
+      whileHover={{ y: -2, scale: 1.01 }}
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
       className={cn(
-        "relative overflow-hidden rounded-2xl border border-outline-variant/10 p-6 transition-all duration-300 shadow-soft hover:shadow-soft-hover cursor-default",
+        "relative overflow-hidden rounded-2xl border border-outline-variant/15 p-6 transition-all duration-300 shadow-sm hover:shadow-md cursor-default bg-white/50 dark:bg-slate-950/20 backdrop-blur-sm",
         v.bg,
         className
       )}
@@ -68,7 +68,7 @@ export function StatsCard({
       {/* Trend Badge */}
       {trend && (
         <div className={cn(
-          "absolute top-4 right-4 px-2 py-1 rounded-full text-[10px] font-bold tracking-tight flex items-center gap-0.5",
+          "absolute top-4 right-4 px-2 py-1 rounded-full text-[10px] font-bold tracking-tight flex items-center gap-0.5 border border-current/10 shadow-sm",
           v.trend
         )}>
           {trend.isPositive ? "↑" : "↓"} {trend.value}%
@@ -78,22 +78,22 @@ export function StatsCard({
       <div className="flex flex-col gap-4">
         {/* Icon Box */}
         <div className={cn(
-          "w-10 h-10 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110",
+          "w-10 h-10 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110 shadow-sm border border-current/5",
           v.iconBg
         )}>
           <Icon className="h-5 w-5" />
         </div>
 
         <div>
-          <p className="text-[11px] font-bold tracking-[0.05em] text-on-surface-variant/70 uppercase mb-1">
+          <p className="text-[11px] font-bold tracking-[0.05em] text-on-surface-variant uppercase mb-1 opacity-80">
             {title}
           </p>
           <div className="flex items-baseline gap-1">
-            <h4 className="text-3xl font-black tracking-tighter text-on-surface">
+            <h4 className="text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
               {value}
             </h4>
             {total && (
-              <span className="text-xs text-on-surface-variant/50 font-medium">
+              <span className="text-xs text-on-surface-variant/60 font-medium">
                 / {total}
               </span>
             )}
