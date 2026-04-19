@@ -46,11 +46,24 @@ export function useAdaptiveQuiz(): UseAdaptiveQuizReturn {
     setAnswers(new Map());
     setResult(null);
 
+    let maxRetries = 6;
+    let delayMs = 3000;
+
     try {
-      const response = await getQuiz(stream, topics);
+      let response = await getQuiz(stream, topics);
+
+      // Poll if the backend scheduled a background job and returned empty
+      while (
+        (!response.questions || response.questions.length === 0) &&
+        maxRetries > 0
+      ) {
+        maxRetries--;
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+        response = await getQuiz(stream, topics);
+      }
 
       if (!response.questions || response.questions.length === 0) {
-        setError("No questions available. Try again later.");
+        setError("AI Generation timed out. The server is heavily loaded, please try again.");
         setState("error");
         setIsGenerating(false);
         return;
