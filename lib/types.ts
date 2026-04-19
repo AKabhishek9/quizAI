@@ -33,6 +33,16 @@ export interface Quiz {
   imageUrl?: string;
 }
 
+export interface DailyQuiz {
+  id: string;
+  date: string;
+  category: string;
+  questions: Question[];
+  questionCount: number;
+  timePerQuestion: number;
+  expiresAt: string;
+}
+
 export interface QuizAttempt {
   id: string;
   quizId: string;

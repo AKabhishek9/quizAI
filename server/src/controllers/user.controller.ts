@@ -20,6 +20,7 @@ interface UserStatsResponse {
   totalQuizzes: number;
   averageScore: number;
   currentStreak: number;
+  bestStreak: number;
   rank: number;
   totalQuestions: number;
   totalCorrect: number;
@@ -112,8 +113,9 @@ export const getUserDashboard = async (
     const stats: UserStatsResponse = {
       totalQuizzes: attempts.length,
       averageScore: avg,
-      currentStreak: 0, 
-      rank: rank, 
+      currentStreak: user.currentStreak || 0,
+      bestStreak: user.bestStreak || 0,
+      rank: rank,
       totalQuestions: user.attemptedQuestions.length,
       totalCorrect,
       weeklyScores: weeklyScores.length ? weeklyScores : [{ day: "Start", score: 0 }],

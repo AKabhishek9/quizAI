@@ -57,6 +57,18 @@ const userSchema = new Schema(
       type: [String],
       default: [],
     },
+    currentStreak: {
+      type: Number,
+      default: 0,
+    },
+    bestStreak: {
+      type: Number,
+      default: 0,
+    },
+    lastActiveDate: {
+      type: String, // format YYYY-MM-DD
+      default: null,
+    },
   },
   {
     timestamps: true,

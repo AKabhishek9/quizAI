@@ -109,10 +109,16 @@ export default function ProfilePage() {
 
       {/* Stats */}
       {stats && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
           <StatsCard title="Quizzes" value={stats.totalQuizzes} icon={BookOpen} />
           <StatsCard title="Avg. Score" value={`${stats.averageScore}%`} icon={Target} />
-          <StatsCard title="Best Streak" value={`${stats.bestStreak}d`} icon={Flame} />
+          <StatsCard 
+            title="Current Streak" 
+            value={`${stats.currentStreak}d`} 
+            icon={Flame} 
+            className={cn(stats.currentStreak > 0 && "text-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.2)]")} 
+          />
+          <StatsCard title="Best Streak" value={`${stats.bestStreak}d`} icon={Trophy} />
           <StatsCard title="Rank" value={`#${stats.rank}`} icon={Trophy} />
         </div>
       )}

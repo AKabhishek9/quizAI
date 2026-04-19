@@ -136,3 +136,28 @@ export async function getQuizById(id: string): Promise<Quiz | null> {
   // Dynamic fetching by ID is not yet implemented on backend
   return null;
 }
+
+/** Get today's active daily quizzes */
+export async function getDailyQuizzes(): Promise<any[]> {
+  return request<any[]>("/daily");
+}
+
+/** Get a specific daily quiz by its database ID */
+export async function getDailyQuiz(id: string): Promise<any> {
+  return request<any>(`/daily/${id}`);
+}
+
+/** Submit daily quiz result and update streak */
+export async function submitDailyQuiz(id: string, answers: { selectedOption: number }[]): Promise<any> {
+  return request<any>(`/daily/${id}/submit`, {
+    method: "POST",
+    body: JSON.stringify({ answers }),
+  });
+}
+
+/** Admin/Manual trigger for daily quiz generation */
+export async function triggerDailyRefresh(): Promise<{ message: string }> {
+  return request<{ message: string }>("/daily/refresh", {
+    method: "POST",
+  });
+}

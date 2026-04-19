@@ -3,6 +3,8 @@ import cors from "cors";
 import helmet from "helmet";
 import { globalLimiter } from "./middleware/rateLimit.middleware.js";
 import dotenv from "dotenv";
+import cron from "node-cron";
+import { DailyQuizService } from "./services/daily-quiz.service.js";
 
 // Start background AI queue worker (in-memory) so jobs can be scheduled
 import "./services/aiQueue.js";
@@ -72,6 +74,12 @@ async function main() {
   app.listen(PORT, () => {
     console.log(`[server] Running on http://localhost:${PORT}`);
     console.log(`[server] API: http://localhost:${PORT}/api`);
+  });
+
+  // Daily Quiz Cron (Midnight)
+  cron.schedule("0 0 * * *", async () => {
+    console.log("[cron] Running daily quiz refresh...");
+    await DailyQuizService.refreshDailyQuizzes();
   });
 }
 
