@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
-import rateLimit from "express-rate-limit";
+import { globalLimiter } from "./middleware/rateLimit.middleware.js";
 import dotenv from "dotenv";
 
 // Start background AI queue worker (in-memory) so jobs can be scheduled
@@ -43,24 +43,7 @@ app.use(
   })
 );
 
-// Global rate limiter: 100 requests per minute per IP
-const globalLimiter = rateLimit({
-  windowMs: 60 * 1000,
-  max: 100,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { error: "Too many requests. Please slow down." },
-});
 app.use(globalLimiter);
-
-// Stricter rate limiter for AI-heavy endpoints (applied per route)
-export const aiLimiter = rateLimit({
-  windowMs: 60 * 1000,
-  max: 10, // 10 quiz generation requests per minute per IP
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { error: "Quiz generation rate limit reached. Please wait a moment." },
-});
 
 // Body parser
 app.use(express.json({ limit: "1mb" }));

@@ -8,7 +8,7 @@ import {
   SubmitQuizSchema,
   AttemptIdParamSchema,
 } from "../middleware/validate.js";
-import { aiLimiter } from "../index.js";
+import { aiLimiter } from "../middleware/rateLimit.middleware.js";
 
 const router = Router();
 
