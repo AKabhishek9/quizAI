@@ -84,7 +84,7 @@ export const getQuizAttempt = async (
 // @access  Protected
 export const getDailyQuizzes = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const quizzes = await DailyQuizService.getTodayQuizzes();
+    const quizzes = await DailyQuizService.getDailyQuizzes();
     res.json(quizzes);
   } catch (error) {
     next(error);

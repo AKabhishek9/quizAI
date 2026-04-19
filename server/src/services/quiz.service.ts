@@ -298,11 +298,19 @@ export async function getQuizAttemptById(attemptId: string) {
   };
 }
 
+let quizCache: { data: any[]; timestamp: number } | null = null;
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
 /**
  * Aggregates unique subjects and streams from existing questions
  * to present available quizzes for the Library.
  */
 export async function getAllAvailableQuizzes() {
+  if (quizCache && (Date.now() - quizCache.timestamp) < CACHE_TTL) {
+    logger.info("[cache] Serving available quizzes from memory");
+    return quizCache.data;
+  }
+
   const aggregated = await QuestionModel.aggregate([
     {
       $group: {
@@ -322,7 +330,7 @@ export async function getAllAvailableQuizzes() {
     }
   ]);
 
-  return aggregated.map(a => ({
+  const result = aggregated.map(a => ({
     id: `${a.subject}-${a.stream}`.toLowerCase().replace(/\s+/g, '-'),
     title: a.subject,
     description: `Master ${a.subject} within the ${a.stream} stream. ${a.count} questions available.`,
@@ -331,4 +339,7 @@ export async function getAllAvailableQuizzes() {
     topics: a.topics,
     difficulty: "Mixed"
   }));
+
+  quizCache = { data: result, timestamp: Date.now() };
+  return result;
 }

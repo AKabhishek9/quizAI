@@ -34,6 +34,7 @@ export interface GenerateParams {
   count?: number; // default 20
   isDaily?: boolean;
   expiresAt?: Date;
+  skipInsert?: boolean;
 }
 
 export interface AIQuestion extends z.infer<typeof AIQuestionSchema> {}
@@ -148,8 +149,12 @@ Generate ${count} multiple choice questions.
       });
 
       if (documents.length > 0) {
-        await QuestionModel.insertMany(documents);
-        console.log(`[ai] Successfully inserted ${documents.length} questions.`);
+        if (!params.skipInsert) {
+          await QuestionModel.insertMany(documents);
+          console.log(`[ai] Successfully inserted ${documents.length} questions into library.`);
+        } else {
+          console.log(`[ai] Generation complete. Skipping DB insert as requested.`);
+        }
         return documents;
       }
       

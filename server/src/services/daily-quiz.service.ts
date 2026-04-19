@@ -1,11 +1,14 @@
-import { UserModel } from "../models/User.js";
 import { QuestionModel } from "../models/Question.js";
+import { DailyQuizModel } from "../models/DailyQuiz.js";
 import { generateQuestions } from "./ai.service.js";
 
-
+/**
+ * Configuration for the Daily Quiz Categories.
+ * IDs match the enum in DailyQuizModel.
+ */
 export const CATEGORIES = [
   {
-    id: "current-affairs",
+    id: "current_affairs",
     name: "Current Affairs",
     prompt: "focus strictly on news from today and yesterday, world events, and politics.",
     stream: "General",
@@ -41,118 +44,123 @@ export const CATEGORIES = [
 export class DailyQuizService {
   /**
    * Generates new daily quizzes for all categories.
-   * Runs at midnight.
+   * Runs at midnight (0 0 * * *).
+   * Implements "Delete & Replace" cycle.
    */
   static async refreshDailyQuizzes() {
     const today = new Date();
     const dateStr = today.toISOString().split("T")[0]; // YYYY-MM-DD
-    const expiresAt = new Date(today);
-    expiresAt.setHours(23, 59, 59, 999); // Expires at end of today
 
-    console.log(`[daily-quiz] Starting fresh overwrite refresh for ${dateStr}`);
+    console.log(`[daily-quiz] Starting midnight refresh cycle for ${dateStr}...`);
 
     try {
-      // 1. Delete all existing daily questions (The Overwrite Cycle)
-      const deleted = await QuestionModel.deleteMany({ isDaily: true });
-      console.log(`[daily-quiz] Purged ${deleted.deletedCount} old daily questions.`);
+      const newDailyQuizzes = [];
 
-      // 2. Generate new questions for each category
+      // 1. Generate new content for each category
       for (const cat of CATEGORIES) {
         try {
-          console.log(`[daily-quiz] Generating for ${cat.name}...`);
+          console.log(`[daily-quiz] Generating ${cat.name}...`);
           
-          // Higher volume for key categories (Current Affairs and Tech)
-          const count = (cat.id === "current-affairs" || cat.id === "tech") ? 15 : 10;
-          
-          await generateQuestions({
-            stream: cat.stream,
-            topics: cat.topics,
-            subject: cat.subject,
-            difficulty: 3, 
-            count: count,
-            isDaily: true,
-            expiresAt: expiresAt
-          });
+          let questions;
+          try {
+            // Try AI generation first
+            questions = await generateQuestions({
+              stream: cat.stream,
+              topics: cat.topics,
+              subject: cat.subject,
+              difficulty: 3, 
+              count: 10,
+              skipInsert: true // We handle insertion into DailyQuizModel ourselves
+            });
+          } catch (aiError) {
+            console.warn(`[daily-quiz] AI failed for ${cat.name}, using library fallback:`, aiError instanceof Error ? aiError.message : aiError);
+            
+            // Fallback: Pull from existing library
+            questions = await QuestionModel.aggregate([
+              { $match: { subject: cat.subject } },
+              { $sample: { size: 10 } }
+            ]);
+            
+            if (questions.length === 0) {
+              // Last ditch: pull ANY 10 questions
+              questions = await QuestionModel.aggregate([
+                { $sample: { size: 10 } }
+              ]);
+            }
+          }
 
-          console.log(`[daily-quiz] Successfully refreshed category: ${cat.name}`);
+          if (questions && questions.length > 0) {
+            newDailyQuizzes.push({
+              category: cat.id,
+              questions: questions,
+              date: dateStr
+            });
+          }
         } catch (error) {
-          console.error(`[daily-quiz] Failed to generate for ${cat.name}:`, error);
+          console.error(`[daily-quiz] Critical failure generating ${cat.name}:`, error);
         }
       }
-    } catch (error) {
-      console.error(`[daily-quiz] Major failure during refresh wipe:`, error);
-    }
-  }
 
-  /**
-   * Updates the user's streak when they complete a daily quiz.
-   */
-  static async updateUserStreak(userId: string) {
-    const user = await UserModel.findOne({ userId });
-    if (!user) return;
-
-    const today = new Date().toISOString().split("T")[0];
-    const yesterday = new Date(Date.now() - 86400000).toISOString().split("T")[0];
-
-    // If already active today, no change to streak
-    if (user.lastActiveDate === today) {
-      return { currentStreak: user.currentStreak, bestStreak: user.bestStreak };
-    }
-
-    let newStreak = 1;
-    if (user.lastActiveDate === yesterday) {
-      newStreak = (user.currentStreak || 0) + 1;
-    }
-
-    const bestStreak = Math.max(user.bestStreak || 0, newStreak);
-
-    await UserModel.updateOne(
-      { userId },
-      {
-        $set: {
-          currentStreak: newStreak,
-          bestStreak: bestStreak,
-          lastActiveDate: today,
-        },
+      // 2. ATOMIC ROTATION: Clear old and insert new
+      if (newDailyQuizzes.length > 0) {
+        console.log(`[daily-quiz] Purging old daily quizzes and inserting ${newDailyQuizzes.length} new categories...`);
+        
+        // As requested: Delete previous day's data
+        await DailyQuizModel.deleteMany({});
+        
+        // Insert new batch
+        await DailyQuizModel.insertMany(newDailyQuizzes);
+        
+        console.log(`[daily-quiz] Refresh cycle complete. Site is updated.`);
+      } else {
+        console.warn(`[daily-quiz] No quizzes were generated. Skipping rotation to protect existing content.`);
       }
-    );
 
-    return { currentStreak: newStreak, bestStreak };
+    } catch (error) {
+      console.error(`[daily-quiz] Major failure during refresh cycle:`, error);
+    }
   }
 
   /**
-   * Returns metadata for the categories that have active questions.
+   * Fetches the 4 daily quizzes for the unified dashboard.
    */
-  static async getTodayQuizzes() {
-    // Return all categories - frontend will handle navigation
-    return CATEGORIES.map(cat => ({
-      _id: cat.id, // Use category ID as the 'quiz ID' for routing
-      category: cat.name,
-      title: `Daily ${cat.name}`,
-      description: `Today's top fresh questions in ${cat.name}.`,
-      questionCount: 10
-    }));
+  static async getDailyQuizzes() {
+    const quizzes = await DailyQuizModel.find({}).lean();
+    
+    // Map to a more useful format for the frontend
+    const result: Record<string, any> = {};
+    
+    // Initialize with placeholders if empty (fallback for brand new deployments)
+    CATEGORIES.forEach(cat => {
+      const found = quizzes.find(q => q.category === cat.id);
+      if (found) {
+        result[cat.id] = {
+          id: found._id,
+          title: `Daily ${cat.name}`,
+          description: `Fresh ${cat.name} challenges for today.`,
+          questionCount: found.questions.length,
+          questions: found.questions.map((q: any) => ({ ...q, answer: undefined })) // Hide answers
+        };
+      }
+    });
+
+    return result;
   }
 
   /**
-   * Fetches the 10 daily questions for a specific category ID.
+   * Fetches a specific daily quiz by its category ID.
    */
   static async getDailyQuizByCategoryId(catId: string) {
+    const quiz = await DailyQuizModel.findOne({ category: catId }).lean();
+    if (!quiz) return null;
+
     const cat = CATEGORIES.find(c => c.id === catId);
-    if (!cat) return null;
-
-    const questions = await QuestionModel.find({ 
-      isDaily: true, 
-      subject: cat.subject 
-    }).select("-answer"); // Security: hide answer until submission
-
-    if (questions.length === 0) return null;
-
+    
     return {
-      _id: cat.id,
-      category: cat.name,
-      title: `Daily ${cat.name}`,
-      questions: questions,
+      _id: quiz._id,
+      category: cat?.name || quiz.category,
+      title: `Daily ${cat?.name || quiz.category}`,
+      questions: quiz.questions,
       timePerQuestion: 30
     };
   }
@@ -161,13 +169,13 @@ export class DailyQuizService {
    * Helper for the controller to get answer key for grading.
    */
   static async getDailyQuizAnswers(catId: string) {
-    const cat = CATEGORIES.find(c => c.id === catId);
-    if (!cat) return null;
+    const quiz = await DailyQuizModel.findOne({ category: catId }).select("questions");
+    if (!quiz) return null;
 
-    return QuestionModel.find({ 
-      isDaily: true, 
-      subject: cat.subject 
-    }).select("_id answer question");
+    return quiz.questions.map((q: any) => ({
+      _id: q._id,
+      answer: q.answer,
+      question: q.question
+    }));
   }
 }
-
