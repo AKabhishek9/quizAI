@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { BookOpen, Trophy, Flame, TrendingUp, ArrowRight } from "lucide-react";
+import { BookOpen, Trophy, TrendingUp, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StatsCard } from "@/components/dashboard/stats-card";
 import { PerformanceChart } from "@/components/dashboard/performance-chart";
@@ -15,7 +15,6 @@ import {
   SkeletonCard,
 } from "@/components/shared/skeleton-loader";
 import { getUserDashboard } from "@/lib/api";
-import type { UserStats, UserProfile, QuizAttempt } from "@/lib/types";
 import { useAuth } from "@/components/providers/auth-provider";
 
 export default function DashboardPage() {

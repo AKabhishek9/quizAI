@@ -11,8 +11,10 @@ export async function getAuthHeaders() {
     "Content-Type": "application/json",
   };
   
-  if (auth && (auth as any).currentUser) {
-    const token = await (auth as any).currentUser.getIdToken();
+import type { Auth } from "firebase/auth";
+
+  if (auth && (auth as Auth).currentUser) {
+    const token = await (auth as Auth).currentUser!.getIdToken();
     headers["Authorization"] = `Bearer ${token}`;
   }
   return headers;
