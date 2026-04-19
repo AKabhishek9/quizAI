@@ -99,7 +99,7 @@ export const getUserDashboard = async (
     const totalCorrect = Array.from(user.conceptStats.values()).reduce((sum, stat) => sum + stat.correct, 0);
 
     const stats: UserStatsResponse = {
-      totalQuizzes: totalAttemptedQuizzes,
+      totalQuizzes: attempts.length,
       averageScore: avg,
       currentStreak: 0, 
       rank: 1, 
