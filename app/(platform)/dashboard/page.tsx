@@ -176,7 +176,7 @@ export default function DashboardPage() {
               </div>
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/50 leading-none mb-2">Streak Index</p>
-                <p className="text-3xl font-black text-foreground leading-none font-heading tracking-tighter italic">4 Days</p>
+                <p className="text-3xl font-black text-foreground leading-none font-heading tracking-tighter italic">{stats?.currentStreak || 0} Day{(stats?.currentStreak !== 1) ? 's' : ''}</p>
               </div>
             </div>
           </div>

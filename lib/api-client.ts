@@ -128,8 +128,7 @@ export async function getLeaderboard(): Promise<Record<string, unknown>[]> {
 }
 
 export async function getQuizzes(): Promise<Quiz[]> {
-  // Return empty until a global Quiz Library/Browser is implemented
-  return [];
+  return request<Quiz[]>("/quiz/all");
 }
 
 export async function getQuizById(id: string): Promise<Quiz | null> {
@@ -142,14 +141,20 @@ export async function getDailyQuizzes(): Promise<any[]> {
   return request<any[]>("/daily");
 }
 
+/** Get a specific daily quiz by its ID (alias for getDailyQuiz) */
+export const getDailyQuizById = getDailyQuiz;
+
 /** Get a specific daily quiz by its database ID */
 export async function getDailyQuiz(id: string): Promise<any> {
-  return request<any>(`/daily/${id}`);
+  return request<any>(`/quiz/daily/${id}`);
 }
 
+/** Submit daily quiz result (alias for submitDailyQuiz) */
+export const submitDailyQuizSolution = submitDailyQuiz;
+
 /** Submit daily quiz result and update streak */
-export async function submitDailyQuiz(id: string, answers: { selectedOption: number }[]): Promise<any> {
-  return request<any>(`/daily/${id}/submit`, {
+export async function submitDailyQuiz(id: string, answers: any): Promise<any> {
+  return request<any>(`/quiz/daily/${id}/submit`, {
     method: "POST",
     body: JSON.stringify({ answers }),
   });

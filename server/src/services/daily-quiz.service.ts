@@ -1,13 +1,13 @@
-import { DailyQuizModel } from "../models/DailyQuiz.js";
 import { UserModel } from "../models/User.js";
+import { QuestionModel } from "../models/Question.js";
 import { generateQuestions } from "./ai.service.js";
-import { logger } from "../index.js";
+
 
 export const CATEGORIES = [
   {
     id: "current-affairs",
     name: "Current Affairs",
-    prompt: "mostly focus on current events from today and yesterday, world news, and politics.",
+    prompt: "focus strictly on news from today and yesterday, world events, and politics.",
     stream: "General",
     topics: ["Current Events", "World News", "Politics"],
     subject: "Current Affairs",
@@ -15,7 +15,7 @@ export const CATEGORIES = [
   {
     id: "tech",
     name: "Tech",
-    prompt: "focus on recent technology trends, software engineering, AI, and big tech news.",
+    prompt: "focus on recent tech trends, engineering breakthroughs, and AI news.",
     stream: "Technology",
     topics: ["Software Engineering", "Artificial Intelligence", "Tech Industry"],
     subject: "Tech",
@@ -23,7 +23,7 @@ export const CATEGORIES = [
   {
     id: "maths",
     name: "Maths",
-    prompt: "quantitative aptitude, basic arithmetic, algebra, and logical math problems.",
+    prompt: "basic maths, arithmetic, and school level algebra.",
     stream: "General",
     topics: ["Arithmetic", "Algebra", "Quantitative Aptitude"],
     subject: "Maths",
@@ -31,7 +31,7 @@ export const CATEGORIES = [
   {
     id: "aptitude",
     name: "Aptitude",
-    prompt: "logical reasoning, analytical thinking, and verbal aptitude.",
+    prompt: "logical reasoning and brain teasers.",
     stream: "General",
     topics: ["Logical Reasoning", "Analytical Thinking", "Verbal Aptitude"],
     subject: "Aptitude",
@@ -49,45 +49,38 @@ export class DailyQuizService {
     const expiresAt = new Date(today);
     expiresAt.setHours(23, 59, 59, 999); // Expires at end of today
 
-    console.log(`[daily-quiz] Starting daily refresh for ${dateStr}`);
+    console.log(`[daily-quiz] Starting fresh overwrite refresh for ${dateStr}`);
 
-    for (const cat of CATEGORIES) {
-      try {
-        // Generate 10 questions for this category
-        const questions = await generateQuestions({
-          stream: cat.stream,
-          topics: cat.topics,
-          subject: cat.subject,
-          difficulty: 3, // Balanced difficulty for daily quests
-          count: 10,
-        });
+    try {
+      // 1. Delete all existing daily questions (The Overwrite Cycle)
+      const deleted = await QuestionModel.deleteMany({ isDaily: true });
+      console.log(`[daily-quiz] Purged ${deleted.deletedCount} old daily questions.`);
 
-        // Map to embedded format
-        const embeddedQuestions = questions.map(q => ({
-          question: q.question,
-          options: q.options,
-          answer: q.answer,
-          topic: q.topic,
-          concept: q.concept,
-        }));
+      // 2. Generate new questions for each category
+      for (const cat of CATEGORIES) {
+        try {
+          console.log(`[daily-quiz] Generating for ${cat.name}...`);
+          
+          // Higher volume for key categories (Current Affairs and Tech)
+          const count = (cat.id === "current-affairs" || cat.id === "tech") ? 15 : 10;
+          
+          await generateQuestions({
+            stream: cat.stream,
+            topics: cat.topics,
+            subject: cat.subject,
+            difficulty: 3, 
+            count: count,
+            isDaily: true,
+            expiresAt: expiresAt
+          });
 
-        await DailyQuizModel.findOneAndUpdate(
-          { date: dateStr, category: cat.name },
-          {
-            category: cat.name,
-            title: `Daily ${cat.name}`,
-            description: `Test your skills in ${cat.name} with today's fresh challenge.`,
-            questions: embeddedQuestions,
-            date: dateStr,
-            expiresAt: expiresAt,
-          },
-          { upsert: true, new: true }
-        );
-
-        console.log(`[daily-quiz] Refreshed category: ${cat.name}`);
-      } catch (error) {
-        console.error(`[daily-quiz] Failed to refresh ${cat.name}:`, error);
+          console.log(`[daily-quiz] Successfully refreshed category: ${cat.name}`);
+        } catch (error) {
+          console.error(`[daily-quiz] Failed to generate for ${cat.name}:`, error);
+        }
       }
+    } catch (error) {
+      console.error(`[daily-quiz] Major failure during refresh wipe:`, error);
     }
   }
 
@@ -127,12 +120,54 @@ export class DailyQuizService {
     return { currentStreak: newStreak, bestStreak };
   }
 
+  /**
+   * Returns metadata for the categories that have active questions.
+   */
   static async getTodayQuizzes() {
-    const today = new Date().toISOString().split("T")[0];
-    return DailyQuizModel.find({ date: today }).select("-questions.answer");
+    // Return all categories - frontend will handle navigation
+    return CATEGORIES.map(cat => ({
+      _id: cat.id, // Use category ID as the 'quiz ID' for routing
+      category: cat.name,
+      title: `Daily ${cat.name}`,
+      description: `Today's top fresh questions in ${cat.name}.`,
+      questionCount: 10
+    }));
   }
 
-  static async getDailyQuizById(id: string) {
-    return DailyQuizModel.findById(id);
+  /**
+   * Fetches the 10 daily questions for a specific category ID.
+   */
+  static async getDailyQuizByCategoryId(catId: string) {
+    const cat = CATEGORIES.find(c => c.id === catId);
+    if (!cat) return null;
+
+    const questions = await QuestionModel.find({ 
+      isDaily: true, 
+      subject: cat.subject 
+    }).select("-answer"); // Security: hide answer until submission
+
+    if (questions.length === 0) return null;
+
+    return {
+      _id: cat.id,
+      category: cat.name,
+      title: `Daily ${cat.name}`,
+      questions: questions,
+      timePerQuestion: 30
+    };
+  }
+
+  /**
+   * Helper for the controller to get answer key for grading.
+   */
+  static async getDailyQuizAnswers(catId: string) {
+    const cat = CATEGORIES.find(c => c.id === catId);
+    if (!cat) return null;
+
+    return QuestionModel.find({ 
+      isDaily: true, 
+      subject: cat.subject 
+    }).select("_id answer question");
   }
 }
+

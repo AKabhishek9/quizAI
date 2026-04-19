@@ -1,4 +1,4 @@
-import { getDynamicQuiz, submitQuiz, getQuizAttemptById } from "../services/quiz.service.js";
+import { getDynamicQuiz, submitQuiz, getQuizAttemptById, getAllAvailableQuizzes } from "../services/quiz.service.js";
 import { DailyQuizService } from "../services/daily-quiz.service.js";
 import type { SubmitPayload } from "../types/index.js";
 
@@ -96,9 +96,9 @@ export const getDailyQuizzes = async (req: Request, res: Response, next: NextFun
 // @access  Protected
 export const getDailyQuiz = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const quiz = await DailyQuizService.getDailyQuizById(req.params.id);
+    const quiz = await DailyQuizService.getDailyQuizByCategoryId(req.params.id);
     if (!quiz) {
-      res.status(404).json({ error: "Daily quiz not found" });
+      res.status(404).json({ error: "Daily quiz not found for today" });
       return;
     }
     res.json(quiz);
@@ -112,33 +112,55 @@ export const getDailyQuiz = async (req: Request, res: Response, next: NextFuncti
 // @access  Protected
 export const submitDailyQuiz = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const quizId = req.params.id;
+    const categoryId = req.params.id;
     const userId = req.user!.uid;
     const { answers } = req.body; // Array of { questionId, selectedOption }
 
-    const quiz = await DailyQuizService.getDailyQuizById(quizId);
-    if (!quiz) {
-      res.status(404).json({ error: "Daily quiz not found" });
+    // Fetch the ground truth answers from DB
+    const questionsWithAnswers = await DailyQuizService.getDailyQuizAnswers(categoryId);
+    if (!questionsWithAnswers || questionsWithAnswers.length === 0) {
+      res.status(404).json({ error: "Daily quiz questions not found" });
       return;
     }
 
-    // Simple grading
+    // Grade the submission
     let correctCount = 0;
-    const results = quiz.questions.map((q, idx) => {
-      const userAnswer = answers[idx]?.selectedOption;
-      const isCorrect = userAnswer === q.answer;
+    const results = questionsWithAnswers.map((q) => {
+      const userSubmission = answers.find((a: any) => a.questionId === q._id.toString());
+      const isCorrect = userSubmission?.selectedOption === q.answer;
       if (isCorrect) correctCount++;
-      return { question: q.question, isCorrect, correctAnswer: q.answer };
+      return { 
+        question: q.question, 
+        isCorrect, 
+        correctAnswer: q.answer,
+        userAnswer: userSubmission?.selectedOption
+      };
     });
 
-    const score = Math.round((correctCount / quiz.questions.length) * 100);
+    const score = Math.round((correctCount / questionsWithAnswers.length) * 100);
+
+    // Create a QuizAttempt record for analytics/history
+    const { QuizAttemptModel } = await import("../models/QuizAttempt.js");
+    await QuizAttemptModel.create({
+      userId,
+      stream: "General",
+      topics: [categoryId],
+      score,
+      totalQuestions: questionsWithAnswers.length,
+      difficulty: 3,
+      answers: results.map((r, i) => ({
+        questionId: questionsWithAnswers[i]._id,
+        selectedOption: r.userAnswer,
+        isCorrect: r.isCorrect
+      }))
+    });
 
     // Update Streak
     const streakInfo = await DailyQuizService.updateUserStreak(userId);
 
     res.json({
       score,
-      total: quiz.questions.length,
+      total: questionsWithAnswers.length,
       correct: correctCount,
       results,
       streak: streakInfo,
@@ -155,6 +177,18 @@ export const refreshDailyQuizzes = async (req: Request, res: Response, next: Nex
   try {
     await DailyQuizService.refreshDailyQuizzes();
     res.json({ message: "Daily quizzes refreshed successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @route   GET /api/quiz/all
+// @desc    Get all available quiz subjects/streams
+// @access  Public
+export const listQuizzes = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const quizzes = await getAllAvailableQuizzes();
+    res.json(quizzes);
   } catch (error) {
     next(error);
   }

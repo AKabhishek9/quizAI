@@ -51,6 +51,18 @@ const questionSchema = new Schema(
       max: 5,
       index: true,
     },
+    isDaily: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
+    expiresAt: {
+      type: Date,
+      index: { expires: 0 }, // TTL index
+    },
+    explanation: {
+      type: String,
+    },
   },
   {
     timestamps: true,

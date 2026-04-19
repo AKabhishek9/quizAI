@@ -297,3 +297,38 @@ export async function getQuizAttemptById(attemptId: string) {
     })
   };
 }
+
+/**
+ * Aggregates unique subjects and streams from existing questions
+ * to present available quizzes for the Library.
+ */
+export async function getAllAvailableQuizzes() {
+  const aggregated = await QuestionModel.aggregate([
+    {
+      $group: {
+        _id: { subject: "$subject", stream: "$stream" },
+        count: { $sum: 1 },
+        topics: { $addToSet: "$topic" }
+      }
+    },
+    {
+      $project: {
+        _id: 0,
+        subject: "$_id.subject",
+        stream: "$_id.stream",
+        count: "$count",
+        topics: { $slice: ["$topics", 5] } // Limit topics for UI
+      }
+    }
+  ]);
+
+  return aggregated.map(a => ({
+    id: `${a.subject}-${a.stream}`.toLowerCase().replace(/\s+/g, '-'),
+    title: a.subject,
+    description: `Master ${a.subject} within the ${a.stream} stream. ${a.count} questions available.`,
+    subject: a.subject,
+    stream: a.stream,
+    topics: a.topics,
+    difficulty: "Mixed"
+  }));
+}

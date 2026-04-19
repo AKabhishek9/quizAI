@@ -6,7 +6,8 @@ import {
   getDailyQuizzes,
   getDailyQuiz,
   submitDailyQuiz,
-  refreshDailyQuizzes
+  refreshDailyQuizzes,
+  listQuizzes
 } from "../controllers/quiz.controller.js";
 import { requireAuth } from "../middleware/auth.middleware.js";
 import {
@@ -30,5 +31,6 @@ router.get("/daily", requireAuth, getDailyQuizzes);
 router.get("/daily/:id", requireAuth, getDailyQuiz);
 router.post("/daily/:id/submit", requireAuth, submitDailyQuiz);
 router.post("/daily/refresh", requireAuth, refreshDailyQuizzes);
+router.get("/quiz/all", listQuizzes);
 
 export default router;

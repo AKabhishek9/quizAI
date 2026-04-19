@@ -17,6 +17,7 @@ const AIQuestionSchema = z.object({
   question: z.string().min(5),
   options: z.array(z.string()).min(2).max(6),
   answer: z.number().int().min(0).max(5),
+  explanation: z.string().min(10),
   topic: z.string().min(2),
   concept: z.string().min(2),
 });
@@ -31,6 +32,8 @@ export interface GenerateParams {
   topics: string[];
   difficulty: number;
   count?: number; // default 20
+  isDaily?: boolean;
+  expiresAt?: Date;
 }
 
 export interface AIQuestion extends z.infer<typeof AIQuestionSchema> {}
@@ -46,6 +49,7 @@ Output exact JSON strictly adhering to this format:
       "question": "A clear, unambiguous question text",
       "options": ["A", "B", "C", "D"],
       "answer": 2, 
+      "explanation": "A concise explanation of why the answer is correct and why others are wrong.",
       "topic": "The general topic this belongs to (e.g., Arrays)",
       "concept": "The precise sub-topic or core concept tested (e.g., Two Pointer Technique)"
     }
@@ -92,12 +96,12 @@ Generate ${count} multiple choice questions.
     try {
       console.log(`[ai] Generation attempt ${attempt}/${maxRetries} for topics: ${params.topics.join(", ")}`);
       
-      // Use the Gemini SDK — API key is sent securely via the SDK, not in URLs
-      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+      // Use the Gemini SDK — stable 1.5 model
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
       
       const result = await Promise.race([
         model.generateContent({
-          contents: [{ role: "user", parts: [{ text: `${SYSTEM_PROMPT}\n\n${userPrompt}` }] }],
+          contents: [{ role: "user", parts: [{ text: `${SYSTEM_PROMPT}\n\n${userPrompt}. For current affairs, focus strictly on news from today or yesterday.` }] }],
           generationConfig: {
             responseMimeType: "application/json",
           },
@@ -132,11 +136,14 @@ Generate ${count} multiple choice questions.
           question: q.question,
           options: q.options,
           answer: q.answer,
+          explanation: q.explanation,
           stream: params.stream,
           subject: params.subject || "Mixed",
           topic: matchedTopic,
           concept: q.concept,
           difficulty: params.difficulty,
+          isDaily: params.isDaily || false,
+          expiresAt: params.expiresAt,
         };
       });
 
