@@ -151,11 +151,11 @@
 /* ─── Global Base ─── */
 @layer base {
   * {
-    border-color: var(--border);
+    @apply border-border;
+    outline-color: var(--ring);
   }
   body {
-    background-color: var(--background);
-    color: var(--foreground);
+    @apply bg-background text-foreground;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
@@ -166,9 +166,7 @@
 @layer utilities {
   /* Glassmorphism — Refined for Atelier */
   .glass {
-    background: color-mix(in oklch, var(--card), transparent 28%);
-    backdrop-filter: blur(24px);
-    border: 1px solid color-mix(in oklch, var(--foreground), transparent 90%);
+    @apply bg-white/72 dark:bg-card/72 backdrop-blur-xl border border-white/20 dark:border-white/5;
   }
   
   /* Whisper Shadow — Perceptually soft depth */
@@ -181,9 +179,7 @@
 
   /* Elevated Surface — Material-like lift */
   .elevated {
-    background-color: var(--card);
-    border: 1px solid var(--border);
-    box-shadow: 0 4px 12px color-mix(in oklch, var(--foreground), transparent 95%);
+    @apply bg-card border border-border shadow-soft;
   }
   
   /* Primary Glow CTA */
