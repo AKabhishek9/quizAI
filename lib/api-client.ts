@@ -13,8 +13,8 @@ export async function getAuthHeaders() {
     "Content-Type": "application/json",
   };
   
-  if (auth && (auth as any).currentUser) {
-    const token = await (auth as any).currentUser.getIdToken();
+  if (auth && auth.currentUser) {
+    const token = await auth.currentUser.getIdToken();
     headers["Authorization"] = `Bearer ${token}`;
   }
   return headers;
@@ -63,12 +63,57 @@ export interface ApiSubmitResponse {
   accuracy: number;
   levelChange: number;
   newLevel: number;
+  xpAwarded: number;
   attemptId: string;
   conceptBreakdown: {
     concept: string;
     correct: number;
     total: number;
   }[];
+}
+
+/** Response from daily quiz submission */
+export interface DailySubmitResponse {
+  score: number;
+  total: number;
+  correct: number;
+  results: {
+    question: string;
+    isCorrect: boolean;
+    correctAnswer: number;
+    userAnswer: number | undefined;
+  }[];
+  streak: {
+    currentStreak: number;
+    bestStreak: number;
+    isNewStreak: boolean;
+    xpGained: number;
+    totalXp: number;
+    currentLevel: number;
+    didLevelUp: boolean;
+  } | null;
+}
+
+/** Summary of a daily quiz category (from getDailyQuizzes) */
+export interface DailyQuizSummary {
+  id: string;
+  title: string;
+  description: string;
+  questionCount: number;
+  theme: string;
+  color: string;
+  questions: ApiQuestion[];
+}
+
+/** Detailed daily quiz (from getDailyQuiz) */
+export interface DailyQuizDetail {
+  _id: string;
+  category: string;
+  categoryKey: string;
+  title: string;
+  theme: string;
+  questions: ApiQuestion[];
+  timePerQuestion: number;
 }
 
 /* ── API methods ── */
@@ -136,25 +181,25 @@ export async function getQuizById(id: string): Promise<Quiz | null> {
   return null;
 }
 
-/** Get today's active daily quizzes */
-export async function getDailyQuizzes(): Promise<any[]> {
-  return request<any[]>("/daily");
+/** Get today's active daily quizzes mapped by category */
+export async function getDailyQuizzes(): Promise<Record<string, DailyQuizSummary>> {
+  return request<Record<string, DailyQuizSummary>>("/daily");
 }
 
 /** Get a specific daily quiz by its ID (alias for getDailyQuiz) */
 export const getDailyQuizById = getDailyQuiz;
 
-/** Get a specific daily quiz by its database ID */
-export async function getDailyQuiz(id: string): Promise<any> {
-  return request<any>(`/quiz/daily/${id}`);
+/** Get a specific daily quiz by its category ID */
+export async function getDailyQuiz(id: string): Promise<DailyQuizDetail> {
+  return request<DailyQuizDetail>(`/daily/${id}`);
 }
 
 /** Submit daily quiz result (alias for submitDailyQuiz) */
 export const submitDailyQuizSolution = submitDailyQuiz;
 
 /** Submit daily quiz result and update streak */
-export async function submitDailyQuiz(id: string, answers: any): Promise<any> {
-  return request<any>(`/quiz/daily/${id}/submit`, {
+export async function submitDailyQuiz(id: string, answers: { questionId: string; selectedOption: number }[]): Promise<DailySubmitResponse> {
+  return request<DailySubmitResponse>(`/daily/${id}/submit`, {
     method: "POST",
     body: JSON.stringify({ answers }),
   });

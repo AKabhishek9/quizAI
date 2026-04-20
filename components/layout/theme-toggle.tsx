@@ -9,8 +9,7 @@ export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  // Setting mounted after first client render to avoid SSR/hydration mismatch.
-  // eslint-disable-next-line react-hooks/set-state-in-effect
+  // Set mounted on first client render to avoid SSR/hydration mismatch
   useEffect(() => setMounted(true), []);
 
   if (!mounted) {

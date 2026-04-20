@@ -36,20 +36,17 @@ const questionSchema = new Schema(
       type: String,
       required: true,
       trim: true,
-      index: true,
     },
     concept: {
       type: String,
       required: true,
       trim: true,
-      index: true,
     },
     difficulty: {
       type: Number,
       required: true,
       min: 1,
       max: 5,
-      index: true,
     },
     isDaily: {
       type: Boolean,

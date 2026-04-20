@@ -15,14 +15,19 @@ export function toFrontendQuestion(api: ApiQuestion): Question {
     text,
   }));
 
+  // The backend `answer` field is the 0-indexed correct option.
+  // If the API includes `answer`, use it; otherwise leave empty (play mode is server-graded).
+  const answerIndex = (api as any).answer;
+  const correctOptionId = typeof answerIndex === "number" && options[answerIndex]
+    ? options[answerIndex].id
+    : "";
+
   return {
     id: api._id,
     text: api.question,
     options,
-    correctOptionId: options[api.options.indexOf(api.options[0])]
-      ? `${api._id}-opt-${0}` // Will be set properly below
-      : "",
-    explanation: "", // Backend doesn't send explanations yet
+    correctOptionId,
+    explanation: (api as any).explanation || "",
     topic: api.concept,
     difficulty: api.difficulty,
   };

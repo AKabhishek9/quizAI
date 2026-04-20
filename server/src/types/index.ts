@@ -58,6 +58,7 @@ export interface SubmitResponse {
   accuracy: number;
   levelChange: number; // -1, 0, or +1
   newLevel: number;
+  xpAwarded: number;
   attemptId: string;
   conceptBreakdown: {
     concept: string;

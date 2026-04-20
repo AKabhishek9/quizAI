@@ -62,3 +62,15 @@ export const SubmitQuizSchema = z.object({
 export const AttemptIdParamSchema = z.object({
   id: z.string().regex(/^[a-f0-9]{24}$/, "Invalid attempt ID format"),
 });
+
+export const DailySubmitSchema = z.object({
+  answers: z
+    .array(
+      z.object({
+        questionId: z.string().min(1, "Question ID is required"),
+        selectedOption: z.number().int().min(0).max(5),
+      })
+    )
+    .min(1, "At least one answer is required")
+    .max(50, "Maximum 50 answers allowed"),
+});

@@ -1,6 +1,7 @@
 "use client";
 
 import { Sidebar } from "@/components/layout/sidebar";
+import { MobileNav } from "@/components/layout/mobile-nav";
 import { ProtectedRoute } from "@/components/auth/protected-route";
 import { useAuth } from "@/components/providers/auth-provider";
 import { Sparkles, LogOut } from "lucide-react";
@@ -29,12 +30,11 @@ export default function PlatformLayout({
             <button 
               onClick={() => logout()}
               className="p-2 text-destructive hover:bg-destructive/10 rounded-full transition-colors"
+              title="Logout"
             >
               <LogOut className="h-4 w-4" />
             </button>
-            <button className="p-2 text-muted-foreground hover:text-foreground">
-              <span className="material-symbols-outlined">menu</span>
-            </button>
+            <MobileNav />
           </div>
         </div>
 

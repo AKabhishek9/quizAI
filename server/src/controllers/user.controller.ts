@@ -54,13 +54,17 @@ export const getUserDashboard = async (
       { upsert: true, new: true }
     );
 
-    const attempts = await QuizAttemptModel.find({ userId }).sort({ createdAt: -1 }).lean();
+    const attempts = await QuizAttemptModel.find({ userId })
+      .sort({ createdAt: -1 })
+      .limit(50)
+      .select("score totalQuestions stream createdAt")
+      .lean();
     
     // 1. Compile User Profile
     const profile: UserProfileResponse = {
       name: user.name,
       level: user.currentLevel,
-      xp: attempts.length * 10,
+      xp: user.xp || 0,
       xpToNextLevel: user.currentLevel * 100,
     };
 
@@ -85,8 +89,10 @@ export const getUserDashboard = async (
     // 3. Compile weeklyScores from `attempts`
     // For simplicity, map last 7 attempts as line chart plots
     const shortAttempts = attempts.slice(0, 10).reverse();
-    const weeklyScores = shortAttempts.map((v, i) => ({
-      day: `Session ${i+1}`,
+    const weeklyScores = shortAttempts.map((v) => ({
+      day: v.createdAt
+        ? new Date(v.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+        : "N/A",
       score: v.score,
     }));
 
@@ -125,7 +131,7 @@ export const getUserDashboard = async (
     // 5. history maps matching frontend QuizAttempt format
     const history = attempts.slice(0, 5).map((a) => ({
       id: a._id.toString(),
-      category: a.stream,
+      quizTitle: a.stream,
       score: a.score,
       totalQuestions: a.totalQuestions,
       date: a.createdAt ? a.createdAt.toISOString() : new Date().toISOString(),
@@ -147,10 +153,10 @@ export const getLeaderboard = async (
   next: NextFunction
 ) => {
   try {
-    // Pipeline: Filter to last 30 days, group by userId, sum scores, count total, then join with User profiles
-    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    // Pipeline: Filter to last 7 days (Weekly Score), group by userId, sum scores, count total, then join with User profiles
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
     const leaderboard = await QuizAttemptModel.aggregate([
-      { $match: { createdAt: { $gte: thirtyDaysAgo } } },
+      { $match: { createdAt: { $gte: sevenDaysAgo } } },
       {
         $group: {
           _id: "$userId",

@@ -16,6 +16,7 @@ import {
   GetQuizSchema,
   SubmitQuizSchema,
   AttemptIdParamSchema,
+  DailySubmitSchema,
 } from "../middleware/validate.js";
 import { aiLimiter } from "../middleware/rateLimit.middleware.js";
 
@@ -26,11 +27,11 @@ router.post("/get-quiz", requireAuth, aiLimiter, validateBody(GetQuizSchema), ge
 router.post("/submit-quiz", requireAuth, validateBody(SubmitQuizSchema), submitQuizHandler);
 router.get("/quiz-attempt/:id", requireAuth, validateParams(AttemptIdParamSchema), getQuizAttempt);
 
-// Daily Quiz Routes
+// Daily Quiz Routes — IMPORTANT: static routes MUST come before dynamic `:id` routes
 router.get("/daily", requireAuth, getDailyQuizzes);
+router.post("/daily/refresh", requireAuth, refreshDailyQuizzes);  // Static route first
 router.get("/daily/:id", requireAuth, getDailyQuiz);
-router.post("/daily/:id/submit", requireAuth, submitDailyQuiz);
-router.post("/daily/refresh", requireAuth, refreshDailyQuizzes);
+router.post("/daily/:id/submit", requireAuth, validateBody(DailySubmitSchema), submitDailyQuiz);  // Dynamic route after
 router.get("/quiz/all", listQuizzes);
 
 export default router;

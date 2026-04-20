@@ -1,3 +1,4 @@
+import { Request, Response, NextFunction } from "express";
 import { getDynamicQuiz, submitQuiz, getQuizAttemptById, getAllAvailableQuizzes } from "../services/quiz.service.js";
 import { DailyQuizService } from "../services/daily-quiz.service.js";
 import type { SubmitPayload } from "../types/index.js";
@@ -96,7 +97,7 @@ export const getDailyQuizzes = async (req: Request, res: Response, next: NextFun
 // @access  Protected
 export const getDailyQuiz = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const quiz = await DailyQuizService.getDailyQuizByCategoryId(req.params.id);
+    const quiz = await DailyQuizService.getDailyQuizByCategoryId(req.params.id as string);
     if (!quiz) {
       res.status(404).json({ error: "Daily quiz not found for today" });
       return;
@@ -112,7 +113,7 @@ export const getDailyQuiz = async (req: Request, res: Response, next: NextFuncti
 // @access  Protected
 export const submitDailyQuiz = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const categoryId = req.params.id;
+    const categoryId = req.params.id as string;
     const userId = req.user!.uid;
     const { answers } = req.body; // Array of { questionId, selectedOption }
 
@@ -143,7 +144,7 @@ export const submitDailyQuiz = async (req: Request, res: Response, next: NextFun
     const { QuizAttemptModel } = await import("../models/QuizAttempt.js");
     await QuizAttemptModel.create({
       userId,
-      stream: "General",
+      stream: "Daily Quest", // Updated for better identification
       topics: [categoryId],
       score,
       totalQuestions: questionsWithAnswers.length,
@@ -155,8 +156,10 @@ export const submitDailyQuiz = async (req: Request, res: Response, next: NextFun
       }))
     });
 
-    // Update Streak
-    const streakInfo = await DailyQuizService.updateUserStreak(userId);
+    // Update Streak and award XP based on question count
+    // 10 questions = 50 XP, 20 questions = 100 XP
+    const xpToAward = questionsWithAnswers.length >= 20 ? 100 : 50;
+    const streakInfo = await DailyQuizService.updateUserStreak(userId, xpToAward);
 
     res.json({
       score,

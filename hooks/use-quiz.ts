@@ -84,5 +84,6 @@ export function useQuiz(quiz: Quiz | null) {
     submitAnswer,
     nextQuestion,
     getResults,
+    answers,
   };
 }

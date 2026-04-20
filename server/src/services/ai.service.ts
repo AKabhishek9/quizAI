@@ -1,9 +1,6 @@
-import dotenv from "dotenv";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { QuestionModel } from "../models/Question.js";
 import { z } from "zod";
-
-dotenv.config();
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
 
@@ -64,6 +61,7 @@ Guidelines:
 4. Distribute the questions evenly among the provided focus topics.
 5. Ensure options are distinct, plausible, and only one is unarguably correct.
 6. Provide only the JSON, no markdown formatting blocks, no explanations.
+7. Ensure all questions are unique and distinct — do NOT repeat common textbook questions or use frequently-seen standard examples.
 `;
 
 export interface GeneratedQuestionDoc {
@@ -97,8 +95,8 @@ Generate ${count} multiple choice questions.
     try {
       console.log(`[ai] Generation attempt ${attempt}/${maxRetries} for topics: ${params.topics.join(", ")}`);
       
-      // Use the Gemini SDK — stable 1.5 model
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const modelName = process.env.GEMINI_MODEL || "gemini-1.5-flash";
+      const model = genAI.getGenerativeModel({ model: modelName });
       
       const result = await Promise.race([
         model.generateContent({

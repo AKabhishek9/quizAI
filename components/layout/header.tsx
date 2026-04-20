@@ -6,6 +6,7 @@ import { Search, Bell, Sparkles, LogOut, User as UserIcon, Settings, ChevronDown
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -71,31 +72,29 @@ export function Header() {
 
           {/* User Profile Dropdown */}
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-3 pl-1 group outline-none">
-                <div className="flex flex-col items-end hidden sm:flex">
-                  <span className="text-[12px] font-black tracking-tighter text-foreground leading-none group-hover:text-primary transition-colors">
-                    {user?.displayName || user?.email?.split("@")[0] || "Scholar"}
-                  </span>
-                  <span className="text-[9px] font-black tracking-[0.2em] text-primary uppercase mt-1 opacity-60">
-                    Elite Scholar
-                  </span>
+            <DropdownMenuTrigger className="flex items-center gap-3 pl-1 group outline-none">
+              <div className="flex flex-col items-end hidden sm:flex">
+                <span className="text-[12px] font-black tracking-tighter text-foreground leading-none group-hover:text-primary transition-colors">
+                  {user?.displayName || user?.email?.split("@")[0] || "Scholar"}
+                </span>
+                <span className="text-[9px] font-black tracking-[0.2em] text-primary uppercase mt-1 opacity-60">
+                  Elite Scholar
+                </span>
+              </div>
+              <div className="relative">
+                <div className="h-10 w-10 rounded-2xl bg-primary/10 border-2 border-background shadow-soft ring-1 ring-primary/20 flex items-center justify-center overflow-hidden transition-all group-hover:scale-105 group-hover:ring-primary/40 group-hover:border-primary/10">
+                  {user?.photoURL ? (
+                    <Image src={user.photoURL} alt="User" width={40} height={40} className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-primary text-[14px] font-black font-heading">
+                      {(user?.displayName || user?.email || "A").substring(0, 1).toUpperCase()}
+                    </span>
+                  )}
                 </div>
-                <div className="relative">
-                  <div className="h-10 w-10 rounded-2xl bg-primary/10 border-2 border-background shadow-soft ring-1 ring-primary/20 flex items-center justify-center overflow-hidden transition-all group-hover:scale-105 group-hover:ring-primary/40 group-hover:border-primary/10">
-                    {user?.photoURL ? (
-                      <img src={user.photoURL} alt="User" className="w-full h-full object-cover" />
-                    ) : (
-                      <span className="text-primary text-[14px] font-black font-heading">
-                        {(user?.displayName || user?.email || "A").substring(0, 1).toUpperCase()}
-                      </span>
-                    )}
-                  </div>
-                  <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-background rounded-full flex items-center justify-center border border-border/40 shadow-soft">
-                    <ChevronDown className="h-2 w-2 text-muted-foreground group-hover:text-primary transition-colors" />
-                  </div>
+                <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-background rounded-full flex items-center justify-center border border-border/40 shadow-soft">
+                  <ChevronDown className="h-2 w-2 text-muted-foreground group-hover:text-primary transition-colors" />
                 </div>
-              </button>
+              </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-64 p-2 rounded-[24px] bg-card/95 border border-border/40 backdrop-blur-xl whisper-shadow" sideOffset={12}>
               <DropdownMenuLabel className="px-3 py-4">

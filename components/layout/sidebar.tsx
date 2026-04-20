@@ -19,7 +19,7 @@ import {
   Sparkles
 } from "lucide-react";
 
-const sidebarLinks = [
+export const sidebarLinks = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/quiz", label: "Quizzes", icon: BookOpen },
   { href: "/leaderboard", label: "Leaderboard", icon: Trophy },
@@ -35,7 +35,7 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "hidden lg:flex flex-col h-screen fixed left-0 top-0 border-r border-sidebar-border bg-sidebar transition-all duration-500 ease-[0.25, 0.1, 0.25, 1] z-50 overflow-hidden",
+        "hidden lg:flex flex-col h-screen fixed left-0 top-0 border-r border-sidebar-border bg-sidebar/80 backdrop-blur-xl transition-all duration-500 ease-[0.25, 0.1, 0.25, 1] z-50 overflow-hidden",
         collapsed ? "w-[80px]" : "w-[260px]"
       )}
     >
@@ -81,13 +81,13 @@ export function Sidebar() {
               className={cn(
                 "group relative flex items-center gap-3.5 px-3 py-2.5 rounded-xl transition-all duration-300",
                 isActive 
-                  ? "bg-primary/10 text-primary" 
-                  : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/50"
+                  ? "bg-primary/15 text-primary shadow-glow-primary/5" 
+                  : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/5"
               )}
             >
               <Icon className={cn(
                 "h-[20px] w-[20px] shrink-0 transition-all duration-300",
-                isActive ? "text-primary scale-110" : "opacity-60 group-hover:opacity-100"
+                isActive ? "text-primary scale-110 drop-shadow-[0_0_8px_rgba(var(--primary),0.5)]" : "opacity-60 group-hover:opacity-100"
               )} />
               
               {!collapsed && (
@@ -102,7 +102,7 @@ export function Sidebar() {
               {isActive && (
                 <motion.div
                   layoutId="sidebar-active-indicator"
-                  className="absolute left-0 w-1 h-5 rounded-full bg-primary"
+                  className="absolute left-0 w-1 h-5 rounded-full bg-primary shadow-glow-primary"
                   transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 />
               )}
@@ -112,7 +112,7 @@ export function Sidebar() {
       </nav>
 
       {/* Bottom Actions */}
-      <div className="p-4 border-t border-sidebar-border bg-sidebar/50 backdrop-blur-sm space-y-1.5">
+      <div className="p-4 border-t border-sidebar-border bg-sidebar/50 backdrop-blur-md space-y-1.5">
         {!collapsed && (
           <div className="px-2 mb-2">
             <span className="text-[10px] font-bold tracking-[0.1em] text-sidebar-foreground/40 uppercase">
@@ -122,7 +122,7 @@ export function Sidebar() {
         )}
 
         <button
-          className="w-full flex items-center gap-3.5 px-3 py-2.5 text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/50 rounded-xl transition-all duration-300 group cursor-pointer"
+          className="w-full flex items-center gap-3.5 px-3 py-2.5 text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/5 rounded-xl transition-all duration-300 group cursor-pointer"
         >
           <HelpCircle className="h-[20px] w-[20px] shrink-0 opacity-60 group-hover:opacity-100" />
           {!collapsed && <span className="text-[13px] font-bold tracking-tight opacity-80">Help Center</span>}
@@ -130,7 +130,7 @@ export function Sidebar() {
 
         <Link
           href="/profile"
-          className="flex items-center gap-3.5 px-3 py-2.5 text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/50 rounded-xl transition-all duration-300 group"
+          className="flex items-center gap-3.5 px-3 py-2.5 text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/5 rounded-xl transition-all duration-300 group"
         >
           <Settings className="h-[20px] w-[20px] shrink-0 opacity-60 group-hover:opacity-100" />
           {!collapsed && <span className="text-[13px] font-bold tracking-tight opacity-80">Settings</span>}
@@ -138,7 +138,7 @@ export function Sidebar() {
         
         <button
           onClick={() => logout()}
-          className="w-full flex items-center gap-3.5 px-3 py-2.5 text-destructive hover:bg-destructive/10 rounded-xl transition-all duration-300 group cursor-pointer"
+          className="w-full flex items-center gap-3.5 px-3 py-2.5 text-destructive/80 hover:text-destructive hover:bg-destructive/10 rounded-xl transition-all duration-300 group cursor-pointer"
         >
           <LogOut className="h-[20px] w-[20px] shrink-0 opacity-70 group-hover:opacity-100" />
           {!collapsed && <span className="text-[13px] font-bold tracking-tight">Logout</span>}
@@ -146,7 +146,7 @@ export function Sidebar() {
 
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="mt-2 w-full flex items-center justify-center p-2 text-sidebar-foreground/40 hover:text-sidebar-foreground transition-colors cursor-pointer"
+          className="mt-2 w-full flex items-center justify-center p-2 text-sidebar-foreground/40 hover:text-sidebar-foreground transition-all duration-300 cursor-pointer hover:bg-sidebar-accent/5 rounded-lg"
         >
           <ChevronLeft className={cn(
             "h-5 w-5 transition-transform duration-500",

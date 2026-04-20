@@ -4,6 +4,8 @@ import { UserModel, MAX_ATTEMPTED } from "../models/User.js";
 import { QuizAttemptModel } from "../models/QuizAttempt.js";
 import type { SubmitPayload, SubmitResponse, QuizResponse, DynamicQuizRequest } from "../types/index.js";
 import { logger } from "../utils/logger.js";
+import { fetchWeakQuestions, fetchRandomQuestions, type SelectionCriteria } from "../utils/quiz-selection.js";
+import { gradeQuizAnswers, updateConceptStats, calculateLevelChange, calculateXPAwarded } from "../utils/quiz-scoring.js";
 
 const QUIZ_SIZE = 10;
 
@@ -49,27 +51,21 @@ export async function getDynamicQuiz({
   const topicCount = topics.length;
   const sanitizedTopics = topicCount > 0 ? topics : ["General Data"];
 
-  let finalQuestions: unknown[] = [];
+  let finalQuestions: any[] = [];
+
+  const selectionCriteria: SelectionCriteria = {
+    stream,
+    topics: sanitizedTopics,
+    targetedLevel,
+    excludeIds,
+    limit: 0,
+  };
 
   // First, fetch weak concept questions (60%)
   if (weakConcepts.length > 0) {
     const weakLimit = Math.ceil(QUIZ_SIZE * 0.6);
-    let weakQuestions = await QuestionModel.aggregate([
-      { $match: { stream, topic: { $in: sanitizedTopics }, concept: { $in: weakConcepts }, difficulty: targetedLevel, _id: { $nin: excludeIds } } },
-      { $sample: { size: weakLimit } },
-      { $project: { question: 1, options: 1, topic: 1, concept: 1, difficulty: 1 } }
-    ]);
-
-    if (weakQuestions.length < weakLimit) {
-      const remainingIds = [...excludeIds, ...weakQuestions.map((r: unknown) => (r as Record<string, unknown>). _id)];
-      const widenedWeak = await QuestionModel.aggregate([
-        { $match: { stream, topic: { $in: sanitizedTopics }, concept: { $in: weakConcepts }, difficulty: { $gte: Math.max(1, targetedLevel - 1), $lte: Math.min(5, targetedLevel + 1) }, _id: { $nin: remainingIds } } },
-        { $sample: { size: weakLimit - weakQuestions.length } },
-        { $project: { question: 1, options: 1, topic: 1, concept: 1, difficulty: 1 } }
-      ]);
-      weakQuestions = [...weakQuestions, ...widenedWeak];
-    }
-
+    selectionCriteria.limit = weakLimit;
+    const weakQuestions = await fetchWeakQuestions(selectionCriteria, weakConcepts);
     finalQuestions = weakQuestions;
   }
 
@@ -78,23 +74,11 @@ export async function getDynamicQuiz({
 
   // Fill remaining with random questions (40%)
   if (remainingLimit > 0) {
-    const randomExcludeIds = [...excludeIds, ...finalQuestions.map((q: unknown) => (q as Record<string, unknown>)._id)];
-    let randomQuestions = await QuestionModel.aggregate([
-      { $match: { stream, topic: { $in: sanitizedTopics }, difficulty: targetedLevel, _id: { $nin: randomExcludeIds } } },
-      { $sample: { size: remainingLimit } },
-      { $project: { question: 1, options: 1, topic: 1, concept: 1, difficulty: 1 } }
-    ]);
-
-    if (randomQuestions.length < remainingLimit) {
-      const remainingIds = [...randomExcludeIds, ...randomQuestions.map((r: unknown) => (r as Record<string, unknown>)._id)];
-      const widenedRandom = await QuestionModel.aggregate([
-        { $match: { stream, topic: { $in: sanitizedTopics }, difficulty: { $gte: Math.max(1, targetedLevel - 1), $lte: Math.min(5, targetedLevel + 1) }, _id: { $nin: remainingIds } } },
-        { $sample: { size: remainingLimit - randomQuestions.length } },
-        { $project: { question: 1, options: 1, topic: 1, concept: 1, difficulty: 1 } }
-      ]);
-      randomQuestions = [...randomQuestions, ...widenedRandom];
-    }
-
+    const randomExcludeIds = [...excludeIds, ...finalQuestions.map((q: any) => q._id)];
+    selectionCriteria.excludeIds = randomExcludeIds;
+    selectionCriteria.limit = remainingLimit;
+    
+    const randomQuestions = await fetchRandomQuestions(selectionCriteria);
     finalQuestions = [...finalQuestions, ...randomQuestions];
   }
 
@@ -172,54 +156,21 @@ export async function submitQuiz(payload: SubmitPayload): Promise<SubmitResponse
   const questionMap = new Map(questions.map((q) => [String(q._id), q]));
 
   // Grade
-  let correct = 0;
-  const conceptTally = new Map<string, { correct: number; total: number }>();
-
-  for (const ans of answers) {
-    const q = questionMap.get(ans.questionId);
-    if (!q) continue;
-
-    const isCorrect = q.answer === ans.selectedOption;
-    if (isCorrect) correct++;
-
-    // Tally per concept
-    const tally = conceptTally.get(q.concept) ?? { correct: 0, total: 0 };
-    tally.total++;
-    if (isCorrect) tally.correct++;
-    conceptTally.set(q.concept, tally);
+  // Prepare questions for grading utility
+  const gradeQuestionMap = new Map<string, { answer: number; concept: string }>();
+  for (const [id, q] of questionMap) {
+    gradeQuestionMap.set(id, { answer: q.answer, concept: q.concept });
   }
 
-  const total = answers.length;
-  const accuracy = total > 0 ? correct / total : 0;
+  const { correct, total, accuracy, conceptTally } = gradeQuizAnswers(answers, gradeQuestionMap);
 
   // Update conceptStats
-  for (const [concept, tally] of conceptTally) {
-    const existing = user.conceptStats?.get(concept) ?? {
-      attempted: 0,
-      correct: 0,
-      accuracy: 0,
-    };
-
-    const newAttempted = existing.attempted + tally.total;
-    const newCorrect = existing.correct + tally.correct;
-    const newAccuracy = newAttempted > 0 ? newCorrect / newAttempted : 0;
-
-    user.conceptStats?.set(concept, {
-      attempted: newAttempted,
-      correct: newCorrect,
-      accuracy: Math.round(newAccuracy * 1000) / 1000, // 3 decimal precision
-    });
-  }
+  if (!user.conceptStats) user.conceptStats = new Map();
+  updateConceptStats(user.conceptStats, conceptTally);
 
   // Adjust difficulty level
-  let levelChange = 0;
   const prevLevel = user.currentLevel;
-
-  if (accuracy >= 0.8 && prevLevel < 5) {
-    levelChange = 1;
-  } else if (accuracy < 0.4 && prevLevel > 1) {
-    levelChange = -1;
-  }
+  const levelChange = calculateLevelChange(accuracy, prevLevel);
   user.currentLevel = prevLevel + levelChange;
 
   // Push attempted questions (capped FIFO)
@@ -230,6 +181,10 @@ export async function submitQuiz(payload: SubmitPayload): Promise<SubmitResponse
   } else {
     user.attemptedQuestions = newAttempted;
   }
+
+  // Award XP
+  const xpAwarded = calculateXPAwarded(accuracy);
+  user.xp = (user.xp ?? 0) + xpAwarded;
 
   await user.save();
 
@@ -261,6 +216,7 @@ export async function submitQuiz(payload: SubmitPayload): Promise<SubmitResponse
     accuracy: Math.round(accuracy * 100),
     levelChange,
     newLevel: user.currentLevel,
+    xpAwarded,
     attemptId: String(attempt._id),
     conceptBreakdown: Array.from(conceptTally.entries()).map(([concept, t]) => ({
       concept,

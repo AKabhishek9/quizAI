@@ -23,28 +23,41 @@ const difficultyFilters: { value: Difficulty | "all"; label: string }[] = [
 export default function QuizCatalogPage() {
   const router = useRouter();
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
-  const [dailyQuizzes, setDailyQuizzes] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [dailyQuizzes, setDailyQuizzes] = useState<Record<string, any>>({});
+  const [loadingLibrary, setLoadingLibrary] = useState(true);
+  const [loadingDaily, setLoadingDaily] = useState(true);
   const [search, setSearch] = useState("");
   const [difficulty, setDifficulty] = useState<Difficulty | "all">("all");
   const [timeLeft, setTimeLeft] = useState("");
 
   useEffect(() => {
-    async function load() {
+    // 1. Fetch Daily Quests (priority - should be fast)
+    async function fetchDaily() {
       try {
-        const [quizzesData, dailyData] = await Promise.all([
-          getQuizzes(),
-          import("@/lib/api-client").then(m => m.getDailyQuizzes())
-        ]);
-        setQuizzes(quizzesData);
+        const m = await import("@/lib/api-client");
+        const dailyData = await m.getDailyQuizzes();
         setDailyQuizzes(dailyData);
       } catch (err) {
-        console.error("Failed to load quizzes:", err);
+        console.error("Failed to load daily quizzes:", err);
       } finally {
-        setLoading(false);
+        setLoadingDaily(false);
       }
     }
-    load();
+
+    // 2. Fetch Library Quizzes (secondary - might be slower/cached)
+    async function fetchLibrary() {
+      try {
+        const data = await getQuizzes();
+        setQuizzes(data);
+      } catch (err) {
+        console.error("Failed to load quiz library:", err);
+      } finally {
+        setLoadingLibrary(false);
+      }
+    }
+
+    fetchDaily();
+    fetchLibrary();
   }, []);
 
   // Countdown timer logic
@@ -89,7 +102,7 @@ export default function QuizCatalogPage() {
           </div>
         </div>
 
-        {loading ? (
+        {loadingDaily ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
              {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="h-32 rounded-xl border border-dashed border-border flex items-center justify-center">
@@ -97,27 +110,27 @@ export default function QuizCatalogPage() {
               </div>
             ))}
           </div>
-        ) : dailyQuizzes.length === 0 ? (
+        ) : Object.keys(dailyQuizzes).length === 0 ? (
           <div className="rounded-xl border border-dashed border-border p-8 text-center bg-secondary/10">
             <p className="text-xs text-muted-foreground">Daily quizzes are being generated. Check back in a moment!</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {dailyQuizzes.map((quiz, index) => (
+            {Object.entries(dailyQuizzes).map(([key, quiz], index) => (
               <motion.div
-                key={quiz._id}
+                key={key}
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: index * 0.05 }}
                 className="group relative rounded-xl border border-border bg-card p-4 hover:border-primary/50 transition-all cursor-pointer overflow-hidden"
-                onClick={() => router.push(`/quiz/daily/${quiz._id}`)}
+                onClick={() => router.push(`/quiz/daily/${key}`)}
               >
                 <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
                    <Zap className="h-12 w-12 text-primary" />
                 </div>
                 
                 <div className="flex flex-col h-full space-y-2">
-                  <span className="text-[10px] font-bold text-primary uppercase">{quiz.category}</span>
+                  <span className="text-[10px] font-bold text-primary uppercase">{key.replace("_", " ")}</span>
                   <h3 className="text-sm font-semibold leading-tight">{quiz.title}</h3>
                   <p className="text-[11px] text-muted-foreground flex-1 line-clamp-2">
                     {quiz.description}
@@ -197,7 +210,7 @@ export default function QuizCatalogPage() {
       </motion.div>
 
       {/* Grid */}
-      {loading ? (
+      {loadingLibrary ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <SkeletonCard key={i} />

@@ -20,24 +20,24 @@ interface StatsCardProps {
 
 const variants = {
   blue: {
-    bg: "bg-gradient-to-br from-indigo-500/10 to-purple-500/10",
-    iconBg: "bg-indigo-500/15 text-indigo-600 dark:text-indigo-400",
-    accent: "text-indigo-600 dark:text-indigo-400"
+    bg: "bg-grad-blue",
+    iconBg: "bg-primary/10 text-primary",
+    accent: "text-primary"
   },
   green: {
-    bg: "bg-gradient-to-br from-emerald-500/10 to-teal-500/10",
-    iconBg: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
-    accent: "text-emerald-600 dark:text-emerald-400"
+    bg: "bg-grad-green",
+    iconBg: "bg-success/10 text-success",
+    accent: "text-success"
   },
   yellow: {
-    bg: "bg-gradient-to-br from-amber-500/10 to-orange-500/10",
-    iconBg: "bg-amber-500/15 text-amber-600 dark:text-amber-400",
-    accent: "text-amber-600 dark:text-amber-400"
+    bg: "bg-grad-yellow",
+    iconBg: "bg-warning/10 text-warning",
+    accent: "text-warning"
   },
   orange: {
-    bg: "bg-gradient-to-br from-rose-500/10 to-orange-500/10",
-    iconBg: "bg-rose-500/15 text-rose-600 dark:text-rose-400",
-    accent: "text-rose-600 dark:text-rose-400"
+    bg: "bg-grad-orange",
+    iconBg: "bg-destructive/10 text-destructive",
+    accent: "text-destructive"
   }
 };
 

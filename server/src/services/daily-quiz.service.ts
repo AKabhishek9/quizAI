@@ -14,6 +14,8 @@ export const CATEGORIES = [
     stream: "General",
     topics: ["Current Events", "World News", "Politics"],
     subject: "Current Affairs",
+    color: "emerald",
+    theme: "emerald"
   },
   {
     id: "tech",
@@ -22,6 +24,8 @@ export const CATEGORIES = [
     stream: "Technology",
     topics: ["Software Engineering", "Artificial Intelligence", "Tech Industry"],
     subject: "Tech",
+    color: "indigo",
+    theme: "indigo"
   },
   {
     id: "maths",
@@ -30,6 +34,8 @@ export const CATEGORIES = [
     stream: "General",
     topics: ["Arithmetic", "Algebra", "Quantitative Aptitude"],
     subject: "Maths",
+    color: "rose",
+    theme: "rose"
   },
   {
     id: "aptitude",
@@ -38,6 +44,8 @@ export const CATEGORIES = [
     stream: "General",
     topics: ["Logical Reasoning", "Analytical Thinking", "Verbal Aptitude"],
     subject: "Aptitude",
+    color: "amber",
+    theme: "amber"
   },
 ];
 
@@ -62,6 +70,10 @@ export class DailyQuizService {
           console.log(`[daily-quiz] Generating ${cat.name}...`);
           
           let questions;
+          // As requested: 20% chance for a "Big Quest" (20 questions instead of 10)
+          const isBigQuest = Math.random() < 0.2;
+          const questionCount = isBigQuest ? 20 : 10;
+          
           try {
             // Try AI generation first
             questions = await generateQuestions({
@@ -69,7 +81,7 @@ export class DailyQuizService {
               topics: cat.topics,
               subject: cat.subject,
               difficulty: 3, 
-              count: 10,
+              count: questionCount,
               skipInsert: true // We handle insertion into DailyQuizModel ourselves
             });
           } catch (aiError) {
@@ -78,13 +90,13 @@ export class DailyQuizService {
             // Fallback: Pull from existing library
             questions = await QuestionModel.aggregate([
               { $match: { subject: cat.subject } },
-              { $sample: { size: 10 } }
+              { $sample: { size: questionCount } }
             ]);
             
             if (questions.length === 0) {
-              // Last ditch: pull ANY 10 questions
+              // Last ditch: pull ANY 10-20 questions
               questions = await QuestionModel.aggregate([
-                { $sample: { size: 10 } }
+                { $sample: { size: questionCount } }
               ]);
             }
           }
@@ -101,15 +113,15 @@ export class DailyQuizService {
         }
       }
 
-      // 2. ATOMIC ROTATION: Clear old and insert new
+      // 2. SAFE ROTATION: Insert new first, then delete old (no zero-quiz window)
       if (newDailyQuizzes.length > 0) {
-        console.log(`[daily-quiz] Purging old daily quizzes and inserting ${newDailyQuizzes.length} new categories...`);
+        console.log(`[daily-quiz] Inserting ${newDailyQuizzes.length} new categories, then purging old...`);
         
-        // As requested: Delete previous day's data
-        await DailyQuizModel.deleteMany({});
-        
-        // Insert new batch
+        // Insert new batch first so users always see content
         await DailyQuizModel.insertMany(newDailyQuizzes);
+        
+        // Now delete old quizzes (anything not from today)
+        await DailyQuizModel.deleteMany({ date: { $ne: dateStr } });
         
         console.log(`[daily-quiz] Refresh cycle complete. Site is updated.`);
       } else {
@@ -139,6 +151,8 @@ export class DailyQuizService {
           title: `Daily ${cat.name}`,
           description: `Fresh ${cat.name} challenges for today.`,
           questionCount: found.questions.length,
+          theme: cat.theme,
+          color: cat.color,
           questions: found.questions.map((q: any) => ({ ...q, answer: undefined })) // Hide answers
         };
       }
@@ -159,7 +173,9 @@ export class DailyQuizService {
     return {
       _id: quiz._id,
       category: cat?.name || quiz.category,
+      categoryKey: catId,
       title: `Daily ${cat?.name || quiz.category}`,
+      theme: cat?.theme || "indigo",
       questions: quiz.questions,
       timePerQuestion: 30
     };
@@ -177,5 +193,59 @@ export class DailyQuizService {
       answer: q.answer,
       question: q.question
     }));
+  }
+
+  /**
+   * Updates the user's daily streak and awards XP.
+   */
+  static async updateUserStreak(userId: string, xpAmount: number = 50) {
+    const { UserModel } = await import("../models/User.js");
+    const user = await UserModel.findOne({ userId });
+    if (!user) return null;
+
+    const today = new Date();
+    const todayStr = today.toISOString().split("T")[0];
+
+    // Award XP
+    const xpGained = xpAmount; 
+    const oldLevel = user.currentLevel;
+    user.xp = (user.xp || 0) + xpGained;
+
+    // Standard Leveling Logic: 100 XP per level (linear for simplicity)
+    const newLevel = Math.floor(user.xp / 100) + 1;
+    const didLevelUp = newLevel > oldLevel;
+    user.currentLevel = newLevel;
+
+    // Streak Logic (only once per day)
+    let streakIncremented = false;
+    if (user.lastActiveDate !== todayStr) {
+      const yesterday = new Date(today);
+      yesterday.setDate(today.getDate() - 1);
+      const yesterdayStr = yesterday.toISOString().split("T")[0];
+
+      let newStreak = 1;
+      if (user.lastActiveDate === yesterdayStr) {
+        newStreak = (user.currentStreak || 0) + 1;
+      }
+
+      user.currentStreak = newStreak;
+      if (newStreak > (user.bestStreak || 0)) {
+        user.bestStreak = newStreak;
+      }
+      user.lastActiveDate = todayStr;
+      streakIncremented = true;
+    }
+
+    await user.save();
+
+    return {
+      currentStreak: user.currentStreak,
+      bestStreak: user.bestStreak,
+      isNewStreak: streakIncremented,
+      xpGained,
+      totalXp: user.xp,
+      currentLevel: user.currentLevel,
+      didLevelUp
+    };
   }
 }

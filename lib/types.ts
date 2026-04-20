@@ -41,6 +41,7 @@ export interface DailyQuiz {
   questionCount: number;
   timePerQuestion: number;
   expiresAt: string;
+  theme?: string;
 }
 
 export interface QuizAttempt {
@@ -100,9 +101,8 @@ export interface CategoryPerformance {
 }
 
 export interface WeeklyScore {
-  week: string;
+  day: string;
   score: number;
-  quizzes: number;
 }
 
 export type QuizState = "idle" | "loading" | "playing" | "reviewing" | "completed";

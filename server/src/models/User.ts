@@ -51,7 +51,10 @@ const userSchema = new Schema(
       type: Number,
       default: 1,
       min: 1,
-      max: 5,
+    },
+    xp: {
+      type: Number,
+      default: 0,
     },
     preferredStreams: {
       type: [String],
