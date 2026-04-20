@@ -33,7 +33,6 @@ export function Navbar() {
   const isPlatform = pathname.startsWith("/dashboard") || 
                      pathname.startsWith("/quiz") || 
                      pathname.startsWith("/leaderboard") || 
-                     pathname.startsWith("/result") || 
                      pathname.startsWith("/profile");
 
   const links = isPlatform ? sidebarLinks : marketingLinks;

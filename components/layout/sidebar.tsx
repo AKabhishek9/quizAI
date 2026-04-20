@@ -21,7 +21,6 @@ export const sidebarLinks = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/quiz", label: "Quizzes", icon: BookOpen },
   { href: "/leaderboard", label: "Leaderboard", icon: Trophy },
-  { href: "/result", label: "Results", icon: ClipboardCheck },
   { href: "/profile", label: "Profile", icon: User },
 ];
 
