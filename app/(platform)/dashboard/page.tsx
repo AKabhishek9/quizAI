@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Zap } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PerformanceChart } from "@/components/dashboard/performance-chart";
 import { RecentActivity } from "@/components/dashboard/recent-activity";
@@ -34,29 +34,27 @@ export default function DashboardPage() {
   const profile = data?.profile;
   const history = data?.history;
 
-  // Weekly Evolution Calculation
-  const weeklyEvolution = stats?.weeklyScores && stats.weeklyScores.length >= 2
-    ? stats.weeklyScores[stats.weeklyScores.length - 1].score - stats.weeklyScores[stats.weeklyScores.length - 2].score
-    : 0;
+  const weeklyEvolution =
+    stats?.weeklyScores && stats.weeklyScores.length >= 2
+      ? stats.weeklyScores[stats.weeklyScores.length - 1].score -
+        stats.weeklyScores[stats.weeklyScores.length - 2].score
+      : 0;
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh] pt-12">
-        <div className="rounded-[40px] border border-destructive/10 bg-card/40 p-12 text-center max-w-md whisper-shadow backdrop-blur-xl">
-          <div className="w-20 h-20 rounded-[28px] bg-destructive/10 flex items-center justify-center mx-auto mb-8 shadow-soft border border-destructive/20">
-            <Zap className="text-destructive h-10 w-10" />
-          </div>
-          <h2 className="text-3xl font-black tracking-tighter text-foreground mb-4 font-heading">
-            System Synchronization Failure
-          </h2>
-          <p className="text-[13px] text-muted-foreground font-bold mb-10 leading-relaxed opacity-70">
-            {error instanceof Error ? error.message : "We encountered a terminal issue calibrating your learning telemetry."}
+      <div className="flex flex-col items-center justify-center min-h-[40vh]">
+        <div className="border border-border rounded-lg p-8 text-center max-w-sm bg-card">
+          <AlertCircle className="h-8 w-8 text-destructive mx-auto mb-3" />
+          <h2 className="text-sm font-semibold text-foreground mb-1">Failed to load dashboard</h2>
+          <p className="text-xs text-muted-foreground mb-4">
+            {error instanceof Error ? error.message : "Something went wrong."}
           </p>
-          <Button 
-            onClick={() => window.location.reload()} 
-            className="rounded-full w-full h-14 font-black tracking-tighter shadow-glow-primary active:scale-[0.98] transition-all bg-primary"
+          <Button
+            onClick={() => window.location.reload()}
+            size="sm"
+            className="w-full h-8 text-xs cursor-pointer"
           >
-            Re-establish Connection
+            Retry
           </Button>
         </div>
       </div>
@@ -64,62 +62,59 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-16 pb-20">
-      {/* Header & Motivational Section */}
+    <div className="space-y-6">
+      {/* Header */}
       <WelcomeBanner profile={profile} />
 
-      {/* Stats Grid */}
-      {isLoading ? (
-        <SkeletonStatsGrid />
-      ) : stats ? (
+      {/* Stats Row */}
+      {isLoading ? <SkeletonStatsGrid /> : stats ? (
         <DashboardStats stats={stats} weeklyEvolution={weeklyEvolution} />
       ) : null}
 
-      {/* Level Progress Banner */}
+      {/* Level Progress */}
       {profile && <LevelProgressBanner profile={profile} stats={stats} />}
 
-      {/* Daily Quests Section */}
+      {/* Daily Quests */}
       <DailyQuizWidget />
 
-      {/* Chart + Activity Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-        <div className="lg:col-span-8 flex flex-col space-y-6">
-          <div className="flex items-center justify-between px-4">
-            <h3 className="text-xl font-black tracking-tighter text-foreground font-heading uppercase italic">Performance Telemetry</h3>
-            <div className="flex bg-muted/30 p-1 rounded-full border border-border/10 shadow-soft">
-              <Button 
-                variant="ghost" 
-                size="sm" 
+      {/* Chart + Activity */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        {/* Performance Chart */}
+        <div className="lg:col-span-3 space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-medium text-foreground">Performance</h2>
+            <div className="flex items-center gap-1 border border-border rounded-md p-0.5">
+              <button
                 onClick={() => setViewMode("generalized")}
                 className={cn(
-                  "h-8 rounded-full px-4 text-[10px] font-black uppercase tracking-widest transition-all",
-                  viewMode === "generalized" ? "bg-card shadow-soft border border-border/20 text-primary" : "opacity-40 hover:opacity-100"
+                  "h-6 px-3 text-xs rounded transition-colors cursor-pointer",
+                  viewMode === "generalized"
+                    ? "bg-primary text-primary-foreground font-medium"
+                    : "text-muted-foreground hover:text-foreground"
                 )}
               >
-                Generalized
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="sm" 
+                Overview
+              </button>
+              <button
                 onClick={() => setViewMode("specialized")}
                 className={cn(
-                  "h-8 rounded-full px-4 text-[10px] font-black uppercase tracking-widest transition-all",
-                  viewMode === "specialized" ? "bg-card shadow-soft border border-border/20 text-primary" : "opacity-40 hover:opacity-100"
+                  "h-6 px-3 text-xs rounded transition-colors cursor-pointer",
+                  viewMode === "specialized"
+                    ? "bg-primary text-primary-foreground font-medium"
+                    : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 Specialized
-              </Button>
+              </button>
             </div>
           </div>
-          {isLoading ? (
-            <SkeletonChart />
-          ) : stats ? (
-            <div className="h-full">
-              <PerformanceChart data={stats.weeklyScores} />
-            </div>
+          {isLoading ? <SkeletonChart /> : stats ? (
+            <PerformanceChart data={stats.weeklyScores} />
           ) : null}
         </div>
-        <div className="lg:col-span-4">
+
+        {/* Recent Activity */}
+        <div className="lg:col-span-2">
           {isLoading ? (
             <SkeletonCard className="h-full" />
           ) : history ? (
@@ -128,7 +123,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Knowledge Analysis */}
+      {/* Category Performance */}
       {stats && <SkillEquilibrium stats={stats} />}
     </div>
   );

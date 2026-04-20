@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/* ─── Premium Design System Tokens (OKLCH) ─── */
+/* ─── Design System Tokens (OKLCH) ─── */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -44,19 +44,20 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  --font-heading: "Outfit", sans-serif;
+  --font-heading: "Manrope", sans-serif;
   
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
 }
 
 :root {
-  /* ─── Base Color Tokens ─── */
+  /* ─── Primary Color — Indigo ─── */
   --primary: oklch(0.55 0.18 264);
+  --primary-foreground: oklch(0.99 0 0);
+
+  /* ─── Base ─── */
   --foreground: oklch(0.12 0.01 260);
   --background: oklch(0.99 0.002 260);
 
@@ -66,18 +67,14 @@
   --popover: oklch(1 0 0);
   --popover-foreground: var(--foreground);
 
-  /* ─── Brand ─── */
-  --primary-foreground: oklch(0.99 0 0);
-  
-  --secondary: oklch(0.96 0.005 260);
+  /* ─── Secondary / Muted ─── */
+  --secondary: oklch(0.97 0.003 260);
   --secondary-foreground: oklch(0.35 0.03 260);
-  
   --muted: oklch(0.96 0.003 260);
   --muted-foreground: oklch(0.50 0.015 260);
-  
   --accent: oklch(0.96 0.005 260);
   --accent-foreground: oklch(0.35 0.03 260);
-  
+
   /* ─── Status ─── */
   --destructive: oklch(0.55 0.22 25);
   --destructive-foreground: oklch(0.99 0 0);
@@ -86,9 +83,9 @@
   --warning: oklch(0.72 0.16 70);
   --warning-foreground: oklch(0.25 0.04 70);
 
-  /* ─── Borders / UI ─── */
-  --border: oklch(0.92 0.005 260);
-  --input: oklch(0.92 0.005 260);
+  /* ─── Borders / Inputs ─── */
+  --border: oklch(0.91 0.005 260);
+  --input: oklch(0.91 0.005 260);
   --ring: color-mix(in oklch, var(--primary), transparent 60%);
 
   /* ─── Sidebar ─── */
@@ -98,53 +95,54 @@
   --sidebar-primary-foreground: var(--primary-foreground);
   --sidebar-accent: oklch(0.95 0.005 260);
   --sidebar-accent-foreground: oklch(0.35 0.03 260);
-  --sidebar-border: oklch(0.92 0.005 260);
+  --sidebar-border: oklch(0.91 0.005 260);
   --sidebar-ring: var(--primary);
 
-  --radius: 0.75rem;
-  --font-heading: "Outfit", sans-serif;
+  /* ─── Shape ─── */
+  --radius: 0.5rem;
 }
 
 .dark {
-  /* ─── Base Color Tokens ─── */
-  --primary: oklch(0.68 0.17 264);
-  --foreground: oklch(0.94 0.005 260);
-  --background: oklch(0.12 0.008 264);
-
-  /* ─── Surfaces ─── */
-  --card: oklch(0.15 0.01 264);
-  --card-foreground: var(--foreground);
-  --popover: oklch(0.15 0.01 264);
-  --popover-foreground: var(--foreground);
-
-  /* ─── Brand ─── */
+  /* ─── Primary ─── */
+  --primary: oklch(0.65 0.17 264);
   --primary-foreground: oklch(0.12 0.008 264);
 
-  --secondary: oklch(0.19 0.012 264);
-  --secondary-foreground: oklch(0.88 0.008 260);
-  --muted: oklch(0.18 0.01 264);
-  --muted-foreground: oklch(0.62 0.015 260);
+  /* ─── Base ─── */
+  --foreground: oklch(0.94 0.005 260);
+  --background: oklch(0.10 0.008 264);
 
-  --accent: oklch(0.19 0.012 264);
+  /* ─── Surfaces ─── */
+  --card: oklch(0.14 0.01 264);
+  --card-foreground: var(--foreground);
+  --popover: oklch(0.14 0.01 264);
+  --popover-foreground: var(--foreground);
+
+  /* ─── Secondary / Muted ─── */
+  --secondary: oklch(0.18 0.012 264);
+  --secondary-foreground: oklch(0.88 0.008 260);
+  --muted: oklch(0.17 0.01 264);
+  --muted-foreground: oklch(0.58 0.015 260);
+  --accent: oklch(0.18 0.012 264);
   --accent-foreground: oklch(0.88 0.008 260);
 
   /* ─── Status ─── */
   --destructive: oklch(0.62 0.18 25);
   --destructive-foreground: oklch(0.98 0 0);
-  --success: oklch(0.62 0.15 155);
+  --success: oklch(0.60 0.15 155);
   --success-foreground: oklch(0.12 0.008 264);
-  --warning: oklch(0.78 0.14 70);
+  --warning: oklch(0.76 0.14 70);
   --warning-foreground: oklch(0.12 0.008 264);
 
-  /* ─── High detail UI ─── */
+  /* ─── Borders ─── */
   --border: oklch(0.22 0.012 264);
   --input: oklch(0.22 0.012 264);
   --ring: color-mix(in oklch, var(--primary), transparent 50%);
 
-  --sidebar: oklch(0.13 0.01 264);
+  /* ─── Sidebar ─── */
+  --sidebar: oklch(0.12 0.01 264);
   --sidebar-foreground: var(--foreground);
   --sidebar-border: oklch(0.22 0.012 264);
-  --sidebar-accent: oklch(0.19 0.012 264);
+  --sidebar-accent: oklch(0.18 0.012 264);
   --sidebar-accent-foreground: oklch(0.88 0.008 260);
 }
 
@@ -162,87 +160,17 @@
   }
 }
 
-/* ─── Modern Design Utilities ─── */
+/* ─── Utility Layer ─── */
 @layer utilities {
-  /* Glassmorphism — Refined for Atelier */
-  .glass {
-    background: color-mix(in oklch, var(--card), transparent 28%);
-    backdrop-filter: blur(24px);
-    border: 1px solid color-mix(in oklch, var(--foreground), transparent 90%);
+  /* Scrollbar — minimal, tasteful */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
   }
-  
-  /* Whisper Shadow — Perceptually soft depth */
-  .whisper-shadow {
-    box-shadow: 0 16px 32px -12px oklch(0 0 0 / 0.08);
+  .scrollbar-none {
+    scrollbar-width: none;
   }
-  .dark .whisper-shadow {
-    box-shadow: 0 16px 48px -12px oklch(0 0 0 / 0.25);
-  }
-
-  /* Elevated Surface — Material-like lift */
-  .elevated {
-    background-color: var(--card);
-    border: 1px solid var(--border);
-    box-shadow: 0 4px 12px color-mix(in oklch, var(--foreground), transparent 95%);
-  }
-  
-  /* Primary Glow CTA */
-  .glow {
-    box-shadow: 0 0 0 1px color-mix(in oklch, var(--primary), transparent 85%),
-                0 4px 16px color-mix(in oklch, var(--primary), transparent 88%);
-  }
-  .dark .glow {
-    box-shadow: 0 0 0 1px color-mix(in oklch, var(--primary), transparent 80%),
-                0 4px 20px color-mix(in oklch, var(--primary), transparent 85%);
-  }
-
-  /* Ambient Mesh — Smooth background flow */
-  .mesh-gradient {
-    background:
-      radial-gradient(ellipse at 50% 0%, color-mix(in oklch, var(--primary), transparent 92%), transparent 70%),
-      radial-gradient(ellipse at 80% 50%, color-mix(in oklch, var(--success), transparent 96%), transparent 70%),
-      radial-gradient(ellipse at 20% 60%, color-mix(in oklch, var(--primary), transparent 96%), transparent 70%);
-  }
-
-  /* Grain Texture — Subtile tactile feel */
-  .grain {
-    position: relative;
-  }
-  .grain::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    opacity: 0.02;
-    pointer-events: none;
-    z-index: 100;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='a'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23a)'/%3E%3C/svg%3E");
-  }
-
-  /* Stats Cards Gradients — Theme Aware */
-  .bg-grad-blue { 
-    background: linear-gradient(135deg, color-mix(in oklch, var(--primary), transparent 90%) 0%, color-mix(in oklch, var(--primary), transparent 98%) 100%); 
-  }
-  .bg-grad-green { 
-    background: linear-gradient(135deg, color-mix(in oklch, var(--success), transparent 90%) 0%, color-mix(in oklch, var(--success), transparent 98%) 100%); 
-  }
-  .bg-grad-yellow { 
-    background: linear-gradient(135deg, color-mix(in oklch, var(--warning), transparent 90%) 0%, color-mix(in oklch, var(--warning), transparent 98%) 100%); 
-  }
-  .bg-grad-orange { 
-    background: linear-gradient(135deg, color-mix(in oklch, var(--destructive), transparent 90%) 0%, color-mix(in oklch, var(--destructive), transparent 98%) 100%); 
-  }
-
-  /* Dark mode overrides for cards - more internal glow */
-  .dark .bg-grad-blue { 
-    background: linear-gradient(135deg, color-mix(in oklch, var(--primary), transparent 85%) 0%, transparent 100%); 
-  }
-  .dark .bg-grad-green { 
-    background: linear-gradient(135deg, color-mix(in oklch, var(--success), transparent 85%) 0%, transparent 100%); 
-  }
-  .dark .bg-grad-yellow { 
-    background: linear-gradient(135deg, color-mix(in oklch, var(--warning), transparent 85%) 0%, transparent 100%); 
-  }
-  .dark .bg-grad-orange { 
-    background: linear-gradient(135deg, color-mix(in oklch, var(--destructive), transparent 85%) 0%, transparent 100%); 
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
   }
 }

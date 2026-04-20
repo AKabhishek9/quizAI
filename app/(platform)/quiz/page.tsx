@@ -87,19 +87,17 @@ export default function QuizCatalogPage() {
   });
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Daily Quests Section */}
-      <section className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-              Daily Quests
-            </h2>
-            <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-secondary text-secondary-foreground font-mono">
-              Refreshes in {timeLeft}
-            </span>
-          </div>
+      <section className="space-y-3">
+        <div className="flex items-center gap-3">
+          <h2 className="text-sm font-medium text-foreground flex items-center gap-2">
+            <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse inline-block" />
+            Daily Quests
+          </h2>
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground font-mono">
+            {timeLeft}
+          </span>
         </div>
 
         {loadingDaily ? (
@@ -150,35 +148,24 @@ export default function QuizCatalogPage() {
 
       <div className="h-px bg-border/50" />
 
-      {/* Main Catalog Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 6 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3"
-      >
+      {/* Library Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">Quiz Library</h1>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Explore our vast collection of adaptive learning paths
-          </p>
+          <h1 className="text-lg font-semibold tracking-tight">Quiz Library</h1>
+          <p className="text-xs text-muted-foreground mt-0.5">Explore our collection of learning paths</p>
         </div>
         <Button
           onClick={() => router.push("/quiz/stream")}
           size="sm"
-          className="cursor-pointer h-8 text-xs font-medium glow"
+          className="cursor-pointer h-8 text-xs font-medium"
         >
           <Zap className="mr-1 h-3 w-3" />
           Generate Mixed Quiz
         </Button>
-      </motion.div>
+      </div>
 
       {/* Filters */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.08 }}
-        className="flex flex-col sm:flex-row gap-3"
-      >
+      <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1 max-w-xs">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
           <Input
@@ -190,7 +177,7 @@ export default function QuizCatalogPage() {
           />
         </div>
 
-        <div className="flex gap-1.5">
+        <div className="flex gap-1">
           {difficultyFilters.map((filter) => (
             <Button
               key={filter.value}
@@ -198,7 +185,7 @@ export default function QuizCatalogPage() {
               size="sm"
               onClick={() => setDifficulty(filter.value)}
               className={cn(
-                "cursor-pointer h-8 text-xs",
+                "cursor-pointer h-7 text-xs px-3",
                 difficulty === filter.value &&
                   "bg-primary text-primary-foreground border-primary hover:bg-primary/90"
               )}
@@ -207,7 +194,7 @@ export default function QuizCatalogPage() {
             </Button>
           ))}
         </div>
-      </motion.div>
+      </div>
 
       {/* Grid */}
       {loadingLibrary ? (

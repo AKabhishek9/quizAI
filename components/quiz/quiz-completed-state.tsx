@@ -55,72 +55,60 @@ export function QuizCompletedState({
           xpGained={xpAwarded}
         />
         
-        <div className="rounded-2xl border border-border bg-card p-8 shadow-sm">
+        <div className="rounded-lg border border-border bg-card p-6">
           <div className={cn(
-            "mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-opacity-5",
-            themeClass
+            "mb-5 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary",
           )}>
-            <Trophy className="h-8 w-8" />
+            <Trophy className="h-6 w-6" />
           </div>
 
-          <h2 className="text-xl font-semibold mb-1">Quest Complete!</h2>
+          <h2 className="text-base font-semibold mb-1">Quest Complete!</h2>
           <div
             className={cn(
-              "text-5xl font-bold tracking-tight mb-2",
+              "text-4xl font-bold tracking-tight mb-1.5",
               accuracy >= 80 ? "text-success" : accuracy >= 50 ? "text-warning" : "text-destructive"
             )}
           >
             {accuracy}%
           </div>
-          <p className="text-sm text-muted-foreground mb-8">
-            You solved {correctCount} out of {questionCount} questions correctly.
+          <p className="text-sm text-muted-foreground mb-6">
+            {correctCount} of {questionCount} correct
           </p>
 
-          <div className="grid grid-cols-2 gap-3 mb-8 text-left">
-            <div className="p-4 rounded-xl bg-secondary/30 border border-border relative overflow-hidden group">
-              <div className="flex items-center gap-2 mb-1">
-                <Flame className={cn("h-4 w-4", streakInfo?.currentStreak ? "text-orange-500" : "text-muted-foreground")} />
-                <span className="text-xs font-medium">Daily Streak</span>
+          <div className="grid grid-cols-2 gap-3 mb-6">
+            <div className="p-3 rounded-lg bg-muted/50 border border-border">
+              <div className="flex items-center gap-1.5 mb-1">
+                <Flame className={cn("h-3.5 w-3.5", streakInfo?.currentStreak ? "text-orange-500" : "text-muted-foreground")} />
+                <span className="text-xs text-muted-foreground">Streak</span>
               </div>
-              <p className="text-lg font-bold tabular-nums">
-                {streakInfo ? `${streakInfo.currentStreak} Days` : "Loading..."}
+              <p className="text-base font-semibold tabular-nums">
+                {streakInfo ? `${streakInfo.currentStreak}d` : "-"}
               </p>
-              {streakInfo?.currentStreak && (
-                <div className="absolute top-0 right-0 p-2 opacity-5 scale-150 rotate-12 group-hover:rotate-0 transition-transform">
-                  <Flame className="h-10 w-10 text-orange-500 fill-current" />
-                </div>
-              )}
             </div>
-            <div className="p-4 rounded-xl bg-secondary/30 border border-border">
-              <div className="flex items-center gap-2 mb-1">
-                <Trophy className="h-4 w-4 text-yellow-500" />
-                <span className="text-xs font-medium">Best Streak</span>
+            <div className="p-3 rounded-lg bg-muted/50 border border-border">
+              <div className="flex items-center gap-1.5 mb-1">
+                <Trophy className="h-3.5 w-3.5 text-muted-foreground" />
+                <span className="text-xs text-muted-foreground">Best</span>
               </div>
-              <p className="text-lg font-bold tabular-nums">
-                {streakInfo ? `${streakInfo.bestStreak} Days` : "-"}
+              <p className="text-base font-semibold tabular-nums">
+                {streakInfo ? `${streakInfo.bestStreak}d` : "-"}
               </p>
             </div>
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex gap-2">
             <Button
               variant="outline"
-              className="flex-1 cursor-pointer h-11"
+              className="flex-1 cursor-pointer h-8 text-sm"
               onClick={() => router.push("/quiz")}
             >
-              Back to Library
+              Library
             </Button>
             <Button
-              className={cn(
-                "flex-1 cursor-pointer h-11",
-                themeName === "indigo" && "bg-indigo-600 hover:bg-indigo-500 text-white",
-                themeName === "emerald" && "bg-emerald-600 hover:bg-emerald-500 text-white",
-                themeName === "amber" && "bg-amber-600 hover:bg-amber-500 text-white",
-                themeName === "rose" && "bg-rose-600 hover:bg-rose-500 text-white"
-              )}
+              className="flex-1 cursor-pointer h-8 text-sm"
               onClick={() => router.push("/profile")}
             >
-              View Profile
+              Profile
             </Button>
           </div>
         </div>
@@ -134,22 +122,11 @@ export function QuizCompletedState({
       animate={{ opacity: 1, scale: 1 }}
       className="max-w-md mx-auto text-center py-16"
     >
-      <div className="rounded-xl border border-border bg-card p-8">
-        <LevelUpToast
-          show={showLevelToast}
-          onClose={() => setShowLevelToast(false)}
-          level={newLevel}
-          xpGained={xpAwarded}
-        />
-
+      <div className="rounded-lg border border-border bg-card p-6">
         <div
           className={cn(
-            "text-5xl font-semibold tracking-tight mb-1",
-            accuracy >= 80
-              ? "text-success"
-              : accuracy >= 50
-              ? "text-warning"
-              : "text-destructive"
+            "text-4xl font-semibold tracking-tight mb-1",
+            accuracy >= 80 ? "text-success" : accuracy >= 50 ? "text-warning" : "text-destructive"
           )}
         >
           {accuracy}%
@@ -160,21 +137,21 @@ export function QuizCompletedState({
 
         <div className="grid grid-cols-2 gap-2 mb-5">
           <div className="rounded-lg bg-success/[0.06] border border-success/10 p-3">
-            <p className="text-base font-semibold text-success">{correctCount}</p>
+            <p className="text-sm font-semibold text-success tabular-nums">{correctCount}</p>
             <p className="text-[11px] text-muted-foreground">Correct</p>
           </div>
-          <div className="rounded-lg bg-secondary p-3">
-            <p className="text-base font-semibold">+{xpAwarded}</p>
+          <div className="rounded-lg bg-muted/50 border border-border p-3">
+            <p className="text-sm font-semibold tabular-nums">+{xpAwarded}</p>
             <p className="text-[11px] text-muted-foreground">XP Earned</p>
           </div>
         </div>
 
-        <div className="flex gap-2 justify-center">
+        <div className="flex gap-2">
           <Button
             variant="outline"
             size="sm"
             onClick={() => router.push("/quiz")}
-            className="cursor-pointer h-8 text-xs"
+            className="cursor-pointer h-8 text-xs flex-1"
           >
             <RotateCcw className="mr-1 h-3 w-3" />
             More quizzes
@@ -182,7 +159,7 @@ export function QuizCompletedState({
           <Button
             size="sm"
             onClick={() => router.push("/dashboard")}
-            className="cursor-pointer h-8 text-xs"
+            className="cursor-pointer h-8 text-xs flex-1"
           >
             Dashboard
           </Button>

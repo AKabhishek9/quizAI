@@ -105,19 +105,10 @@ export function QuizPlayingState({
           exit={{ opacity: 0, x: -12 }}
           transition={{ duration: 0.2 }}
           className={cn(
-            "rounded-xl border border-border bg-card",
-            isDaily ? "p-6 shadow-sm min-h-[400px] flex flex-col relative overflow-hidden rounded-2xl" : "p-5"
+            "rounded-lg border border-border bg-card",
+            isDaily ? "p-6 min-h-[360px] flex flex-col" : "p-5"
           )}
         >
-          {isDaily && (
-            <div className={cn(
-              "absolute top-0 right-0 w-64 h-64 blur-[80px] opacity-[0.03] rounded-full -mr-20 -mt-20 pointer-events-none",
-              themeName === "indigo" && "bg-indigo-500",
-              themeName === "emerald" && "bg-emerald-500",
-              themeName === "amber" && "bg-amber-500",
-              themeName === "rose" && "bg-rose-500"
-            )} />
-          )}
 
           <h2 className={cn(
             "font-medium leading-relaxed mb-5",
@@ -189,40 +180,20 @@ export function QuizPlayingState({
           <Button
             onClick={submitAnswer}
             disabled={!selectedAnswer}
-            size={isDaily ? "lg" : "sm"}
-            className={cn(
-              "cursor-pointer disabled:opacity-40",
-              isDaily 
-                ? "px-10 h-11 text-sm font-semibold shadow-md transition-all" 
-                : "h-8 text-xs",
-              isDaily && themeName === "indigo" && "bg-indigo-600 hover:bg-indigo-500 text-white",
-              isDaily && themeName === "emerald" && "bg-emerald-600 hover:bg-emerald-500 text-white",
-              isDaily && themeName === "amber" && "bg-amber-600 hover:bg-amber-500 text-white",
-              isDaily && themeName === "rose" && "bg-rose-600 hover:bg-rose-500 text-white"
-            )}
+            size="sm"
+            className="cursor-pointer disabled:opacity-40 h-9 text-sm px-6"
           >
-            {isDaily ? "Submit Answer" : "Submit"}
+            Submit
           </Button>
         ) : (
           <Button
             onClick={nextQuestion}
-            size={isDaily ? "lg" : "sm"}
+            size="sm"
             disabled={isSubmitting}
-            className={cn(
-              "cursor-pointer",
-              isDaily 
-                ? "px-10 h-11 text-sm font-semibold shadow-md transition-all" 
-                : "h-8 text-xs",
-              isDaily && themeName === "indigo" && "bg-indigo-600 hover:bg-indigo-500 text-white",
-              isDaily && themeName === "emerald" && "bg-emerald-600 hover:bg-emerald-500 text-white",
-              isDaily && themeName === "amber" && "bg-amber-600 hover:bg-amber-500 text-white",
-              isDaily && themeName === "rose" && "bg-rose-600 hover:bg-rose-500 text-white"
-            )}
+            className="cursor-pointer h-9 text-sm px-6"
           >
-            {currentQuestionIndex < questionCount - 1
-              ? (isDaily ? "Next Question" : "Next")
-              : (isDaily ? "Finish Quest" : "See results")}
-            <ArrowRight className={cn(isDaily ? "ml-2 h-4 w-4" : "ml-1 h-3 w-3")} />
+            {currentQuestionIndex < questionCount - 1 ? "Next" : "See results"}
+            <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
           </Button>
         )}
       </div>
