@@ -58,65 +58,61 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-12 pb-20">
+    <div className="max-w-5xl mx-auto space-y-6 pb-20">
       {/* Profile header */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="rounded-[40px] border border-border/40 bg-card/30 p-10 whisper-shadow backdrop-blur-xl"
-      >
-        <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
+      <div className="rounded-lg border border-border bg-card p-6">
+        <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
           <div className="relative group">
-            <Avatar className="h-24 w-24 border-4 border-background shadow-soft ring-4 ring-primary/10 transition-transform group-hover:scale-105 duration-500">
-              <AvatarFallback className="bg-primary text-primary-foreground font-black text-2xl font-heading">
+            <Avatar className="h-20 w-20 border border-border bg-muted">
+              <AvatarFallback className="bg-primary text-primary-foreground font-semibold text-xl">
                 {profile?.name
                   .split(" ")
                   .map((n) => n[0])
                   .join("")}
               </AvatarFallback>
             </Avatar>
-            <div className="absolute -bottom-2 -right-2 bg-foreground text-background text-[11px] font-black px-4 py-1.5 rounded-full shadow-soft border-2 border-background">
+            <div className="absolute -bottom-1 -right-1 bg-foreground text-background text-[10px] font-bold px-2 py-0.5 rounded border border-background">
               Lv. {profile?.level}
             </div>
           </div>
 
-          <div className="text-center md:text-left flex-1 space-y-4">
-            <div>
-              <h1 className="text-4xl font-black tracking-tighter text-foreground font-heading mb-2">
+          <div className="text-center md:text-left flex-1">
+            <div className="mb-4">
+              <h1 className="text-xl font-semibold tracking-tight text-foreground mb-1">
                 {profile?.name}
               </h1>
-              <div className="flex flex-col sm:flex-row items-center gap-3 text-xs font-bold text-muted-foreground/60">
-                <span className="flex items-center gap-2 hover:text-foreground transition-colors cursor-default">
-                  <Mail className="h-3.5 w-3.5" />
+              <div className="flex flex-col sm:flex-row items-center gap-3 text-xs text-muted-foreground">
+                <span className="flex items-center gap-1.5">
+                  <Mail className="h-3 w-3" />
                   {profile?.email}
                 </span>
-                <span className="hidden sm:inline text-border/40">|</span>
-                <span className="flex items-center gap-2">
-                  <Calendar className="h-3.5 w-3.5" />
-                  Initiated {profile?.memberSince}
+                <span className="hidden sm:inline opacity-30">|</span>
+                <span className="flex items-center gap-1.5">
+                  <Calendar className="h-3 w-3" />
+                  Joined {profile?.memberSince}
                 </span>
               </div>
             </div>
 
             {profile && (
-              <div className="max-w-md pt-2">
-                <div className="flex items-end justify-between mb-2.5">
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Mastery Calibration</span>
-                  <span className="text-[11px] font-black tabular-nums text-muted-foreground/40 italic">
+              <div className="max-w-xs pt-1">
+                <div className="flex items-end justify-between mb-1.5">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-primary">Mastery</span>
+                  <span className="text-[10px] tabular-nums text-muted-foreground/60">
                     {profile.xp} / {profile.xpToNextLevel} XP
                   </span>
                 </div>
                 <ProgressBar
                   value={(profile.xp / profile.xpToNextLevel) * 100}
-                  size="md"
-                  className="bg-muted h-3 rounded-full overflow-hidden"
+                  size="sm"
+                  className="bg-muted h-1.5"
                   showPercentage={false}
                 />
               </div>
             )}
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Stats */}
       {stats && (
@@ -146,14 +142,14 @@ export default function ProfilePage() {
         </TabsList>
 
         {/* History */}
-        <TabsContent value="history" className="mt-8 transition-all">
-          <div className="rounded-[32px] border border-border/40 bg-card/30 overflow-hidden whisper-shadow backdrop-blur-md">
-            <div className="hidden sm:grid grid-cols-5 gap-3 px-8 py-5 border-b border-border/50 text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em]">
-              <span>Session Type</span>
-              <span className="text-center">Performance</span>
-              <span className="text-center">Complexity</span>
-              <span className="text-center">Telemetry</span>
-              <span className="text-right">Timecode</span>
+        <TabsContent value="history" className="mt-6">
+          <div className="rounded-lg border border-border bg-card overflow-hidden">
+            <div className="hidden sm:grid grid-cols-5 gap-3 px-6 py-3 border-b border-border bg-muted/30 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+              <span>Quiz</span>
+              <span className="text-center">Score</span>
+              <span className="text-center">Difficulty</span>
+              <span className="text-center">Time Taken</span>
+              <span className="text-right">Date</span>
             </div>
 
             {history?.map((attempt, index) => (

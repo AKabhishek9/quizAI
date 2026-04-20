@@ -51,11 +51,11 @@ export default function LeaderboardPage() {
   const restOfUsers = filteredUsers; // Show all in the table for now, or slice(3) if preferred. 
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 pb-12">
+    <div className="max-w-5xl mx-auto space-y-6 pb-12">
       {/* Header Section */}
       <div className="flex flex-col gap-2 px-4 md:px-0">
-        <h1 className="text-3xl font-black tracking-tighter sm:text-4xl text-foreground">Leaderboard</h1>
-        <p className="text-muted-foreground text-sm">
+        <h1 className="text-xl font-semibold tracking-tight">Leaderboard</h1>
+        <p className="text-muted-foreground text-xs">
           Tracking the top performers of the week. Master the daily challenges to climb.
         </p>
       </div>
@@ -94,12 +94,12 @@ export default function LeaderboardPage() {
 
           {/* List Section */}
           <div className="px-4 md:px-0">
-            <Card className="border-border shadow-sm overflow-hidden bg-card/50 backdrop-blur-sm">
+            <Card className="border-border shadow-sm overflow-hidden bg-card">
               <CardContent className="p-0">
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
-                      <tr className="border-b border-border text-[11px] uppercase tracking-wider text-muted-foreground font-bold">
+                      <tr className="border-b border-border text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
                         <th className="px-6 py-4 text-left w-16">Rank</th>
                         <th className="px-6 py-4 text-left">Player</th>
                         <th className="px-6 py-4 text-center">Level</th>
