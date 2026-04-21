@@ -38,8 +38,8 @@ const features = [
 
 export function Features() {
   return (
-    <section className="py-24 relative bg-white dark:bg-neutral-950" id="features">
-      <div className="max-w-7xl mx-auto px-8 relative z-10">
+    <section className="py-20 relative bg-neutral-50 dark:bg-neutral-800 border-y border-neutral-200 dark:border-neutral-700" id="features">
+      <div className="max-w-2xl lg:max-w-7xl mx-auto px-4 relative z-10">
         <div className="mb-16">
           <motion.div 
             initial={{ opacity: 0, x: -10 }}
@@ -61,7 +61,7 @@ export function Features() {
           </motion.h2>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, idx) => (
             <motion.div
               key={feature.title}
@@ -69,10 +69,10 @@ export function Features() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 }}
-              className="bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-800 p-8 rounded-2xl transition-all duration-200 hover:border-neutral-300 dark:hover:border-neutral-700"
+              className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 p-8 rounded-2xl transition-all duration-200 hover:border-neutral-300 dark:hover:border-neutral-600"
             >
-              <div className="w-10 h-10 rounded-lg bg-white dark:bg-neutral-800 flex items-center justify-center border border-neutral-200 dark:border-neutral-700 mb-6 transition-all duration-200">
-                <feature.icon className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+              <div className="w-12 h-12 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center mb-6 transition-all duration-200">
+                <feature.icon className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
               </div>
               <h3 className="text-lg font-semibold tracking-tight text-neutral-900 dark:text-neutral-100 mb-3">{feature.title}</h3>
               <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">

@@ -22,8 +22,8 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section className="py-24 bg-neutral-50 dark:bg-neutral-900/50 border-y border-neutral-200 dark:border-neutral-800">
-      <div className="max-w-7xl mx-auto px-8">
+    <section className="py-20 bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-700">
+      <div className="max-w-2xl lg:max-w-7xl mx-auto px-4">
         <div className="mb-16">
           <motion.span 
             initial={{ opacity: 0 }}
@@ -44,7 +44,7 @@ export function HowItWorks() {
           </motion.h2>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {steps.map((step, idx) => (
             <motion.div 
               key={step.number}
@@ -54,7 +54,7 @@ export function HowItWorks() {
               transition={{ delay: idx * 0.1 + 0.2 }}
               className="space-y-6"
             >
-               <div className="w-10 h-10 border border-neutral-200 dark:border-neutral-700 flex items-center justify-center font-semibold text-indigo-600 dark:text-indigo-400 rounded-lg bg-white dark:bg-neutral-800 shadow-sm">
+               <div className="w-10 h-10 border border-neutral-200 dark:border-neutral-700 flex items-center justify-center font-semibold text-indigo-600 dark:text-indigo-400 rounded-lg bg-neutral-50 dark:bg-neutral-800 shadow-sm">
                 {step.number}
               </div>
               <h3 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100 tracking-tight">{step.title}</h3>

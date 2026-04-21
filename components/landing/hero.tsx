@@ -10,18 +10,18 @@ const ease = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
 
 export function Hero() {
   return (
-    <header className="relative pt-32 pb-24 overflow-hidden bg-white dark:bg-neutral-950">
+    <header className="relative pt-32 pb-24 overflow-hidden bg-white dark:bg-neutral-900">
       {/* Background Ambience - Simplified */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute -top-[10%] -left-[10%] w-[60%] h-[60%] rounded-full bg-indigo-500/5 blur-[120px] opacity-30" />
       </div>
 
-      <div className="max-w-6xl mx-auto text-center px-8 relative z-10">
+      <div className="max-w-2xl mx-auto text-center px-4 relative z-10">
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 text-[11px] font-medium tracking-wider text-neutral-600 dark:text-neutral-400 uppercase mb-8"
+          className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-[11px] font-medium tracking-wider text-neutral-600 dark:text-neutral-400 uppercase mb-8"
         >
           <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 animate-pulse"></span>
           Now in Public Beta
@@ -31,7 +31,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-          className="text-4xl md:text-5xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50 mb-6"
+          className="text-3xl md:text-5xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100 mb-6"
         >
           Master the Technical Horizon.
         </motion.h1>
@@ -49,16 +49,16 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-6"
+          className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10"
         >
           <Link href="/login" className="w-full sm:w-auto">
-            <Button className="w-full h-11 px-8 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition-all duration-200 border-0 font-medium text-sm cursor-pointer group">
+            <Button className="w-full sm:w-auto h-auto px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition-all duration-200 border-0 font-medium text-sm cursor-pointer group">
               Initiate Discovery
               <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Button>
           </Link>
           <Link href="/quiz" className="w-full sm:w-auto">
-            <Button variant="outline" className="w-full h-11 px-8 rounded-lg border-neutral-200 dark:border-neutral-800 bg-transparent hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-all duration-200 font-medium text-sm cursor-pointer text-neutral-900 dark:text-neutral-100">
+            <Button variant="outline" className="w-full sm:w-auto h-auto px-5 py-2.5 rounded-lg border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-all duration-200 font-medium text-sm cursor-pointer text-neutral-900 dark:text-neutral-100">
               Explore Repository
             </Button>
           </Link>
