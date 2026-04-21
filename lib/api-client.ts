@@ -102,6 +102,7 @@ export interface DailyQuizSummary {
   questionCount: number;
   theme: string;
   color: string;
+  expiresAt?: string;
   questions: ApiQuestion[];
 }
 

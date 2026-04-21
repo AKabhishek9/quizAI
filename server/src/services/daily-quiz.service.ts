@@ -56,10 +56,10 @@ export class DailyQuizService {
    * Implements "Delete & Replace" cycle.
    */
   static async refreshDailyQuizzes() {
-    const today = new Date();
-    const dateStr = today.toISOString().split("T")[0]; // YYYY-MM-DD
+    const now = new Date();
+    const expiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
-    console.log(`[daily-quiz] Starting midnight refresh cycle for ${dateStr}...`);
+    console.log(`[daily-quiz] Starting refresh cycle at ${now.toISOString()}...`);
 
     try {
       const newDailyQuizzes = [];
@@ -69,10 +69,9 @@ export class DailyQuizService {
         try {
           console.log(`[daily-quiz] Generating ${cat.name}...`);
           
-          let questions;
-          // As requested: 20% chance for a "Big Quest" (20 questions instead of 10)
-          const isBigQuest = Math.random() < 0.2;
-          const questionCount = isBigQuest ? 20 : 10;
+          // Strictly 10 questions per the spec
+          const questionCount = 10;
+          let questions: any[] = [];
           
           try {
             // Try AI generation first
@@ -105,7 +104,8 @@ export class DailyQuizService {
             newDailyQuizzes.push({
               category: cat.id,
               questions: questions,
-              date: dateStr
+              generatedAt: now,
+              expiresAt: expiresAt
             });
           }
         } catch (error) {
@@ -115,13 +115,8 @@ export class DailyQuizService {
 
       // 2. SAFE ROTATION: Insert new first, then delete old (no zero-quiz window)
       if (newDailyQuizzes.length > 0) {
-        console.log(`[daily-quiz] Inserting ${newDailyQuizzes.length} new categories, then purging old...`);
-        
-        // Insert new batch first so users always see content
+        // Insert new batch. Older documents will be naturally purged by MongoDB TTL when Date.now() >= expiresAt
         await DailyQuizModel.insertMany(newDailyQuizzes);
-        
-        // Now delete old quizzes (anything not from today)
-        await DailyQuizModel.deleteMany({ date: { $ne: dateStr } });
         
         console.log(`[daily-quiz] Refresh cycle complete. Site is updated.`);
       } else {
@@ -137,8 +132,21 @@ export class DailyQuizService {
    * Fetches the 4 daily quizzes for the unified dashboard.
    */
   static async getDailyQuizzes() {
-    const quizzes = await DailyQuizModel.find({}).lean();
+    let quizzes = await DailyQuizModel.find({}).lean();
     
+    // Fast Response Fallback: If DB is empty, generate synchronously once.
+    if (quizzes.length === 0) {
+      console.log(`[daily-quiz] DB empty on get request. Triggering synchronous generation fallback.`);
+      await this.refreshDailyQuizzes();
+      quizzes = await DailyQuizModel.find({}).lean();
+    }
+    
+    // Calculate uniform expiration time for the frontend to show a countdown timer
+    let globalExpiresAt = null;
+    if (quizzes.length > 0 && quizzes[0].expiresAt) {
+      globalExpiresAt = quizzes[0].expiresAt;
+    }
+
     // Map to a more useful format for the frontend
     const result: Record<string, any> = {};
     
@@ -153,12 +161,16 @@ export class DailyQuizService {
           questionCount: found.questions.length,
           theme: cat.theme,
           color: cat.color,
+          expiresAt: found.expiresAt,
           questions: found.questions.map((q: any) => ({ ...q, answer: undefined })) // Hide answers
         };
       }
     });
 
-    return result;
+    return {
+      quizzes: result,
+      expiresAt: globalExpiresAt
+    };
   }
 
   /**

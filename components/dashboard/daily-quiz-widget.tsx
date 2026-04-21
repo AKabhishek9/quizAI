@@ -2,9 +2,10 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Zap, Brain, Calculator, Globe, ArrowRight } from "lucide-react";
+import { Zap, Brain, Calculator, Globe, ArrowRight, Clock } from "lucide-react";
 import { getDailyQuizzes } from "@/lib/api-client";
 import Link from "next/link";
+import { useEffect, useState, useMemo } from "react";
 
 const CATEGORY_MAP: Record<string, { icon: any; label: string }> = {
   current_affairs: { icon: Globe, label: "Current Affairs" },
@@ -19,18 +20,54 @@ export function DailyQuizWidget() {
     queryFn: getDailyQuizzes,
   });
 
-  const quizzes = dailyQuizzes
-    ? Object.keys(dailyQuizzes).map((key) => ({
-        ...dailyQuizzes[key],
-        type: key,
-      }))
-    : [];
+  const quizzes = useMemo(() => {
+    return dailyQuizzes
+      ? Object.keys(dailyQuizzes).map((key) => ({
+          ...dailyQuizzes[key],
+          type: key,
+        }))
+      : [];
+  }, [dailyQuizzes]);
+
+  const [timeLeft, setTimeLeft] = useState<string>("");
+
+  useEffect(() => {
+    if (!quizzes.length || !quizzes[0].expiresAt) return;
+
+    const expiresAt = new Date(quizzes[0].expiresAt).getTime();
+    
+    const updateCountdown = () => {
+      const now = new Date().getTime();
+      const distance = expiresAt - now;
+
+      if (distance < 0) {
+        setTimeLeft("Refreshing shortly...");
+        return;
+      }
+
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      setTimeLeft(`Refreshes in ${hours}h ${minutes}m`);
+    };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 60000);
+    return () => clearInterval(interval);
+  }, [quizzes]);
 
   return (
     <section className="border border-border rounded-lg bg-card p-4 h-full flex flex-col">
-      <div className="flex items-center gap-2 mb-3">
-        <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse inline-block" />
-        <h2 className="text-sm font-medium text-foreground">Daily Quests</h2>
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+        <div className="flex items-center gap-2">
+          <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse inline-block" />
+          <h2 className="text-sm font-medium text-foreground">Daily Quests</h2>
+        </div>
+        {timeLeft && (
+          <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground bg-muted/30 px-2 py-0.5 rounded-md">
+            <Clock className="w-3.5 h-3.5" />
+            <span>{timeLeft}</span>
+          </div>
+        )}
       </div>
 
       {isLoading ? (

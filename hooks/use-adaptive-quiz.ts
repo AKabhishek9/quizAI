@@ -49,41 +49,40 @@ export function useAdaptiveQuiz(): UseAdaptiveQuizReturn {
 
   const rawQuestionsRef = useRef<ApiQuestion[]>([]);
 
-  const startQuiz = useCallback(
-    async (
-      stream: string,
-      topics: string[],
-      difficulty: DifficultyLabel = "medium",
-      useFallback: boolean = false
-    ) => {
-      setState("loading");
-      setError(null);
-      setQuestions([]);
-      setCurrentQuestionIndex(0);
-      setSelectedAnswer(null);
-      setAnswers(new Map());
-      setResult(null);
+  const startQuiz = useCallback(async (
+    stream: string,
+    topics: string[],
+    difficulty: DifficultyLabel = "medium",
+    useFallback: boolean = false
+  ) => {
+    setState("loading");
+    setError(null);
+    setQuestions([]);
+    setCurrentQuestionIndex(0);
+    setSelectedAnswer(null);
+    setAnswers(new Map());
+    setResult(null);
 
-      try {
-        const numericDifficulty = difficultyToNumber(difficulty);
-        const response = await generateQuiz(stream, topics, numericDifficulty, useFallback);
+    try {
+      // Single request — the backend handles AI generation synchronously.
+      // No polling needed; the backend will block until questions are ready.
+      const numericDifficulty = difficultyToNumber(difficulty);
+      const response = await generateQuiz(stream, topics, numericDifficulty, useFallback);
 
-        if (!response.questions || response.questions.length === 0) {
-          setError("AI Generation timed out. Please try again, or use the fallback model.");
-          setState("error");
-          return;
-        }
-
-        rawQuestionsRef.current = response.questions;
-        setQuestions(response.questions.map(toPlayableQuestion));
-        setState("playing");
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load quiz");
+      if (!response.questions || response.questions.length === 0) {
+        setError("No questions generated. Try different topics or try again.");
         setState("error");
+        return;
       }
-    },
-    []
-  );
+
+      rawQuestionsRef.current = response.questions;
+      setQuestions(response.questions.map(toPlayableQuestion));
+      setState("playing");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load quiz");
+      setState("error");
+    }
+  }, []);
 
   const selectAnswer = useCallback((optionId: string) => {
     setSelectedAnswer(optionId);

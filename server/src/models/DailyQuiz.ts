@@ -24,10 +24,14 @@ const dailyQuizSchema = new Schema(
         concept: String,
       },
     ],
-    date: {
-      type: String, // Format: YYYY-MM-DD
+    generatedAt: {
+      type: Date,
+      default: Date.now,
+    },
+    expiresAt: {
+      type: Date,
       required: true,
-      index: true,
+      index: { expires: 0 }, // TTL index: MongoDB deletes the document when Date.now() >= expiresAt
     },
   },
   {
