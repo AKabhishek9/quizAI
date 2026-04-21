@@ -1,5 +1,5 @@
 /**
- * OpenRouter AI Service Integration Test
+ * Google AI Studio (Gemini) Integration Test
  *
  * Run: npx tsx src/scripts/test-ai-integration.ts
  */
@@ -18,27 +18,27 @@ const TEST_CONFIG = {
 };
 
 async function runTests() {
-  console.log("🧪 Starting OpenRouter AI Integration Tests\n");
+  console.log("🧪 Starting Google AI Studio (Gemini) Integration Tests\n");
 
   // Test 0: DB Connection
-  // try {
-  //   console.log("Test 0: 🔗 Connecting to MongoDB...");
-  //   await connectDB();
-  //   console.log("   ✓ Database connected\n");
-  // } catch (err) {
-  //   console.warn("   ⚠️ Database connection failed.\n");
-  // }
+  try {
+    console.log("Test 0: 🔗 Connecting to MongoDB...");
+    await connectDB();
+    console.log("   ✓ Database connected\n");
+  } catch (err) {
+    console.warn("   ⚠️ Database connection failed.\n");
+  }
 
   // Test 1: Environment Check
   console.log("Test 1: ✓ Environment Variable Check");
-  const apiKey = process.env.OPENROUTER_API_KEY;
+  const apiKey = process.env.GOOGLE_AI_API_KEY;
   if (!apiKey) {
-    console.error("❌ OPENROUTER_API_KEY not found in .env");
+    console.error("❌ GOOGLE_AI_API_KEY not found in .env");
     process.exit(1);
   }
   console.log(`   ✓ Found API Key: ${apiKey.slice(0, 8)}...\n`);
 
-  const model = process.env.OPENROUTER_MODEL || "meta-llama/llama-3.3-8b-instruct:free";
+  const model = process.env.GEMINI_MODEL || "gemini-2.0-flash";
   console.log(`   ✓ Model: ${model}\n`);
 
   // Test 2: AI Generation

@@ -2,20 +2,18 @@ import OpenAI from "openai";
 import { QuestionModel } from "../models/Question.js";
 import { z } from "zod";
 
-// ── OpenRouter API Configuration (Server-side only) ──────────────────────────
-// The API key is read from OPENROUTER_API_KEY environment variable.
+// ── Google AI Studio API Configuration (Server-side only) ─────────────────────
+// Uses Google AI Studio's OpenAI-compatible endpoint — no extra SDK needed.
+// API key from: https://aistudio.google.com/apikey
 // It is NEVER shipped to the browser — this file only runs on the Express server.
 let openaiInstance: OpenAI | null = null;
 
 function getOpenAIClient() {
   if (!openaiInstance) {
-    const key = process.env.OPENROUTER_API_KEY || "";
+    const key = process.env.GOOGLE_AI_API_KEY?.trim() || "";
     openaiInstance = new OpenAI({
       apiKey: key,
-      baseURL: "https://openrouter.ai/api/v1",
-      defaultHeaders: {
-        "HTTP-Referer": "https://quizai.com",
-      },
+      baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
     });
   }
   return openaiInstance;
@@ -100,15 +98,14 @@ export interface GeneratedQuestionDoc {
 export async function generateQuestions(
   params: GenerateParams
 ): Promise<GeneratedQuestionDoc[]> {
-  const apiKey = process.env.OPENROUTER_API_KEY || "";
+  const apiKey = process.env.GOOGLE_AI_API_KEY?.trim() || "";
   if (!apiKey) {
     throw new Error(
-      "[ai] OPENROUTER_API_KEY is not set. Cannot generate questions."
+      "[ai] GOOGLE_AI_API_KEY is not set. Cannot generate questions."
     );
   }
 
-  // Use only the primary model — no fallback
-  const model = process.env.OPENROUTER_MODEL || "meta-llama/llama-3.3-8b-instruct:free";
+  const model = process.env.GEMINI_MODEL?.trim() || "gemini-2.0-flash";
   const openai = getOpenAIClient();
 
   const count = params.count || 20;
@@ -126,7 +123,7 @@ export async function generateQuestions(
 
   let lastError: unknown = null;
   const MAX_ATTEMPTS = 2; // Try the model up to 2 times before giving up
-  const TIMEOUT_MS = 30000; // 30 seconds per attempt
+  const TIMEOUT_MS = 75_000; // 75 seconds per attempt (free models can be slow on cold starts)
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     try {
@@ -143,7 +140,7 @@ export async function generateQuestions(
             { role: "user", content: userPrompt },
           ],
           temperature: 0.7,
-          max_tokens: 2048,
+          max_tokens: 4096, // 2048 was too tight — 20 questions can exceed it and truncate JSON
           stream: false,
         }),
         new Promise<never>((_, reject) =>

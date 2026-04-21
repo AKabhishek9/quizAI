@@ -20,19 +20,38 @@ export async function getAuthHeaders() {
   return headers;
 }
 
-/** Thin fetch wrapper with error handling */
-export async function request<T>(url: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_BASE}${url}`, {
-    headers: await getAuthHeaders(),
-    ...options,
-  });
+/** Thin fetch wrapper with error handling and configurable timeout */
+export async function request<T>(
+  url: string,
+  options?: RequestInit,
+  timeoutMs: number = 15_000
+): Promise<T> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
 
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    throw new Error(body.error || `Request failed: ${res.status}`);
+  try {
+    const res = await fetch(`${API_BASE}${url}`, {
+      headers: await getAuthHeaders(),
+      signal: controller.signal,
+      ...options,
+    });
+
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.error || `Request failed: ${res.status}`);
+    }
+
+    return res.json() as Promise<T>;
+  } catch (err: unknown) {
+    if (err instanceof DOMException && err.name === "AbortError") {
+      throw new Error(
+        "Quiz generation is taking longer than expected. The AI model may be busy — please try again in a moment."
+      );
+    }
+    throw err;
+  } finally {
+    clearTimeout(timer);
   }
-
-  return res.json() as Promise<T>;
 }
 
 /* ── Types matching the backend response ── */
@@ -129,11 +148,16 @@ export async function generateQuiz(
   difficulty: number = 3,
   useFallback: boolean = false
 ): Promise<ApiQuizResponse> {
-  return request<ApiQuizResponse>("/get-quiz", {
-    method: "POST",
-    body: JSON.stringify({ stream, topics, difficulty, useFallback }),
-    cache: "no-store",
-  });
+  // AI generation can be slow on free models — allow up to 90 seconds
+  return request<ApiQuizResponse>(
+    "/get-quiz",
+    {
+      method: "POST",
+      body: JSON.stringify({ stream, topics, difficulty, useFallback }),
+      cache: "no-store",
+    },
+    90_000 // 90s timeout for AI quiz generation
+  );
 }
 
 export async function submitQuizAnswers(payload: ApiSubmitPayload): Promise<ApiSubmitResponse> {
