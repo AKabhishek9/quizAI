@@ -46,7 +46,7 @@ export function QuizCompletedState({
       <motion.div
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="max-w-md mx-auto text-center py-12"
+        className="max-w-2xl mx-auto text-center py-12"
       >
         <LevelUpToast
           show={showLevelToast}
@@ -55,11 +55,11 @@ export function QuizCompletedState({
           xpGained={xpAwarded}
         />
         
-        <div className="rounded-lg border border-border bg-card p-6">
+        <div className="rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4">
           <div className={cn(
-            "mb-5 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary",
+            "mb-4 mx-auto inline-flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400",
           )}>
-            <Trophy className="h-6 w-6" />
+            <Trophy className="h-5 w-5" />
           </div>
 
           <h2 className="text-base font-semibold mb-1">Quest Complete!</h2>
@@ -75,20 +75,20 @@ export function QuizCompletedState({
             {correctCount} of {questionCount} correct
           </p>
 
-          <div className="grid grid-cols-2 gap-3 mb-6">
-            <div className="p-3 rounded-lg bg-muted/50 border border-border">
-              <div className="flex items-center gap-1.5 mb-1">
-                <Flame className={cn("h-3.5 w-3.5", streakInfo?.currentStreak ? "text-orange-500" : "text-muted-foreground")} />
-                <span className="text-xs text-muted-foreground">Streak</span>
+          <div className="grid grid-cols-2 gap-2 mb-6">
+            <div className="p-3 rounded-lg bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-700">
+              <div className="flex items-center gap-1.5 mb-1 justify-center">
+                <Flame className={cn("h-3.5 w-3.5", streakInfo?.currentStreak ? "text-orange-500" : "text-neutral-400")} />
+                <span className="text-xs text-neutral-500 dark:text-neutral-400">Streak</span>
               </div>
               <p className="text-base font-semibold tabular-nums">
                 {streakInfo ? `${streakInfo.currentStreak}d` : "-"}
               </p>
             </div>
-            <div className="p-3 rounded-lg bg-muted/50 border border-border">
-              <div className="flex items-center gap-1.5 mb-1">
-                <Trophy className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="text-xs text-muted-foreground">Best</span>
+            <div className="p-3 rounded-lg bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-700">
+              <div className="flex items-center gap-1.5 mb-1 justify-center">
+                <Trophy className="h-3.5 w-3.5 text-neutral-400" />
+                <span className="text-xs text-neutral-500 dark:text-neutral-400">Best</span>
               </div>
               <p className="text-base font-semibold tabular-nums">
                 {streakInfo ? `${streakInfo.bestStreak}d` : "-"}
@@ -98,14 +98,13 @@ export function QuizCompletedState({
 
           <div className="flex gap-2">
             <Button
-              variant="outline"
-              className="flex-1 cursor-pointer h-8 text-sm"
+              className="flex-1 cursor-pointer h-9 px-4 py-2 text-sm font-medium rounded-lg border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-700"
               onClick={() => router.push("/quiz")}
             >
               Library
             </Button>
             <Button
-              className="flex-1 cursor-pointer h-8 text-sm"
+              className="flex-1 cursor-pointer h-9 px-4 py-2 text-sm font-medium rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 border-0"
               onClick={() => router.push("/profile")}
             >
               Profile
@@ -120,46 +119,43 @@ export function QuizCompletedState({
     <motion.div
       initial={{ opacity: 0, scale: 0.98 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="max-w-md mx-auto text-center py-16"
+      className="max-w-2xl mx-auto text-center py-16"
     >
-      <div className="rounded-lg border border-border bg-card p-6">
+      <div className="rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4">
         <div
           className={cn(
             "text-4xl font-semibold tracking-tight mb-1",
-            accuracy >= 80 ? "text-success" : accuracy >= 50 ? "text-warning" : "text-destructive"
+            accuracy >= 80 ? "text-green-500" : accuracy >= 50 ? "text-yellow-500" : "text-red-500"
           )}
         >
           {accuracy}%
         </div>
-        <p className="text-xs text-muted-foreground mb-5">
+        <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-5">
           {correctCount} of {questionCount} correct
         </p>
 
         <div className="grid grid-cols-2 gap-2 mb-5">
-          <div className="rounded-lg bg-success/[0.06] border border-success/10 p-3">
-            <p className="text-sm font-semibold text-success tabular-nums">{correctCount}</p>
-            <p className="text-[11px] text-muted-foreground">Correct</p>
+          <div className="rounded-lg bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-800/30 p-3">
+            <p className="text-sm font-semibold text-green-600 dark:text-green-400 tabular-nums">{correctCount}</p>
+            <p className="text-[11px] text-neutral-500 dark:text-neutral-400">Correct</p>
           </div>
-          <div className="rounded-lg bg-muted/50 border border-border p-3">
-            <p className="text-sm font-semibold tabular-nums">+{xpAwarded}</p>
-            <p className="text-[11px] text-muted-foreground">XP Earned</p>
+          <div className="rounded-lg bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-700 p-3">
+            <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 tabular-nums">+{xpAwarded}</p>
+            <p className="text-[11px] text-neutral-500 dark:text-neutral-400">XP Earned</p>
           </div>
         </div>
 
         <div className="flex gap-2">
           <Button
-            variant="outline"
-            size="sm"
             onClick={() => router.push("/quiz")}
-            className="cursor-pointer h-8 text-xs flex-1"
+            className="flex-1 cursor-pointer h-9 px-4 py-2 text-sm font-medium rounded-lg border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-700"
           >
-            <RotateCcw className="mr-1 h-3 w-3" />
+            <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
             More quizzes
           </Button>
           <Button
-            size="sm"
             onClick={() => router.push("/dashboard")}
-            className="cursor-pointer h-8 text-xs flex-1"
+            className="flex-1 cursor-pointer h-9 px-4 py-2 text-sm font-medium rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 border-0"
           >
             Dashboard
           </Button>

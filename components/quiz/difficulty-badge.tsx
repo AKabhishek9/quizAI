@@ -10,15 +10,15 @@ interface DifficultyBadgeProps {
 const difficultyConfig = {
   easy: {
     label: "Easy",
-    className: "bg-success/10 text-success border-success/20 hover:bg-success/15",
+    className: "bg-green-50 text-green-600 border-green-200 dark:bg-green-900/10 dark:text-green-400 dark:border-green-800/30",
   },
   medium: {
     label: "Medium",
-    className: "bg-warning/10 text-warning border-warning/20 hover:bg-warning/15",
+    className: "bg-yellow-50 text-yellow-600 border-yellow-200 dark:bg-yellow-900/10 dark:text-yellow-400 dark:border-yellow-800/30",
   },
   hard: {
     label: "Hard",
-    className: "bg-destructive/10 text-destructive border-destructive/20 hover:bg-destructive/15",
+    className: "bg-red-50 text-red-600 border-red-200 dark:bg-red-900/10 dark:text-red-400 dark:border-red-800/30",
   },
 };
 

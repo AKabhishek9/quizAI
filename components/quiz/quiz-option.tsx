@@ -34,16 +34,16 @@ export function QuizOption({
       onClick={() => !disabled && onSelect(option.id)}
       disabled={disabled}
       className={cn(
-        "w-full flex items-center gap-3 p-3.5 rounded-lg border text-left transition-all duration-150 cursor-pointer",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2",
+        "w-full flex items-center gap-3 py-2 px-3 rounded-lg border text-left transition-all duration-150 cursor-pointer overflow-hidden leading-tight",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40",
         // Default
-        !isSelected && !isRevealed && "border-border hover:border-primary/30 hover:bg-secondary/40",
+        !isSelected && !isRevealed && "border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-800/80 hover:border-neutral-300 dark:hover:border-neutral-600",
         // Selected
-        isSelected && !isRevealed && "border-primary/50 bg-primary/[0.04]",
+        isSelected && !isRevealed && "border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20",
         // Correct
-        isThisCorrectAnswer && "border-success/50 bg-success/[0.04]",
+        isThisCorrectAnswer && "border-green-500/50 bg-green-50 dark:bg-green-900/20",
         // Wrong
-        isThisWrongSelected && "border-destructive/50 bg-destructive/[0.04]",
+        isThisWrongSelected && "border-red-500/50 bg-red-50 dark:bg-red-900/20",
         disabled && "cursor-not-allowed"
       )}
       role="radio"
@@ -53,23 +53,29 @@ export function QuizOption({
       {/* Label */}
       <span
         className={cn(
-          "flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-xs font-semibold transition-colors duration-150",
-          !isSelected && !isRevealed && "bg-secondary text-muted-foreground",
-          isSelected && !isRevealed && "bg-primary text-primary-foreground",
-          isThisCorrectAnswer && "bg-success text-success-foreground",
-          isThisWrongSelected && "bg-destructive text-white"
+          "flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-xs font-semibold transition-colors duration-150",
+          !isSelected && !isRevealed && "bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400",
+          isSelected && !isRevealed && "bg-indigo-600 text-white",
+          isThisCorrectAnswer && "bg-green-500 text-white",
+          isThisWrongSelected && "bg-red-500 text-white"
         )}
       >
         {isThisCorrectAnswer ? (
-          <Check className="h-3.5 w-3.5" />
+          <Check className="h-3 w-3" />
         ) : isThisWrongSelected ? (
-          <X className="h-3.5 w-3.5" />
+          <X className="h-3 w-3" />
         ) : (
           option.label
         )}
       </span>
 
-      <span className="text-[13px] font-medium flex-1">{option.text}</span>
+      <span className={cn(
+        "text-sm font-medium flex-1",
+        !isSelected && !isRevealed ? "text-neutral-900 dark:text-neutral-100" : 
+        isSelected && !isRevealed ? "text-indigo-900 dark:text-indigo-100" :
+        isThisCorrectAnswer ? "text-green-900 dark:text-green-100" :
+        "text-red-900 dark:text-red-100"
+      )}>{option.text}</span>
     </motion.button>
   );
 }

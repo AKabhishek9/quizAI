@@ -55,8 +55,8 @@ export function Navbar() {
       <div className="flex justify-between items-center h-16 px-6 md:px-10 max-w-7xl mx-auto">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 bg-primary/10 rounded-[14px] flex items-center justify-center border border-primary/20 transition-all group-hover:scale-105 group-hover:bg-primary group-hover:shadow-glow-primary">
-            <Zap className="h-5 w-5 text-primary group-hover:text-primary-foreground fill-current transition-colors" />
+          <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-900/10 rounded-[14px] flex items-center justify-center border border-indigo-100 dark:border-indigo-800/30 transition-all group-hover:scale-105 group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900/30">
+            <Zap className="h-5 w-5 text-indigo-600 dark:text-indigo-400 fill-current transition-colors" />
           </div>
           <div className="flex flex-col">
             <span className="text-[20px] font-black tracking-tighter text-foreground leading-none font-heading">QuizAI</span>
@@ -87,10 +87,10 @@ export function Navbar() {
 
         {/* Actions */}
         <div className="flex items-center gap-3">
-          <ThemeToggle />
+          <ThemeToggle className="w-9 h-9" />
           
           <Link href="/login" className="hidden sm:block">
-            <Button className="h-11 px-6 rounded-full bg-primary hover:bg-primary/90 transition-all shadow-glow-primary border-0 text-primary-foreground font-black tracking-tighter cursor-pointer active:scale-95">
+            <Button className="h-9 px-4 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition-all border-0 text-sm font-medium tracking-normal cursor-pointer active:scale-95">
               Initiate
             </Button>
           </Link>
@@ -129,10 +129,10 @@ export function Navbar() {
                         href={link.href}
                         onClick={() => setMobileOpen(false)}
                         className={cn(
-                          "group flex items-center justify-between p-6 rounded-[24px] transition-all duration-500",
+                          "group flex items-center justify-between p-4 rounded-xl transition-all duration-300",
                           isActive 
-                            ? "bg-primary text-primary-foreground shadow-glow-primary" 
-                            : "hover:bg-muted/50 text-foreground/80"
+                            ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-900 dark:text-indigo-100" 
+                            : "hover:bg-neutral-50 dark:hover:bg-neutral-800/50 text-neutral-600 dark:text-neutral-400"
                         )}
                       >
                         <div className="flex items-center gap-5">
@@ -159,9 +159,9 @@ export function Navbar() {
                 <div className="p-8 border-t border-border/40 bg-muted/30 space-y-3">
                   {!user ? (
                     <Link href="/login" onClick={() => setMobileOpen(false)}>
-                      <Button className="w-full h-16 text-lg font-black tracking-tighter rounded-[24px] bg-primary hover:bg-primary/90 shadow-glow-primary group">
+                      <Button className="w-full h-12 text-base font-medium rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 border-0 group">
                         Get Started
-                        <Zap className="ml-2 h-5 w-5 fill-current transition-transform group-hover:scale-110" />
+                        <Zap className="ml-2 h-4 w-4 fill-current transition-transform group-hover:scale-110" />
                       </Button>
                     </Link>
                   ) : (
@@ -171,10 +171,10 @@ export function Navbar() {
                         setMobileOpen(false);
                       }}
                       variant="destructive"
-                      className="w-full h-16 text-lg font-black tracking-tighter rounded-[24px] group"
+                      className="w-full h-12 text-base font-medium rounded-xl bg-red-600 text-white hover:bg-red-700 border-0 group"
                     >
                       Terminate Session
-                      <LogOut className="ml-2 h-5 w-5 transition-transform group-hover:scale-110" />
+                      <LogOut className="ml-2 h-4 w-4 transition-transform group-hover:scale-110" />
                     </Button>
                   )}
                 </div>

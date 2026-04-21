@@ -36,7 +36,7 @@ export function QuizIdleState({
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-md mx-auto text-center py-16"
+        className="max-w-2xl mx-auto text-center py-16"
       >
         {onBack && (
           <Button
@@ -50,7 +50,7 @@ export function QuizIdleState({
           </Button>
         )}
 
-        <div className="rounded-lg border border-border bg-card p-6">
+        <div className="rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4">
           <div className={cn(
             "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium uppercase tracking-wider mb-4 bg-primary/10 text-primary border border-primary/20",
           )}>
@@ -65,24 +65,24 @@ export function QuizIdleState({
             {description}
           </p>
           
-          <div className="flex justify-center gap-6 text-xs text-muted-foreground mb-6 divide-x divide-border">
-            <div className="text-center pr-6">
-              <p className="text-foreground font-medium tabular-nums">{questionCount}</p>
+          <div className="flex justify-center gap-4 text-xs text-neutral-500 dark:text-neutral-400 mb-6 divide-x divide-neutral-200 dark:divide-neutral-700">
+            <div className="text-center pr-4">
+              <p className="text-neutral-900 dark:text-neutral-100 font-medium tabular-nums">{questionCount}</p>
               <p>Questions</p>
             </div>
-            <div className="text-center px-6">
-              <p className="text-foreground font-medium tabular-nums">{timePerQuestion}s</p>
+            <div className="text-center px-4">
+              <p className="text-neutral-900 dark:text-neutral-100 font-medium tabular-nums">{timePerQuestion}s</p>
               <p>Timer</p>
             </div>
-            <div className="text-center pl-6">
-              <p className="text-foreground font-medium tabular-nums">+{xpReward}</p>
+            <div className="text-center pl-4">
+              <p className="text-neutral-900 dark:text-neutral-100 font-medium tabular-nums">+{xpReward}</p>
               <p>XP Reward</p>
             </div>
           </div>
 
           <Button
             onClick={onStart}
-            className="w-full cursor-pointer h-9 text-sm font-medium"
+            className="w-full cursor-pointer h-9 px-4 py-2 text-sm font-medium rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 border-0"
           >
             Start Challenge
             <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
@@ -97,23 +97,23 @@ export function QuizIdleState({
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      className="max-w-md mx-auto text-center py-16"
+      className="max-w-2xl mx-auto text-center py-16"
     >
-      <div className="rounded-lg border border-border bg-card p-6">
+      <div className="rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4">
         <DifficultyBadge difficulty={difficulty || "medium"} className="mb-3" />
         <h1 className="text-lg font-semibold tracking-tight mb-1">
           {title}
         </h1>
-        <p className="text-sm text-muted-foreground mb-5">
+        <p className="text-sm text-neutral-500 mt-2 mb-5">
           {description}
         </p>
-        <div className="flex justify-center gap-6 text-xs text-muted-foreground mb-5 divide-x divide-border">
-          <span className="pr-6">{questionCount} questions</span>
-          <span className="pl-6">{timePerQuestion}s per question</span>
+        <div className="flex justify-center gap-4 text-xs text-neutral-500 mb-5 divide-x divide-neutral-200 dark:divide-neutral-700">
+          <span className="pr-4">{questionCount} questions</span>
+          <span className="pl-4">{timePerQuestion}s per question</span>
         </div>
         <Button
           onClick={onStart}
-          className="cursor-pointer h-9 px-6 text-sm font-medium w-full"
+          className="cursor-pointer h-9 px-4 py-2 text-sm font-medium w-full rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 border-0"
         >
           Start quiz
           <ArrowRight className="ml-1.5 h-3.5 w-3.5" />

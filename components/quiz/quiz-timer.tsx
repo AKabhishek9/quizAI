@@ -29,35 +29,35 @@ export function QuizTimer({
           className={cn(
             "h-3.5 w-3.5 transition-colors",
             isDanger
-              ? "text-destructive"
+              ? "text-red-500"
               : isWarning
-              ? "text-warning"
-              : "text-muted-foreground"
+              ? "text-yellow-500"
+              : "text-neutral-500 dark:text-neutral-400"
           )}
         />
         <span
           className={cn(
             "text-xs font-mono font-semibold tabular-nums transition-colors",
             isDanger
-              ? "text-destructive"
+              ? "text-red-500"
               : isWarning
-              ? "text-warning"
-              : "text-foreground"
+              ? "text-yellow-500"
+              : "text-neutral-900 dark:text-neutral-100"
           )}
         >
           {minutes}:{seconds.toString().padStart(2, "0")}
         </span>
       </div>
 
-      <div className="flex-1 h-1 rounded-full bg-secondary overflow-hidden">
+      <div className="flex-1 h-1 rounded-full bg-neutral-100 dark:bg-neutral-800 overflow-hidden">
         <motion.div
           className={cn(
             "h-full rounded-full transition-colors",
             isDanger
-              ? "bg-destructive"
+              ? "bg-red-500"
               : isWarning
-              ? "bg-warning"
-              : "bg-primary"
+              ? "bg-yellow-500"
+              : "bg-indigo-600"
           )}
           initial={{ width: "100%" }}
           animate={{ width: `${percentage}%` }}
@@ -66,7 +66,7 @@ export function QuizTimer({
       </div>
 
       {isDanger && (
-        <span className="h-2 w-2 rounded-full bg-destructive animate-pulse" />
+        <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
       )}
     </div>
   );
