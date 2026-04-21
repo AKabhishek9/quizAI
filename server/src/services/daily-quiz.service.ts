@@ -48,7 +48,7 @@ export const CATEGORIES = [
     theme: "amber"
   },
 ];
-
+// Forced refresh for Render build pipeline
 export class DailyQuizService {
   private static isRefreshing = false;
   private static lastRefreshAttempt = 0;
