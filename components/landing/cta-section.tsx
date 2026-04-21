@@ -2,31 +2,31 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { ArrowRight } from "lucide-react";
 
 export function CtaSection() {
   return (
-    <section className="py-24 px-8">
+    <section className="py-24 px-8 bg-white dark:bg-neutral-950">
       <motion.div 
         initial={{ opacity: 0, scale: 0.98 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className="max-w-5xl mx-auto bg-on-surface rounded-[32px] sm:rounded-[48px] p-12 sm:p-20 text-center relative overflow-hidden whisper-shadow"
+        className="max-w-4xl mx-auto bg-neutral-50 dark:bg-neutral-900/50 rounded-2xl p-12 sm:p-16 text-center border border-neutral-200 dark:border-neutral-800"
       >
-        <div className="absolute inset-0 mesh-gradient-stitch opacity-10"></div>
-        <div className="relative z-10 max-w-2xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-headline font-extrabold tracking-tight text-primary-foreground mb-6">
-            Ready to master your <br/>next challenge?
+        <div className="max-w-2xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50 mb-6">
+            Ready to master your next challenge?
           </h2>
-          <p className="text-primary-foreground/70 text-lg mb-10 leading-relaxed">
+          <p className="text-neutral-600 dark:text-neutral-400 text-base mb-10 leading-relaxed">
             Join 2,000+ developers sharpening their skills daily. <br className="hidden sm:block"/>
             Free to start, no credit card required.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/login" className="w-full sm:w-auto">
-              <button className="w-full px-8 py-4 bg-background text-on-surface rounded-xl font-bold hover:bg-background/90 transition-all flex items-center justify-center gap-2">
+              <button className="w-full px-8 py-3 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-500 transition-all duration-200 flex items-center justify-center gap-2">
                 Get started for free
-                <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                <ArrowRight className="h-4 w-4" />
               </button>
             </Link>
           </div>

@@ -22,25 +22,25 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section className="py-24 bg-surface-container-low">
+    <section className="py-24 bg-neutral-50 dark:bg-neutral-900/50 border-y border-neutral-200 dark:border-neutral-800">
       <div className="max-w-7xl mx-auto px-8">
         <div className="mb-16">
           <motion.span 
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="text-[11px] font-bold tracking-[0.2em] text-primary mb-4 block"
+            className="text-[11px] font-medium tracking-widest text-indigo-600 dark:text-indigo-400 mb-4 block uppercase"
           >
-            HOW IT WORKS
+            Process
           </motion.span>
           <motion.h2 
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-4xl font-headline font-extrabold tracking-tight text-on-surface"
+            className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50"
           >
-            Three steps to mastery
+            Three steps to mastery.
           </motion.h2>
         </div>
         
@@ -54,11 +54,11 @@ export function HowItWorks() {
               transition={{ delay: idx * 0.1 + 0.2 }}
               className="space-y-6"
             >
-              <div className="w-10 h-10 border border-outline-variant flex items-center justify-center font-headline font-bold text-primary rounded-lg bg-surface-container-lowest">
+               <div className="w-10 h-10 border border-neutral-200 dark:border-neutral-700 flex items-center justify-center font-semibold text-indigo-600 dark:text-indigo-400 rounded-lg bg-white dark:bg-neutral-800 shadow-sm">
                 {step.number}
               </div>
-              <h3 className="text-xl font-headline font-bold text-on-surface">{step.title}</h3>
-              <p className="text-on-surface-variant leading-relaxed text-sm">{step.description}</p>
+              <h3 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100 tracking-tight">{step.title}</h3>
+              <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed text-sm">{step.description}</p>
             </motion.div>
           ))}
         </div>
