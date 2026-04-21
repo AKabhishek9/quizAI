@@ -2,9 +2,6 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { BookOpen, Clock, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { DifficultyBadge } from "./difficulty-badge";
 import type { Quiz } from "@/lib/types";
 
 interface QuizCardProps {
@@ -13,51 +10,48 @@ interface QuizCardProps {
 }
 
 export function QuizCard({ quiz, index = 0 }: QuizCardProps) {
+  // Simulate completion status — in production this would come from attempt data
+  const isCompleted = Math.random() > 0.5; // placeholder
+  const score = isCompleted ? Math.floor(Math.random() * 40 + 60) : Math.floor(Math.random() * 50 + 30);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.05, duration: 0.35 }}
-      className="group rounded-xl border border-border bg-card p-5 flex flex-col transition-shadow duration-200 hover:elevated cursor-pointer"
+      transition={{ delay: index * 0.04, duration: 0.3 }}
     >
-      {/* Top row */}
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
-          {quiz.category}
-        </span>
-        <DifficultyBadge difficulty={quiz.difficulty} />
-      </div>
+      <Link href={`/quiz/${quiz.id}`} className="block h-full">
+        <div className="group h-full rounded-lg border border-border bg-card p-5 flex flex-col gap-3 hover:border-primary/40 transition-colors cursor-pointer">
+          {/* Title */}
+          <h3 className="text-base font-bold text-foreground leading-snug group-hover:text-primary transition-colors">
+            {quiz.title}
+          </h3>
 
-      {/* Title */}
-      <h3 className="text-sm font-semibold mb-1.5 group-hover:text-primary transition-colors duration-150">
-        {quiz.title}
-      </h3>
-      <p className="text-xs text-muted-foreground leading-relaxed mb-4 flex-1">
-        {quiz.description}
-      </p>
+          {/* Category badge */}
+          <span className="self-start px-3 py-1 rounded-md bg-muted text-xs font-medium text-foreground">
+            {quiz.category}
+          </span>
 
-      {/* Meta */}
-      <div className="flex items-center gap-3 text-[11px] text-muted-foreground mb-4">
-        <span className="flex items-center gap-1">
-          <BookOpen className="h-3 w-3" />
-          {quiz.questionCount} questions
-        </span>
-        <span className="flex items-center gap-1">
-          <Clock className="h-3 w-3" />
-          {Math.round((quiz.questionCount * quiz.timePerQuestion) / 60)} min
-        </span>
-      </div>
+          {/* Description */}
+          <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2 flex-1">
+            {quiz.description || `${quiz.title} quiz`}
+          </p>
 
-      {/* CTA */}
-      <Link href={`/quiz/${quiz.id}`} className="w-full">
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-full cursor-pointer h-8 text-xs"
-        >
-          Start quiz
-          <ArrowRight className="ml-1 h-3 w-3" />
-        </Button>
+          {/* Bottom row: Status/Score + Action button */}
+          <div className="flex items-center justify-between pt-1">
+            {isCompleted ? (
+              <span className="text-sm font-semibold text-emerald-500">Completed</span>
+            ) : (
+              <span className="text-lg font-bold text-foreground tabular-nums">{score}%</span>
+            )}
+
+            <span
+              className="px-4 py-1.5 rounded-md text-xs font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+            >
+              {isCompleted ? "Retake" : "Take Quiz"}
+            </span>
+          </div>
+        </div>
       </Link>
     </motion.div>
   );
