@@ -5,7 +5,6 @@ import { z } from "zod";
 // ── OpenRouter API Configuration (Server-side only) ──────────────────────────
 // The API key is read from OPENROUTER_API_KEY environment variable.
 // It is NEVER shipped to the browser — this file only runs on the Express server.
-// Removed static initialization because dotenv might not be imported yet due to ES module hoisting.
 let openaiInstance: OpenAI | null = null;
 
 function getOpenAIClient() {
@@ -92,7 +91,8 @@ export interface GeneratedQuestionDoc {
 
 // ── Main generation function with OpenRouter + Fallback logic ────────────────
 export async function generateQuestions(
-  params: GenerateParams
+  params: GenerateParams,
+  useFallback: boolean = false
 ): Promise<GeneratedQuestionDoc[]> {
   const apiKey = process.env.OPENROUTER_API_KEY || "";
   if (!apiKey) {
@@ -112,20 +112,21 @@ export async function generateQuestions(
 - Focus Topics (distribute evenly): ${params.topics.join(", ")}`;
 
   let lastError: unknown = null;
-  const models = [primaryModel, fallbackModel]; // Try primary first, then fallback
-  const maxRetriesPerModel = 1; // Retry once per model = 2 total attempts
+  // If useFallback is false, only try the primary model. 
+  // If true, try primary, then start fallback if it fails.
+  const models = useFallback ? [primaryModel, fallbackModel] : [primaryModel];
+  const maxRetriesPerModel = 1;
 
   for (const model of models) {
     for (let attempt = 1; attempt <= maxRetriesPerModel; attempt++) {
       try {
         console.log(
-          `[ai] Attempt (${model}/${attempt}/${maxRetriesPerModel}) | topics: ${params.topics.join(", ")}`
+          `[ai] Attempt (${model}/${attempt}/${maxRetriesPerModel}) | useFallback: ${useFallback} | topics: ${params.topics.join(", ")}`
         );
 
         // Non-streaming call — we need the full JSON before we can parse it
         const response = await Promise.race([
           openai.chat.completions.create({
-
             model,
             messages: [
               { role: "system", content: SYSTEM_PROMPT },
@@ -135,11 +136,11 @@ export async function generateQuestions(
             max_tokens: 2048,
             stream: false,
           }),
-          // 8-second hard timeout for OpenRouter (faster than NVIDIA)
+          // 30-second hard timeout for primary model as requested
           new Promise<never>((_, reject) =>
             setTimeout(
-              () => reject(new Error(`OpenRouter API timeout after 8s (${model})`)),
-              8000
+              () => reject(new Error(`AI generation timeout after 30s (${model})`)),
+              30000
             )
           ),
         ]);
@@ -211,26 +212,12 @@ export async function generateQuestions(
           error instanceof z.ZodError ? "Zod validation error" : msg
         );
 
-        // Only retry if it's a potentially transient error
-        if (
-          error instanceof z.ZodError ||
-          (error instanceof Error && 
-            (error.message.includes("timeout") ||
-             error.message.includes("429") ||
-             error.message.includes("500")))
-        ) {
-          // Continue to retry or next model
-        } else if (attempt === maxRetriesPerModel) {
-          // Permanent error, move to fallback model
-          console.warn(
-            `[ai] ${model} failed permanently, trying fallback model...`
-          );
-        }
+        // Continue to retry or next model if possible
       }
     }
   }
 
-  // All models failed - try to get questions from database as fallback
+  // All models failed - try to get questions from database as fallback ONLY if we really found nothing
   console.error("[ai] All generation attempts failed. Attempting database fallback...");
   
   try {

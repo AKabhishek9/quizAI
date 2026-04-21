@@ -17,7 +17,7 @@ interface UseAdaptiveQuizReturn {
   answers: Map<string, string>;
   totalQuestions: number;
   result: ApiSubmitResponse | null;
-  startQuiz: (stream: string, topics: string[]) => Promise<void>;
+  startQuiz: (stream: string, topics: string[], useFallback?: boolean) => Promise<void>;
   selectAnswer: (optionId: string) => void;
   nextQuestion: () => void;
   submitToBackend: () => Promise<void>;
@@ -36,7 +36,7 @@ export function useAdaptiveQuiz(): UseAdaptiveQuizReturn {
   const rawQuestionsRef = useRef<ApiQuestion[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const startQuiz = useCallback(async (stream: string, topics: string[]) => {
+  const startQuiz = useCallback(async (stream: string, topics: string[], useFallback: boolean = false) => {
     setState("loading");
     setIsGenerating(true);
     setError(null);
@@ -46,24 +46,12 @@ export function useAdaptiveQuiz(): UseAdaptiveQuizReturn {
     setAnswers(new Map());
     setResult(null);
 
-    let maxRetries = 20;
-    let delayMs = 3000;
-
     try {
-      let response = await generateQuiz(stream, topics);
-
-      // Poll if the backend scheduled a background job and returned empty
-      while (
-        (!response.questions || response.questions.length === 0) &&
-        maxRetries > 0
-      ) {
-        maxRetries--;
-        await new Promise((resolve) => setTimeout(resolve, delayMs));
-        response = await generateQuiz(stream, topics);
-      }
+      // Backend now blocks for up to 30s. If it fails, we handle it directly.
+      const response = await generateQuiz(stream, topics, 3, useFallback);
 
       if (!response.questions || response.questions.length === 0) {
-        setError("AI Generation timed out. The server is heavily loaded, please try again.");
+        setError("AI Generation timed out. Please try again, or use the fallback model.");
         setState("error");
         setIsGenerating(false);
         return;

@@ -24,6 +24,7 @@ export async function getDynamicQuiz({
   stream,
   topics,
   difficulty,
+  useFallback = false,
 }: DynamicQuizRequest): Promise<QuizResponse> {
   // Get or create user
   let user = await UserModel.findOne({ userId });
@@ -82,21 +83,32 @@ export async function getDynamicQuiz({
     finalQuestions = [...finalQuestions, ...randomQuestions];
   }
 
-  // If still short, schedule AI generation as a background job (non-blocking)
+  // If still short, trigger blocking AI generation
   const deficit = QUIZ_SIZE - finalQuestions.length;
   if (deficit > 0) {
-    logger.info(`Shortfall detected: ${deficit}. Scheduling background AI generation.`);
+    logger.info(`Deficit detected: ${deficit}. Triggering sync AI generation (fallback: ${useFallback}).`);
     try {
-      const { addJob } = await import("./aiQueue.js");
-      const jobId = addJob({
+      const { generateQuestions } = await import("./ai.service.js");
+      const generated = await generateQuestions({
         stream,
         topics: sanitizedTopics,
         difficulty: targetedLevel,
-        count: Math.max(20, deficit * 2),
-      });
-      logger.info(`AI generation job scheduled: ${jobId}`);
+        count: Math.max(15, deficit + 5), // Generate a bit extra for library
+      }, useFallback);
+      
+      if (generated && generated.length > 0) {
+        // Add new questions to our selection
+        const newQuestions = generated.slice(0, deficit);
+        finalQuestions = [...finalQuestions, ...newQuestions];
+        logger.info(`AI successfully filled the deficit with ${newQuestions.length} questions.`);
+      }
     } catch (err) {
-      logger.error({ err: String(err) }, "Failed to schedule AI job");
+      logger.error({ err: String(err) }, "Sync AI generation failed");
+      // If we still have at least 1 question, we can let user play a shorter quiz
+      // but usually we want to throw if zero questions are found
+      if (finalQuestions.length === 0) {
+         throw new Error("Could not find or generate questions for this topic. Please try again or choose different topics.");
+      }
     }
   }
 

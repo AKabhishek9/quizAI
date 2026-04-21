@@ -12,13 +12,13 @@ export const getQuiz = async (
   next: NextFunction
 ) => {
   try {
-    // Body is already validated by Zod middleware (stream, topics, difficulty)
-    const { stream, topics, difficulty } = req.body;
+    // Body is already validated by Zod middleware (stream, topics, difficulty, useFallback)
+    const { stream, topics, difficulty, useFallback } = req.body;
 
     // Security: userId derived from verified JWT, never from body
     const userId = req.user!.uid;
 
-    const quiz = await getDynamicQuiz({ userId, stream, topics, difficulty });
+    const quiz = await getDynamicQuiz({ userId, stream, topics, difficulty, useFallback });
     
     res.json(quiz);
   } catch (error) {

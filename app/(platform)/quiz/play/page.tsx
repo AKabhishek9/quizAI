@@ -115,7 +115,7 @@ function PlayQuizEngine() {
                 Change Topics
               </Button>
               <Button
-                onClick={() => startQuiz(streamParam, topicsArray)}
+                onClick={() => startQuiz(streamParam, topicsArray, true)}
                 size="sm"
                 className="cursor-pointer bg-foreground text-background hover:bg-foreground/90 h-8 text-xs"
               >

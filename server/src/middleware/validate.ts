@@ -45,6 +45,7 @@ export const GetQuizSchema = z.object({
     .min(1, "At least one topic is required")
     .max(10, "Maximum 10 topics allowed"),
   difficulty: z.number().int().min(1).max(5).optional(),
+  useFallback: z.boolean().optional(),
 });
 
 export const SubmitQuizSchema = z.object({

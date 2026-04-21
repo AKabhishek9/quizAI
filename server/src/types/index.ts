@@ -31,6 +31,7 @@ export interface DynamicQuizRequest {
   stream: string;
   topics: string[];
   difficulty?: number;
+  useFallback?: boolean;
 }
 
 export interface SubmitPayload {

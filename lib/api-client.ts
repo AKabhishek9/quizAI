@@ -125,11 +125,12 @@ export interface DailyQuizDetail {
 export async function generateQuiz(
   stream: string,
   topics: string[],
-  difficulty: number = 3
+  difficulty: number = 3,
+  useFallback: boolean = false
 ): Promise<ApiQuizResponse> {
   return request<ApiQuizResponse>("/get-quiz", {
     method: "POST",
-    body: JSON.stringify({ stream, topics, difficulty }),
+    body: JSON.stringify({ stream, topics, difficulty, useFallback }),
     cache: "no-store",
   });
 }
