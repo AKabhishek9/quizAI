@@ -1,8 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ProgressBar } from "@/components/dashboard/progress-bar";
-import { cn } from "@/lib/utils";
 
 interface SkillEquilibriumProps {
   stats: {
@@ -15,40 +13,40 @@ interface SkillEquilibriumProps {
 }
 
 export function SkillEquilibrium({ stats }: SkillEquilibriumProps) {
-  return (
-    <section>
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="text-sm font-medium text-foreground">Category Performance</h2>
-        <span className="text-xs text-muted-foreground tabular-nums">
-          Avg {stats.averageScore}%
-        </span>
-      </div>
+  const cats = stats.categoryPerformance;
 
-      <div className="border border-border rounded-lg bg-card divide-y divide-border">
-        {stats.categoryPerformance.map((cat, idx) => (
+  return (
+    <section className="border border-border rounded-lg bg-card p-4 flex flex-col gap-3">
+      <h2 className="text-sm font-medium text-foreground">Category Breakdown</h2>
+
+      {/* 2-column grid of category rows */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
+        {cats.map((cat, idx) => (
           <motion.div
             key={cat.category}
-            className="flex items-center gap-3 px-4 py-3"
-            initial={{ opacity: 0, x: -6 }}
+            initial={{ opacity: 0, x: -4 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: idx * 0.04 }}
+            className="flex flex-col gap-1"
           >
-            <span className="w-28 text-sm text-muted-foreground truncate shrink-0">
-              {cat.category}
-            </span>
-            <div className="flex-1">
-              <ProgressBar
-                value={cat.percentage}
-                color={cat.percentage >= 80 ? "primary" : "neutral"}
-                showPercentage={false}
-                size="sm"
-                className="h-1.5"
+            {/* Name + Avg */}
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-medium text-foreground">{cat.category}</span>
+              <span className="text-[11px] text-muted-foreground tabular-nums">
+                Avg {cat.percentage}%
+              </span>
+            </div>
+            {/* Progress bar */}
+            <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+              <motion.div
+                className="h-full bg-primary rounded-full"
+                initial={{ width: 0 }}
+                animate={{ width: `${cat.percentage}%` }}
+                transition={{ duration: 0.6, delay: idx * 0.05, ease: "easeOut" }}
               />
             </div>
-            <span className={cn(
-              "w-10 text-right text-xs tabular-nums font-medium shrink-0",
-              cat.percentage >= 80 ? "text-primary" : "text-muted-foreground"
-            )}>
+            {/* Percentage value at end of bar */}
+            <span className="text-[10px] text-muted-foreground/70 tabular-nums self-end">
               {cat.percentage}%
             </span>
           </motion.div>

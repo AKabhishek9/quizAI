@@ -18,11 +18,9 @@ import {
 } from "@/components/shared/skeleton-loader";
 import { getUserDashboard } from "@/lib/api-client";
 import { useAuth } from "@/components/providers/auth-provider";
-import { cn } from "@/lib/utils";
 
 export default function DashboardPage() {
   const { user, loading: authLoading } = useAuth();
-  const [viewMode, setViewMode] = useState<"generalized" | "specialized">("generalized");
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["dashboard"],
@@ -58,75 +56,63 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-5">
-      {/* Welcome + CTA */}
-      <WelcomeBanner profile={profile} />
+    <div className="space-y-4">
+      {/*
+        TOP ROW — 2-column split:
+          Left (~55%): Greeting + Stats + Level bar
+          Right (~45%): Performance Trend (3fr) | Recent Activity (2fr)
+      */}
+      <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,55fr)_minmax(0,45fr)] gap-4">
+        {/* ── LEFT COLUMN ── */}
+        <div className="flex flex-col gap-4">
+          {/* Greeting + Start Quiz */}
+          <WelcomeBanner profile={profile} />
 
-      {/* Stats Row — 3 cards */}
-      {isLoading ? (
-        <SkeletonStatsGrid />
-      ) : stats ? (
-        <DashboardStats stats={stats} weeklyEvolution={weeklyEvolution} />
-      ) : null}
+          {/* Stats Cards */}
+          {isLoading ? <SkeletonStatsGrid /> : stats ? (
+            <DashboardStats stats={stats} weeklyEvolution={weeklyEvolution} />
+          ) : null}
 
-      {/* Level Progress */}
-      {profile && <LevelProgressBanner profile={profile} stats={stats} />}
-
-      {/* Middle row: Daily Quests (left) + Performance Chart (right) */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
-        {/* Daily Quests */}
-        <div className="lg:col-span-2">
-          <DailyQuizWidget />
+          {/* Level Bar */}
+          {profile && <LevelProgressBanner profile={profile} stats={stats} />}
         </div>
 
-        {/* Performance Chart */}
-        <div className="lg:col-span-3 space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-medium text-foreground">Performance Trend</h2>
-            <div className="flex items-center gap-1 border border-border rounded-md p-0.5">
-              <button
-                onClick={() => setViewMode("generalized")}
-                className={cn(
-                  "h-6 px-3 text-xs rounded transition-colors cursor-pointer",
-                  viewMode === "generalized"
-                    ? "bg-primary text-primary-foreground font-medium"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                Overview
-              </button>
-              <button
-                onClick={() => setViewMode("specialized")}
-                className={cn(
-                  "h-6 px-3 text-xs rounded transition-colors cursor-pointer",
-                  viewMode === "specialized"
-                    ? "bg-primary text-primary-foreground font-medium"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                Specialized
-              </button>
+        {/* ── RIGHT COLUMN: Performance Trend + Recent Activity side by side ── */}
+        <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] gap-4">
+          {/* Performance Trend */}
+          <div className="border border-border rounded-lg bg-card p-4 flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-medium text-foreground">Performance Trend</h2>
+              <span className="text-[10px] font-medium text-muted-foreground border border-border rounded-md px-2 py-0.5">
+                Database data
+              </span>
             </div>
+            {isLoading ? <SkeletonChart /> : stats ? (
+              <PerformanceChart data={stats.weeklyScores} />
+            ) : null}
           </div>
+
+          {/* Recent Activity */}
           {isLoading ? (
-            <SkeletonChart />
-          ) : stats ? (
-            <PerformanceChart data={stats.weeklyScores} />
+            <SkeletonCard />
+          ) : history ? (
+            <RecentActivity attempts={history} />
           ) : null}
         </div>
       </div>
 
-      {/* Recent Activity — full width below chart */}
-      <div>
-        {isLoading ? (
-          <SkeletonCard />
-        ) : history ? (
-          <RecentActivity attempts={history} />
-        ) : null}
-      </div>
+      {/*
+        BOTTOM ROW — 2-column split:
+          Left (~40%): Daily Quests
+          Right (~60%): Category Breakdown
+      */}
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,40fr)_minmax(0,60fr)] gap-4">
+        {/* Daily Quests */}
+        <DailyQuizWidget />
 
-      {/* Category Breakdown — full width */}
-      {stats && <SkillEquilibrium stats={stats} />}
+        {/* Category Breakdown */}
+        {stats && <SkillEquilibrium stats={stats} />}
+      </div>
     </div>
   );
 }
