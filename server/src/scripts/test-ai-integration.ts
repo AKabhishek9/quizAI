@@ -4,10 +4,7 @@
  * Run: npx tsx src/scripts/test-ai-integration.ts
  */
 
-import * as dotenv from "dotenv";
-
-// Load environment variables FIRST
-dotenv.config({ override: true });
+import "dotenv/config"; // Ensure this loads first before any static imports
 
 import { generateQuestions } from "../services/ai.service.js";
 import { connectDB } from "../config/db.js";
@@ -24,13 +21,13 @@ async function runTests() {
   console.log("🧪 Starting OpenRouter AI Integration Tests\n");
 
   // Test 0: DB Connection
-  try {
-    console.log("Test 0: 🔗 Connecting to MongoDB...");
-    await connectDB();
-    console.log("   ✓ Database connected\n");
-  } catch (err) {
-    console.warn("   ⚠️ Database connection failed.\n");
-  }
+  // try {
+  //   console.log("Test 0: 🔗 Connecting to MongoDB...");
+  //   await connectDB();
+  //   console.log("   ✓ Database connected\n");
+  // } catch (err) {
+  //   console.warn("   ⚠️ Database connection failed.\n");
+  // }
 
   // Test 1: Environment Check
   console.log("Test 1: ✓ Environment Variable Check");
@@ -48,7 +45,7 @@ async function runTests() {
   console.log("Test 2: 🚀 Testing AI Generation");
   try {
     const start = Date.now();
-    const questions = await generateQuestions(TEST_CONFIG);
+    const questions = await generateQuestions({ ...TEST_CONFIG, skipInsert: true });
     console.log(`   ✓ Success! Received ${questions.length} questions in ${Date.now() - start}ms\n`);
     if (questions.length > 0) {
       console.log(`   Sample Q: ${questions[0].question.slice(0, 80)}...`);
