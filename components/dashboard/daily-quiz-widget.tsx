@@ -27,26 +27,24 @@ export function DailyQuizWidget() {
     : [];
 
   return (
-    <section>
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="text-sm font-medium text-foreground flex items-center gap-2">
-          <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse inline-block" />
-          Daily Quests
-        </h2>
+    <section className="border border-border rounded-lg bg-card p-4 h-full flex flex-col">
+      <div className="flex items-center gap-2 mb-3">
+        <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse inline-block" />
+        <h2 className="text-sm font-medium text-foreground">Daily Quests</h2>
       </div>
 
       {isLoading ? (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 gap-3 flex-1">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-20 rounded-lg border border-border bg-card animate-pulse" />
+            <div key={i} className="h-20 rounded-lg bg-muted/40 animate-pulse" />
           ))}
         </div>
       ) : quizzes.length === 0 ? (
-        <div className="border border-dashed border-border rounded-lg p-6 text-center">
-          <p className="text-xs text-muted-foreground">Daily quests are being generated. Check back soon.</p>
+        <div className="flex-1 flex items-center justify-center">
+          <p className="text-xs text-muted-foreground text-center">Daily quests are being generated. Check back soon.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 gap-3 flex-1">
           {quizzes.map((quiz, index) => {
             const config = CATEGORY_MAP[quiz.type] ?? { icon: Brain, label: quiz.type };
             const Icon = config.icon;
@@ -58,7 +56,7 @@ export function DailyQuizWidget() {
                 transition={{ delay: index * 0.05 }}
               >
                 <Link href={`/quiz/daily/${quiz.id}`}>
-                  <div className="group flex flex-col gap-2 p-4 border border-border rounded-lg bg-card hover:border-primary/40 hover:bg-card/80 transition-colors duration-150 cursor-pointer">
+                  <div className="group flex flex-col gap-2 p-3 rounded-lg bg-muted/30 hover:bg-muted/60 transition-colors duration-150 cursor-pointer">
                     <div className="flex items-center justify-between">
                       <Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
                       <ArrowRight className="h-3 w-3 text-muted-foreground/40 group-hover:text-primary transition-colors" />

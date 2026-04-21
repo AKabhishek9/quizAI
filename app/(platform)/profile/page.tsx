@@ -201,7 +201,12 @@ export default function ProfilePage() {
 
         {/* Analytics */}
         <TabsContent value="analytics" className="space-y-4 mt-2">
-          {stats && <PerformanceChart data={stats.weeklyScores} />}
+          {stats && (
+            <div className="rounded-lg border border-border bg-card p-5">
+              <h3 className="text-sm font-semibold mb-3">Performance Trend</h3>
+              <PerformanceChart data={stats.weeklyScores} />
+            </div>
+          )}
           {stats && (
             <div className="rounded-lg border border-border bg-card p-5">
               <h3 className="text-sm font-semibold mb-3">Category Performance</h3>
