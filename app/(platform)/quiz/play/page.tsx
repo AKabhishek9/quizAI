@@ -83,7 +83,7 @@ function PlayQuizEngine() {
            </h3>
            <p className="text-xs text-muted-foreground leading-relaxed">
              {isGenerating 
-                ? "Our AI engine is currently generating and balancing your custom assessment. This may take 5–15 seconds if the topics are new." 
+                ? "Our AI engine is currently generating and balancing your custom assessment. This may take 5–30 seconds if the topics are new." 
                 : "Calculating your adaptive metrics..."}
            </p>
         </div>
