@@ -46,7 +46,7 @@ export function useAdaptiveQuiz(): UseAdaptiveQuizReturn {
     setAnswers(new Map());
     setResult(null);
 
-    let maxRetries = 6;
+    let maxRetries = 20;
     let delayMs = 3000;
 
     try {
