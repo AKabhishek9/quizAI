@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, Suspense, useMemo, useRef, useCallback } from "react";
+import { useEffect, useState, Suspense, useMemo, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ArrowLeft, AlertCircle, Loader2, TrendingUp, TrendingDown, Minus, Cpu } from "lucide-react";
@@ -67,6 +67,18 @@ function PlayQuizEngine() {
   const isLastQuestion = currentQuestionIndex === totalQuestions - 1;
   const isFirstQuestion = currentQuestionIndex === 0;
 
+  // Elapsed counter so user can see AI is working
+  const [elapsed, setElapsed] = useState(0);
+  useEffect(() => {
+    if (state !== "loading") {
+      setElapsed(0);
+      return;
+    }
+    setElapsed(0);
+    const id = setInterval(() => setElapsed((s) => s + 1), 1000);
+    return () => clearInterval(id);
+  }, [state]);
+
   /* ── Idle (Fallback if no params) ── */
   if (state === "idle") {
     return (
@@ -106,9 +118,14 @@ function PlayQuizEngine() {
           </h3>
           <p className="text-xs text-muted-foreground leading-relaxed">
             {isGenerating
-              ? "Our AI engine is generating your custom assessment. This may take 5–30 seconds if the topics are new."
+              ? "Our AI engine is generating your custom assessment. This may take up to 30 seconds."
               : "Calculating your adaptive metrics..."}
           </p>
+          {isGenerating && (
+            <p className="text-xs font-mono text-primary/70 mt-3 tabular-nums">
+              {elapsed}s elapsed…
+            </p>
+          )}
         </div>
       </motion.div>
     );
@@ -141,7 +158,7 @@ function PlayQuizEngine() {
               onClick={() => {
                 startedRef.current = false;
                 reset();
-                startQuiz(streamParam, topicsArray, difficultyParam, true);
+                startQuiz(streamParam, topicsArray, difficultyParam);
               }}
               size="sm"
               className="cursor-pointer bg-foreground text-background hover:bg-foreground/90 h-8 text-xs"
