@@ -18,6 +18,9 @@ import { errorHandler } from "./middleware/errorHandler.js";
 
 const app = express();
 
+// Trust Render/Heroku/etc. reverse proxy so express-rate-limit gets real client IP
+app.set("trust proxy", 1);
+
 const PORT = parseInt(process.env.PORT || "5000", 10);
 
 // ──────────────────────────────────────────────

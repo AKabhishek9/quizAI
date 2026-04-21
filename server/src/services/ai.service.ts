@@ -1,22 +1,19 @@
-import OpenAI from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { QuestionModel } from "../models/Question.js";
 import { z } from "zod";
 
-// ── Google AI Studio API Configuration (Server-side only) ─────────────────────
-// Uses Google AI Studio's OpenAI-compatible endpoint — no extra SDK needed.
-// API key from: https://aistudio.google.com/apikey
-// It is NEVER shipped to the browser — this file only runs on the Express server.
-let openaiInstance: OpenAI | null = null;
+// ── Google AI Studio — Native Gemini SDK ──────────────────────────────────────
+// Uses @google/generative-ai (official SDK) instead of the OpenAI compat layer
+// which was returning 400 errors for AI Studio project keys.
+// API key from: https://aistudio.google.com/apikey  (never shipped to browser)
+let genAIInstance: GoogleGenerativeAI | null = null;
 
-function getOpenAIClient() {
-  if (!openaiInstance) {
+function getGenAIClient(): GoogleGenerativeAI {
+  if (!genAIInstance) {
     const key = process.env.GOOGLE_AI_API_KEY?.trim() || "";
-    openaiInstance = new OpenAI({
-      apiKey: key,
-      baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
-    });
+    genAIInstance = new GoogleGenerativeAI(key);
   }
-  return openaiInstance;
+  return genAIInstance;
 }
 
 // ── Zod schema for robust AI response validation ─────────────────────────────
@@ -94,7 +91,7 @@ export interface GeneratedQuestionDoc {
   expiresAt?: Date;
 }
 
-// ── Main generation function with OpenRouter + Fallback logic ────────────────
+// ── Main generation function ──────────────────────────────────────────────────
 export async function generateQuestions(
   params: GenerateParams
 ): Promise<GeneratedQuestionDoc[]> {
@@ -105,8 +102,12 @@ export async function generateQuestions(
     );
   }
 
-  const model = process.env.GEMINI_MODEL?.trim() || "gemini-2.0-flash";
-  const openai = getOpenAIClient();
+  const modelName = process.env.GEMINI_MODEL?.trim() || "gemini-2.0-flash";
+  const genAI = getGenAIClient();
+  const model = genAI.getGenerativeModel({
+    model: modelName,
+    systemInstruction: SYSTEM_PROMPT,
+  });
 
   const count = params.count || 20;
   const difficultyLabel =
@@ -122,38 +123,32 @@ export async function generateQuestions(
 - Focus Topics (distribute evenly): ${params.topics.join(", ")}`;
 
   let lastError: unknown = null;
-  const MAX_ATTEMPTS = 2; // Try the model up to 2 times before giving up
-  const TIMEOUT_MS = 75_000; // 75 seconds per attempt (free models can be slow on cold starts)
+  const MAX_ATTEMPTS = 2;
+  const TIMEOUT_MS = 75_000; // 75 seconds
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     try {
       console.log(
-        `[ai] Attempt ${attempt}/${MAX_ATTEMPTS} | model: ${model} | topics: ${params.topics.join(", ")}`
+        `[ai] Attempt ${attempt}/${MAX_ATTEMPTS} | model: ${modelName} | topics: ${params.topics.join(", ")}`
       );
 
-      // Non-streaming call — wait up to 30s
-      const response = await Promise.race([
-        openai.chat.completions.create({
-          model,
-          messages: [
-            { role: "system", content: SYSTEM_PROMPT },
-            { role: "user", content: userPrompt },
-          ],
-          temperature: 0.7,
-          max_tokens: 4096, // 2048 was too tight — 20 questions can exceed it and truncate JSON
-          stream: false,
+      const result = await Promise.race([
+        model.generateContent({
+          contents: [{ role: "user", parts: [{ text: userPrompt }] }],
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 4096,
+          },
         }),
         new Promise<never>((_, reject) =>
           setTimeout(
-            () => reject(new Error(`AI generation timed out after 30s`)),
+            () => reject(new Error(`AI generation timed out after ${TIMEOUT_MS / 1000}s`)),
             TIMEOUT_MS
           )
         ),
       ]);
 
-      let content =
-        (response as OpenAI.Chat.Completions.ChatCompletion).choices[0]
-          ?.message?.content ?? "";
+      let content = result.response.text();
 
       // Strip any accidental markdown fences the model may emit
       content = content
@@ -230,9 +225,9 @@ export async function generateQuestions(
     }
   }
 
-  // All models failed - try to get questions from database as fallback ONLY if we really found nothing
+  // All attempts failed — try database fallback
   console.error("[ai] All generation attempts failed. Attempting database fallback...");
-  
+
   try {
     const fallbackQuestions = await QuestionModel.find({
       stream: params.stream,
