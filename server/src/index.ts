@@ -1,8 +1,12 @@
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
-import { globalLimiter } from "./middleware/rateLimit.middleware.js";
 import dotenv from "dotenv";
+
+// Load environment variables FIRST before any local modules
+dotenv.config({ override: true });
+
+import { globalLimiter } from "./middleware/rateLimit.middleware.js";
 import cron from "node-cron";
 import { DailyQuizService } from "./services/daily-quiz.service.js";
 
@@ -14,9 +18,8 @@ import quizRoutes from "./routes/quiz.routes.js";
 import userRoutes from "./routes/user.routes.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 
-dotenv.config();
-
 const app = express();
+
 const PORT = parseInt(process.env.PORT || "5000", 10);
 
 // ──────────────────────────────────────────────

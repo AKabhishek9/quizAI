@@ -5,21 +5,22 @@ import { z } from "zod";
 // ── OpenRouter API Configuration (Server-side only) ──────────────────────────
 // The API key is read from OPENROUTER_API_KEY environment variable.
 // It is NEVER shipped to the browser — this file only runs on the Express server.
-const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";
-const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
+// Removed static initialization because dotenv might not be imported yet due to ES module hoisting.
+let openaiInstance: OpenAI | null = null;
 
-// Unified OpenRouter Model Configuration
-// Standardized names used by the .env and Render deployment
-const PRIMARY_MODEL = process.env.OPENROUTER_MODEL || "mistralai/mistral-7b-instruct:free";
-const FALLBACK_MODEL = process.env.OPENROUTER_FALLBACK_MODEL || "meta-llama/llama-3-8b-instruct:free";
-
-const openai = new OpenAI({
-  apiKey: OPENROUTER_API_KEY,
-  baseURL: OPENROUTER_BASE_URL,
-  defaultHeaders: {
-    "HTTP-Referer": "https://quizai.com", // Optional but recommended for OpenRouter
-  },
-});
+function getOpenAIClient() {
+  if (!openaiInstance) {
+    const key = process.env.OPENROUTER_API_KEY || "";
+    openaiInstance = new OpenAI({
+      apiKey: key,
+      baseURL: "https://openrouter.ai/api/v1",
+      defaultHeaders: {
+        "HTTP-Referer": "https://quizai.com",
+      },
+    });
+  }
+  return openaiInstance;
+}
 
 // ── Zod schema for robust AI response validation ─────────────────────────────
 const AIQuestionSchema = z.object({
@@ -93,11 +94,16 @@ export interface GeneratedQuestionDoc {
 export async function generateQuestions(
   params: GenerateParams
 ): Promise<GeneratedQuestionDoc[]> {
-  if (!OPENROUTER_API_KEY) {
+  const apiKey = process.env.OPENROUTER_API_KEY || "";
+  if (!apiKey) {
     throw new Error(
       "[ai] OPENROUTER_API_KEY is not set. Cannot generate questions."
     );
   }
+
+  const primaryModel = process.env.OPENROUTER_MODEL || "openrouter/free";
+  const fallbackModel = process.env.OPENROUTER_FALLBACK_MODEL || "openrouter/auto";
+  const openai = getOpenAIClient();
 
   const count = params.count || 20;
   const userPrompt = `Generate ${count} multiple choice questions.
@@ -106,7 +112,7 @@ export async function generateQuestions(
 - Focus Topics (distribute evenly): ${params.topics.join(", ")}`;
 
   let lastError: unknown = null;
-  const models = [PRIMARY_MODEL, FALLBACK_MODEL]; // Try primary first, then fallback
+  const models = [primaryModel, fallbackModel]; // Try primary first, then fallback
   const maxRetriesPerModel = 1; // Retry once per model = 2 total attempts
 
   for (const model of models) {
@@ -119,6 +125,7 @@ export async function generateQuestions(
         // Non-streaming call — we need the full JSON before we can parse it
         const response = await Promise.race([
           openai.chat.completions.create({
+
             model,
             messages: [
               { role: "system", content: SYSTEM_PROMPT },

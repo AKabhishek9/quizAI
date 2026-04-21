@@ -13,11 +13,12 @@
  */
 
 import * as dotenv from "dotenv";
+
+// Load environment variables FIRST
+dotenv.config({ override: true });
+
 import { generateQuestions } from "../services/ai.service.js";
 import { connectDB } from "../config/db.js";
-
-// Load environment variables
-dotenv.config();
 
 const TEST_CONFIG = {
   stream: "Technology",
