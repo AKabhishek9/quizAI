@@ -102,13 +102,11 @@ export async function generateQuestions(
     );
   }
 
-  const modelName = process.env.GEMINI_MODEL?.trim() || "gemini-2.0-flash";
-  const genAI = getGenAIClient();
-  const model = genAI.getGenerativeModel({
-    model: modelName,
-    systemInstruction: SYSTEM_PROMPT,
-  });
+  const primaryModel = process.env.GEMINI_MODEL?.trim() || "gemini-2.0-flash";
+  const fallbackModels = ["gemini-1.5-flash", "gemini-1.5-pro"];
+  const allModels = [primaryModel, ...fallbackModels.filter(m => m !== primaryModel)];
 
+  const genAI = getGenAIClient();
   const count = params.count || 20;
   const difficultyLabel =
     params.difficulty <= 1 ? "Easy (Level 1)"
@@ -123,30 +121,37 @@ export async function generateQuestions(
 - Focus Topics (distribute evenly): ${params.topics.join(", ")}`;
 
   let lastError: unknown = null;
-  const MAX_ATTEMPTS = 2;
-  const TIMEOUT_MS = 75_000; // 75 seconds
+  const MAX_ATTEMPTS_PER_MODEL = 1;
+  const TIMEOUT_MS = 60_000;
 
-  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-    try {
-      console.log(
-        `[ai] Attempt ${attempt}/${MAX_ATTEMPTS} | model: ${modelName} | topics: ${params.topics.join(", ")}`
-      );
+  for (const modelName of allModels) {
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS_PER_MODEL; attempt++) {
+      try {
+        console.log(
+          `[ai] Attempting ${modelName} | topics: ${params.topics.join(", ")}`
+        );
 
-      const result = await Promise.race([
-        model.generateContent({
-          contents: [{ role: "user", parts: [{ text: userPrompt }] }],
-          generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: 4096,
-          },
-        }),
-        new Promise<never>((_, reject) =>
-          setTimeout(
-            () => reject(new Error(`AI generation timed out after ${TIMEOUT_MS / 1000}s`)),
-            TIMEOUT_MS
-          )
-        ),
-      ]);
+        const model = genAI.getGenerativeModel({
+          model: modelName,
+          systemInstruction: SYSTEM_PROMPT,
+        });
+
+        const result = await Promise.race([
+          model.generateContent({
+            contents: [{ role: "user", parts: [{ text: userPrompt }] }],
+            generationConfig: {
+              temperature: 0.7,
+              maxOutputTokens: 4096,
+            },
+          }),
+          new Promise<never>((_, reject) =>
+            setTimeout(
+              () => reject(new Error(`AI generation timed out after ${TIMEOUT_MS / 1000}s`)),
+              TIMEOUT_MS
+            )
+          ),
+        ]);
+
 
       let content = result.response.text();
 
