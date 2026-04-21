@@ -6,6 +6,17 @@ import type { ApiSubmitResponse, ApiQuestion } from "@/lib/api-client";
 import { toPlayableQuestion, optionIdToIndex } from "@/lib/transforms";
 import type { Question } from "@/lib/types";
 
+export type DifficultyLabel = "easy" | "medium" | "hard";
+
+/** Maps user-facing difficulty label to the numeric 1-5 scale used by the backend */
+function difficultyToNumber(label: DifficultyLabel): number {
+  switch (label) {
+    case "easy":   return 1;
+    case "medium": return 3;
+    case "hard":   return 5;
+  }
+}
+
 type AdaptiveQuizState = "idle" | "loading" | "playing" | "submitting" | "completed" | "error";
 
 interface UseAdaptiveQuizReturn {
@@ -13,13 +24,15 @@ interface UseAdaptiveQuizReturn {
   error: string | null;
   questions: Question[];
   currentQuestionIndex: number;
+  /** The currently displayed answer (from persisted map or live selection) */
   selectedAnswer: string | null;
   answers: Map<string, string>;
   totalQuestions: number;
   result: ApiSubmitResponse | null;
-  startQuiz: (stream: string, topics: string[], useFallback?: boolean) => Promise<void>;
+  startQuiz: (stream: string, topics: string[], difficulty?: DifficultyLabel, useFallback?: boolean) => Promise<void>;
   selectAnswer: (optionId: string) => void;
   nextQuestion: () => void;
+  prevQuestion: () => void;
   submitToBackend: () => Promise<void>;
   reset: () => void;
 }
@@ -30,72 +43,96 @@ export function useAdaptiveQuiz(): UseAdaptiveQuizReturn {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+  // answers is the single source of truth: questionId → optionId
   const [answers, setAnswers] = useState<Map<string, string>>(new Map());
   const [result, setResult] = useState<ApiSubmitResponse | null>(null);
 
   const rawQuestionsRef = useRef<ApiQuestion[]>([]);
-  const [isGenerating, setIsGenerating] = useState(false);
 
-  const startQuiz = useCallback(async (stream: string, topics: string[], useFallback: boolean = false) => {
-    setState("loading");
-    setIsGenerating(true);
-    setError(null);
-    setQuestions([]);
-    setCurrentQuestionIndex(0);
-    setSelectedAnswer(null);
-    setAnswers(new Map());
-    setResult(null);
+  const startQuiz = useCallback(
+    async (
+      stream: string,
+      topics: string[],
+      difficulty: DifficultyLabel = "medium",
+      useFallback: boolean = false
+    ) => {
+      setState("loading");
+      setError(null);
+      setQuestions([]);
+      setCurrentQuestionIndex(0);
+      setSelectedAnswer(null);
+      setAnswers(new Map());
+      setResult(null);
 
-    try {
-      // Backend now blocks for up to 30s. If it fails, we handle it directly.
-      const response = await generateQuiz(stream, topics, 3, useFallback);
+      try {
+        const numericDifficulty = difficultyToNumber(difficulty);
+        const response = await generateQuiz(stream, topics, numericDifficulty, useFallback);
 
-      if (!response.questions || response.questions.length === 0) {
-        setError("AI Generation timed out. Please try again, or use the fallback model.");
+        if (!response.questions || response.questions.length === 0) {
+          setError("AI Generation timed out. Please try again, or use the fallback model.");
+          setState("error");
+          return;
+        }
+
+        rawQuestionsRef.current = response.questions;
+        setQuestions(response.questions.map(toPlayableQuestion));
+        setState("playing");
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load quiz");
         setState("error");
-        setIsGenerating(false);
-        return;
       }
-
-      rawQuestionsRef.current = response.questions;
-      setQuestions(response.questions.map(toPlayableQuestion));
-      setState("playing");
-      setIsGenerating(false);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load quiz");
-      setState("error");
-      setIsGenerating(false);
-    }
-  }, []);
+    },
+    []
+  );
 
   const selectAnswer = useCallback((optionId: string) => {
     setSelectedAnswer(optionId);
   }, []);
 
+  /**
+   * Save the current answer (if any) and advance to next question.
+   * On the last question, persists answer and submits.
+   */
   const nextQuestion = useCallback(() => {
-    if (!selectedAnswer) return;
-
     const questionId = questions[currentQuestionIndex]?.id;
-    if (questionId) {
-      setAnswers((prev) => {
-        const next = new Map(prev);
-        next.set(questionId, selectedAnswer);
-        return next;
-      });
+
+    // Persist whichever answer is selected (may be null if user skips — we allow that on prev/next)
+    const updatedAnswers = new Map(answers);
+    if (questionId && selectedAnswer) {
+      updatedAnswers.set(questionId, selectedAnswer);
     }
+    setAnswers(updatedAnswers);
 
     if (currentQuestionIndex < questions.length - 1) {
+      // Move forward — restore any prior answer for the next question
+      const nextId = questions[currentQuestionIndex + 1]?.id;
+      setSelectedAnswer(nextId ? (updatedAnswers.get(nextId) ?? null) : null);
       setCurrentQuestionIndex((prev) => prev + 1);
-      setSelectedAnswer(null);
     } else {
-      const finalAnswers = new Map(answers);
-      if (questionId) {
-        finalAnswers.set(questionId, selectedAnswer);
-      }
-      setAnswers(finalAnswers);
-      submitWithAnswers(finalAnswers);
+      // Last question — submit
+      submitWithAnswers(updatedAnswers);
     }
-   
+  }, [selectedAnswer, currentQuestionIndex, questions, answers]);
+
+  /**
+   * Save the current answer and go back one question, restoring the prior answer.
+   */
+  const prevQuestion = useCallback(() => {
+    if (currentQuestionIndex <= 0) return;
+
+    const questionId = questions[currentQuestionIndex]?.id;
+
+    // Persist current answer before going back
+    const updatedAnswers = new Map(answers);
+    if (questionId && selectedAnswer) {
+      updatedAnswers.set(questionId, selectedAnswer);
+    }
+    setAnswers(updatedAnswers);
+
+    // Restore the prior question's answer
+    const prevId = questions[currentQuestionIndex - 1]?.id;
+    setSelectedAnswer(prevId ? (updatedAnswers.get(prevId) ?? null) : null);
+    setCurrentQuestionIndex((prev) => prev - 1);
   }, [selectedAnswer, currentQuestionIndex, questions, answers]);
 
   const submitWithAnswers = async (allAnswers: Map<string, string>) => {
@@ -110,10 +147,7 @@ export function useAdaptiveQuiz(): UseAdaptiveQuizReturn {
         })
       );
 
-      const response = await submitQuizAnswers({
-        answers: submissionAnswers,
-      });
-
+      const response = await submitQuizAnswers({ answers: submissionAnswers });
       setResult(response);
       setState("completed");
     } catch (err) {
@@ -124,7 +158,6 @@ export function useAdaptiveQuiz(): UseAdaptiveQuizReturn {
 
   const submitToBackend = useCallback(async () => {
     await submitWithAnswers(answers);
-   
   }, [answers]);
 
   const reset = useCallback(() => {
@@ -150,6 +183,7 @@ export function useAdaptiveQuiz(): UseAdaptiveQuizReturn {
     startQuiz,
     selectAnswer,
     nextQuestion,
+    prevQuestion,
     submitToBackend,
     reset,
   };

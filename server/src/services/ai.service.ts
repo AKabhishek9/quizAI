@@ -66,10 +66,17 @@ Use this exact structure:
   ]
 }
 
+Difficulty scale (1–5):
+- 1 (Easy):   Basic definitions, recall questions, simple direct concepts. Suitable for beginners encountering the topic for the first time.
+- 2:           Slightly beyond basics; requires light understanding or recognition of patterns.
+- 3 (Medium): Applied understanding. Requires connecting concepts, writing/reading short code, or solving practical problems.
+- 4:           Multi-step reasoning, edge cases, trade-offs between approaches.
+- 5 (Hard):   Advanced problem-solving, system design implications, subtle gotchas, or algorithmic optimization.
+
 Rules:
 1. Provide exactly the number of questions requested.
 2. "answer" MUST be the 0-indexed integer of the correct option in the options array.
-3. Keep difficulty strictly to the requested level (1=Beginner, 5=Expert).
+3. Adhere STRICTLY to the requested difficulty level — do not mix levels unless explicitly asked.
 4. Distribute questions evenly across the provided topics.
 5. Options must be distinct, plausible, and only one unarguably correct.
 6. Output ONLY the JSON object — absolutely no markdown, no \`\`\`json, no surrounding text.
@@ -106,9 +113,16 @@ export async function generateQuestions(
   const openai = getOpenAIClient();
 
   const count = params.count || 20;
+  const difficultyLabel =
+    params.difficulty <= 1 ? "Easy (Level 1)"
+    : params.difficulty <= 2 ? "Easy-Medium (Level 2)"
+    : params.difficulty <= 3 ? "Medium (Level 3)"
+    : params.difficulty <= 4 ? "Hard (Level 4)"
+    : "Expert (Level 5)";
+
   const userPrompt = `Generate ${count} multiple choice questions.
 - Stream: ${params.stream}
-- Difficulty Level (1-5): ${params.difficulty}
+- Difficulty: ${difficultyLabel} — strictly adhere to this level.
 - Focus Topics (distribute evenly): ${params.topics.join(", ")}`;
 
   let lastError: unknown = null;
