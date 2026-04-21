@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>QuizFlow | Architecture Unit 4</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-variant": "#e4e1ee",
+                    "on-error": "#ffffff",
+                    "on-tertiary-fixed-variant": "#7b2f00",
+                    "primary": "#3525cd",
+                    "primary-fixed-dim": "#c3c0ff",
+                    "error-container": "#ffdad6",
+                    "outline": "#777587",
+                    "secondary-fixed": "#e2dfff",
+                    "surface": "#fcf8ff",
+                    "tertiary-container": "#a44100",
+                    "surface-container": "#f0ecf9",
+                    "on-surface": "#1b1b24",
+                    "tertiary": "#7e3000",
+                    "surface-tint": "#4d44e3",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-bright": "#fcf8ff",
+                    "secondary-container": "#b6b4ff",
+                    "tertiary-fixed": "#ffdbcc",
+                    "surface-container-highest": "#e4e1ee",
+                    "on-secondary-fixed": "#140f54",
+                    "on-secondary-container": "#454386",
+                    "on-tertiary-fixed": "#351000",
+                    "on-surface-variant": "#464555",
+                    "on-secondary-fixed-variant": "#413f82",
+                    "on-secondary": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "background": "#fcf8ff",
+                    "on-tertiary": "#ffffff",
+                    "secondary": "#58579b",
+                    "error": "#ba1a1a",
+                    "primary-container": "#4f46e5",
+                    "on-error-container": "#93000a",
+                    "primary-fixed": "#e2dfff",
+                    "on-primary-fixed": "#0f0069",
+                    "secondary-fixed-dim": "#c3c0ff",
+                    "inverse-primary": "#c3c0ff",
+                    "tertiary-fixed-dim": "#ffb695",
+                    "outline-variant": "#c7c4d8",
+                    "on-tertiary-container": "#ffd2be",
+                    "surface-container-high": "#eae6f4",
+                    "inverse-surface": "#302f39",
+                    "on-background": "#1b1b24",
+                    "inverse-on-surface": "#f3effc",
+                    "surface-dim": "#dcd8e5",
+                    "surface-container-low": "#f5f2ff",
+                    "on-primary-container": "#dad7ff",
+                    "on-primary-fixed-variant": "#3323cc"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Inter"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .ghost-border {
+            box-shadow: 0 0 0 1px rgba(199, 196, 216, 0.15);
+        }
+        .focus-bottom-border:focus-within {
+            border-bottom: 2px solid #4f46e5;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-[#fcf8ff] dark:bg-slate-950">
+<div class="flex justify-between items-center px-12 h-16 w-full max-w-screen-2xl mx-auto">
+<div class="flex items-center gap-8">
+<span class="text-xl font-black text-[#4f46e5] dark:text-indigo-500 tracking-tighter">QuizFlow</span>
+<nav class="hidden md:flex gap-6 items-center">
+<a class="text-slate-500 dark:text-slate-400 hover:text-[#4f46e5] font-inter tracking-tight text-sm font-medium transition-all duration-200" href="#">Dashboard</a>
+<a class="text-[#4f46e5] dark:text-indigo-400 font-bold border-b-2 border-[#4f46e5] pb-1 font-inter tracking-tight text-sm transition-all duration-200" href="#">Courses</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4 text-slate-500">
+<button class="hover:text-[#3525cd] transition-all duration-200 scale-98 active:opacity-80">
+<span class="material-symbols-outlined">timer</span>
+</button>
+<span class="text-sm font-mono font-medium">14:52</span>
+<button class="hover:text-[#3525cd] transition-all duration-200 scale-98 active:opacity-80">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<button class="hover:text-[#3525cd] transition-all duration-200 scale-98 active:opacity-80">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="h-8 w-8 rounded-full overflow-hidden bg-surface-container-highest">
+<img alt="Student avatar" data-alt="Professional portrait of a young student in a clean, minimalist studio setting with soft lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJg4VucRjwGsuB7ciZcjxh1hIIHEJ9nPq06YoGRBlSZUIujI7G1VlcEucKJzEjw4n7gJSt0MOu0Z4BcVQymsV1KtTrCgL8kSscBnCq0oTcIMViCPRKXNA0Z8o_JI6tY500pUAROupNp4YQO9mSEgXLgIthtvpdqyakpb-IWMdwA34P3ATKQowJ1NBMEs41Da64PogE66m0-sc2-ka_gr7-CT4HS2XmKCVuPxOzrCQZjOLdtg1kjzPOljP19CLybuFy8c5802S_fNrr"/>
+</div>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="h-screen w-72 fixed left-0 top-0 pt-20 bg-[#f5f2ff] dark:bg-slate-900 tonal-shift no-border flex flex-col gap-y-8 p-8">
+<div class="mb-4">
+<h2 class="text-lg font-bold text-[#1b1b24] dark:text-white">Unit 4: Architecture</h2>
+<p class="text-[10px] uppercase tracking-widest text-slate-500 mt-1">Precision &amp; Form</p>
+</div>
+<nav class="flex flex-col gap-4">
+<a class="text-[#4f46e5] dark:text-indigo-400 font-bold flex items-center gap-3 font-inter text-sm uppercase tracking-widest hover:bg-[#e4e1ee] dark:hover:bg-slate-800 rounded-md transition-all translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined">list_alt</span>
+                Questions
+            </a>
+<a class="text-slate-500 dark:text-slate-400 flex items-center gap-3 font-inter text-sm uppercase tracking-widest hover:bg-[#e4e1ee] dark:hover:bg-slate-800 rounded-md transition-all duration-200" href="#">
+<span class="material-symbols-outlined">visibility</span>
+                Review
+            </a>
+<a class="text-slate-500 dark:text-slate-400 flex items-center gap-3 font-inter text-sm uppercase tracking-widest hover:bg-[#e4e1ee] dark:hover:bg-slate-800 rounded-md transition-all duration-200" href="#">
+<span class="material-symbols-outlined">bookmark</span>
+                Bookmarks
+            </a>
+<a class="text-slate-500 dark:text-slate-400 flex items-center gap-3 font-inter text-sm uppercase tracking-widest hover:bg-[#e4e1ee] dark:hover:bg-slate-800 rounded-md transition-all duration-200" href="#">
+<span class="material-symbols-outlined">edit_note</span>
+                Notes
+            </a>
+</nav>
+<!-- Progress Tracking -->
+<div class="mt-auto space-y-6">
+<div class="space-y-2">
+<div class="flex justify-between text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">
+<span>Progress</span>
+<span>12/40</span>
+</div>
+<div class="h-0.5 w-full bg-surface-container-highest overflow-hidden">
+<div class="h-full bg-primary-container" style="width: 30%"></div>
+</div>
+</div>
+<button class="w-full py-4 bg-primary-container text-on-primary font-inter text-sm uppercase tracking-widest font-bold rounded-md hover:bg-primary transition-all duration-200 active:scale-[0.98]">
+                Finish Attempt
+            </button>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="pl-72 pt-16 min-h-screen bg-surface">
+<div class="max-w-4xl mx-auto px-12 py-16">
+<!-- Question Metadata -->
+<div class="flex items-center gap-4 mb-8">
+<span class="bg-secondary-container text-on-secondary-container text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">Question 12 of 40</span>
+<span class="bg-surface-container-high text-on-surface-variant text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">Hard</span>
+<div class="ml-auto flex gap-2">
+<button class="p-2 hover:bg-surface-container rounded-md transition-colors text-slate-400 hover:text-primary">
+<span class="material-symbols-outlined">bookmark</span>
+</button>
+<button class="p-2 hover:bg-surface-container rounded-md transition-colors text-slate-400 hover:text-primary">
+<span class="material-symbols-outlined">flag</span>
+</button>
+</div>
+</div>
+<!-- Question Content -->
+<section class="mb-12">
+<h1 class="text-3xl font-bold text-on-surface tracking-tight leading-snug mb-8">
+                    Which architectural principle primarily defines the use of repetitive geometric forms to create a sense of rhythm and structural integrity in Brutalist design?
+                </h1>
+<div class="aspect-video w-full rounded-xl overflow-hidden bg-surface-container-low mb-12 ghost-border">
+<img class="w-full h-full object-cover" data-alt="Striking minimalist brutalist building with strong shadows, geometric concrete shapes, and dramatic architectural perspective" src="https://lh3.googleusercontent.com/aida-public/AB6AXuATHFoby83FEXtf3mIuJIOfLUjVd-G3CRfgzBpnv5YDz194kKwLIImcztPmD9maElpoL8plgrfpuLy8S1-m28DPx0MFrimam521XljNFHNxynON9m9682VnLqcgFZUbBSuFslaNoU7Oyk__T8Z2AofMe9ArydYMSrxw4emHTowN2PipOCqbqcYwIEHBi_tBkw43bN5aTx4gv7fonpmRC0FxBxDOEMGv2_-4OZLWJZdRwjR7lXi_ldhJ0TZdtjviZ8R1N3RFgfGxrpP0"/>
+</div>
+</section>
+<!-- Answer Grid -->
+<section class="grid grid-cols-1 gap-4">
+<!-- Answer Option A -->
+<button class="group flex items-start gap-6 p-6 bg-surface-container-lowest ghost-border rounded-xl transition-all duration-200 hover:border-primary-container/30 text-left">
+<div class="flex-shrink-0 w-8 h-8 rounded bg-surface-container flex items-center justify-center font-bold text-sm text-on-surface-variant group-hover:bg-primary-container group-hover:text-on-primary transition-colors">A</div>
+<div class="flex-grow">
+<p class="text-lg font-medium text-on-surface leading-tight">Modular Tessellation</p>
+<p class="text-sm text-on-surface-variant mt-1 opacity-0 group-hover:opacity-100 transition-opacity">Select this option</p>
+</div>
+</button>
+<!-- Answer Option B (Selected State) -->
+<button class="group flex items-start gap-6 p-6 bg-surface-container-lowest border-2 border-primary-container rounded-xl text-left shadow-xl shadow-primary-container/5">
+<div class="flex-shrink-0 w-8 h-8 rounded bg-primary-container flex items-center justify-center font-bold text-sm text-on-primary">B</div>
+<div class="flex-grow">
+<div class="flex justify-between items-center">
+<p class="text-lg font-bold text-on-surface leading-tight">Formal Structuralism</p>
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<p class="text-sm text-primary-container mt-1 font-medium">Selected</p>
+</div>
+</button>
+<!-- Answer Option C -->
+<button class="group flex items-start gap-6 p-6 bg-surface-container-lowest ghost-border rounded-xl transition-all duration-200 hover:border-primary-container/30 text-left">
+<div class="flex-shrink-0 w-8 h-8 rounded bg-surface-container flex items-center justify-center font-bold text-sm text-on-surface-variant group-hover:bg-primary-container group-hover:text-on-primary transition-colors">C</div>
+<div class="flex-grow">
+<p class="text-lg font-medium text-on-surface leading-tight">Organic Volumetricism</p>
+<p class="text-sm text-on-surface-variant mt-1 opacity-0 group-hover:opacity-100 transition-opacity">Select this option</p>
+</div>
+</button>
+<!-- Answer Option D -->
+<button class="group flex items-start gap-6 p-6 bg-surface-container-lowest ghost-border rounded-xl transition-all duration-200 hover:border-primary-container/30 text-left">
+<div class="flex-shrink-0 w-8 h-8 rounded bg-surface-container flex items-center justify-center font-bold text-sm text-on-surface-variant group-hover:bg-primary-container group-hover:text-on-primary transition-colors">D</div>
+<div class="flex-grow">
+<p class="text-lg font-medium text-on-surface leading-tight">Parametric Expressionism</p>
+<p class="text-sm text-on-surface-variant mt-1 opacity-0 group-hover:opacity-100 transition-opacity">Select this option</p>
+</div>
+</button>
+</section>
+<!-- Navigation Footer -->
+<footer class="mt-16 pt-12 flex justify-between items-center">
+<button class="flex items-center gap-2 px-6 py-3 bg-surface-container-high text-on-surface font-bold rounded-lg hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined">chevron_left</span>
+                    Previous
+                </button>
+<div class="flex gap-2">
+<div class="w-2 h-2 rounded-full bg-primary-container"></div>
+<div class="w-2 h-2 rounded-full bg-surface-container-highest"></div>
+<div class="w-2 h-2 rounded-full bg-surface-container-highest"></div>
+</div>
+<button class="flex items-center gap-2 px-8 py-3 bg-primary-container text-on-primary font-bold rounded-lg hover:bg-primary transition-colors">
+                    Save &amp; Next
+                    <span class="material-symbols-outlined">chevron_right</span>
+</button>
+</footer>
+</div>
+</main>
+</body></html>

@@ -49,11 +49,7 @@ export default function DashboardPage() {
           <p className="text-xs text-muted-foreground mb-4">
             {error instanceof Error ? error.message : "Something went wrong."}
           </p>
-          <Button
-            onClick={() => window.location.reload()}
-            size="sm"
-            className="w-full h-8 text-xs cursor-pointer"
-          >
+          <Button onClick={() => window.location.reload()} size="sm" className="w-full h-8 text-xs cursor-pointer">
             Retry
           </Button>
         </div>
@@ -62,27 +58,31 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
+    <div className="space-y-5">
+      {/* Welcome + CTA */}
       <WelcomeBanner profile={profile} />
 
-      {/* Stats Row */}
-      {isLoading ? <SkeletonStatsGrid /> : stats ? (
+      {/* Stats Row — 3 cards */}
+      {isLoading ? (
+        <SkeletonStatsGrid />
+      ) : stats ? (
         <DashboardStats stats={stats} weeklyEvolution={weeklyEvolution} />
       ) : null}
 
       {/* Level Progress */}
       {profile && <LevelProgressBanner profile={profile} stats={stats} />}
 
-      {/* Daily Quests */}
-      <DailyQuizWidget />
+      {/* Middle row: Daily Quests (left) + Performance Chart (right) */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
+        {/* Daily Quests */}
+        <div className="lg:col-span-2">
+          <DailyQuizWidget />
+        </div>
 
-      {/* Chart + Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         {/* Performance Chart */}
         <div className="lg:col-span-3 space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-medium text-foreground">Performance</h2>
+            <h2 className="text-sm font-medium text-foreground">Performance Trend</h2>
             <div className="flex items-center gap-1 border border-border rounded-md p-0.5">
               <button
                 onClick={() => setViewMode("generalized")}
@@ -108,22 +108,24 @@ export default function DashboardPage() {
               </button>
             </div>
           </div>
-          {isLoading ? <SkeletonChart /> : stats ? (
-            <PerformanceChart data={stats.weeklyScores} />
-          ) : null}
-        </div>
-
-        {/* Recent Activity */}
-        <div className="lg:col-span-2">
           {isLoading ? (
-            <SkeletonCard className="h-full" />
-          ) : history ? (
-            <RecentActivity attempts={history} />
+            <SkeletonChart />
+          ) : stats ? (
+            <PerformanceChart data={stats.weeklyScores} />
           ) : null}
         </div>
       </div>
 
-      {/* Category Performance */}
+      {/* Recent Activity — full width below chart */}
+      <div>
+        {isLoading ? (
+          <SkeletonCard />
+        ) : history ? (
+          <RecentActivity attempts={history} />
+        ) : null}
+      </div>
+
+      {/* Category Breakdown — full width */}
       {stats && <SkillEquilibrium stats={stats} />}
     </div>
   );

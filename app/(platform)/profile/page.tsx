@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Mail, Calendar, Trophy, BookOpen, Flame, Target } from "lucide-react";
+import { Calendar, Trophy, BookOpen, Flame, Target, Pencil } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StatsCard } from "@/components/dashboard/stats-card";
@@ -12,17 +12,15 @@ import { DifficultyBadge } from "@/components/quiz/difficulty-badge";
 import { PerformanceChart } from "@/components/dashboard/performance-chart";
 import { SkeletonStatsGrid, SkeletonCard } from "@/components/shared/skeleton-loader";
 import { getUserDashboard } from "@/lib/api-client";
-import type {  } from "@/lib/types";
-import { formatDistanceToNow } from "date-fns";
 import { useAuth } from "@/components/providers/auth-provider";
 import { cn } from "@/lib/utils";
 
 export default function ProfilePage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
-  
+
   const { data, isLoading, error } = useQuery({
-    queryKey: ['dashboard'],
+    queryKey: ["dashboard"],
     queryFn: getUserDashboard,
     enabled: !authLoading && !!user,
   });
@@ -32,7 +30,7 @@ export default function ProfilePage() {
   const history = data?.history;
 
   if (!authLoading && !user) {
-    router.push('/login');
+    router.push("/login");
     return null;
   }
 
@@ -59,46 +57,46 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6 pb-20">
-      {/* Profile header */}
+      {/* Profile Header Card */}
       <div className="rounded-lg border border-border bg-card p-6">
         <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
-          <div className="relative group">
+          {/* Avatar */}
+          <div className="relative shrink-0">
             <Avatar className="h-20 w-20 border border-border bg-muted">
               <AvatarFallback className="bg-primary text-primary-foreground font-semibold text-xl">
-                {profile?.name
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")}
+                {profile?.name.split(" ").map((n) => n[0]).join("")}
               </AvatarFallback>
             </Avatar>
             <div className="absolute -bottom-1 -right-1 bg-foreground text-background text-[10px] font-bold px-2 py-0.5 rounded border border-background">
-              Lv. {profile?.level}
+              Level {profile?.level}
             </div>
           </div>
 
-          <div className="text-center md:text-left flex-1">
-            <div className="mb-4">
-              <h1 className="text-xl font-semibold tracking-tight text-foreground mb-1">
+          {/* Info */}
+          <div className="flex-1 text-center md:text-left">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
+              <h1 className="text-2xl font-bold tracking-tight text-foreground">
                 {profile?.name}
               </h1>
-              <div className="flex flex-col sm:flex-row items-center gap-3 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1.5">
-                  <Mail className="h-3 w-3" />
-                  {profile?.email}
-                </span>
-                <span className="hidden sm:inline opacity-30">|</span>
-                <span className="flex items-center gap-1.5">
-                  <Calendar className="h-3 w-3" />
-                  Joined {profile?.memberSince}
-                </span>
-              </div>
+              <button
+                type="button"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border text-xs font-medium text-foreground hover:bg-muted transition-colors cursor-pointer"
+              >
+                <Pencil className="h-3 w-3" />
+                Edit Profile
+              </button>
+              <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <Calendar className="h-3 w-3" />
+                Joined {profile?.memberSince}
+              </span>
             </div>
 
+            {/* XP Bar */}
             {profile && (
-              <div className="max-w-xs pt-1">
+              <div className="max-w-xs">
                 <div className="flex items-end justify-between mb-1.5">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-primary">Mastery</span>
-                  <span className="text-[10px] tabular-nums text-muted-foreground/60">
+                  <span className="text-[11px] font-semibold text-primary">Mastery XP</span>
+                  <span className="text-[11px] tabular-nums text-muted-foreground">
                     {profile.xp} / {profile.xpToNextLevel} XP
                   </span>
                 </div>
@@ -114,35 +112,45 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* Stats */}
+      {/* Stats Grid */}
       {stats && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-          <StatsCard title="Quizzes" value={stats.totalQuizzes} icon={BookOpen} />
-          <StatsCard title="Avg. Score" value={`${stats.averageScore}%`} icon={Target} />
-          <StatsCard 
-            title="Current Streak" 
-            value={`${stats.currentStreak}d`} 
-            icon={Flame} 
-            className={cn(stats.currentStreak > 0 && "text-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.2)]")} 
-          />
-          <StatsCard title="Best Streak" value={`${stats.bestStreak}d`} icon={Trophy} />
-          <StatsCard title="Rank" value={`#${stats.rank}`} icon={Trophy} />
+        <div className="space-y-2">
+          <h2 className="text-sm font-semibold text-foreground">Detailed Stats Grid</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            <StatsCard title="Quizzes" value={stats.totalQuizzes} icon={BookOpen} />
+            <StatsCard title="Avg. Score" value={`${stats.averageScore}%`} icon={Target} />
+            <StatsCard
+              title="Current Streak"
+              value={`${stats.currentStreak}d`}
+              icon={Flame}
+              className={cn(stats.currentStreak > 0 && "border-orange-500/30")}
+            />
+            <StatsCard title="Best Streak" value={`${stats.bestStreak}d`} icon={Trophy} />
+            <StatsCard title="Global Rank" value={`#${stats.rank}`} icon={Trophy} />
+          </div>
         </div>
       )}
 
       {/* Tabs */}
       <Tabs defaultValue="history" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="history" className="cursor-pointer text-xs">
-            History
-          </TabsTrigger>
-          <TabsTrigger value="analytics" className="cursor-pointer text-xs">
-            Analytics
-          </TabsTrigger>
+        <TabsList className="border-b border-border bg-transparent rounded-none p-0 h-auto gap-0 w-full justify-start">
+          {[
+            { value: "history", label: "Quiz History" },
+            { value: "analytics", label: "Detailed Analytics" },
+            { value: "achievements", label: "Achievements" },
+          ].map((tab) => (
+            <TabsTrigger
+              key={tab.value}
+              value={tab.value}
+              className="cursor-pointer text-sm rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-foreground data-[state=active]:shadow-none data-[state=active]:bg-transparent px-4 pb-3 pt-1 text-muted-foreground"
+            >
+              {tab.label}
+            </TabsTrigger>
+          ))}
         </TabsList>
 
-        {/* History */}
-        <TabsContent value="history" className="mt-6">
+        {/* Quiz History */}
+        <TabsContent value="history" className="mt-2">
           <div className="rounded-lg border border-border bg-card overflow-hidden">
             <div className="hidden sm:grid grid-cols-5 gap-3 px-6 py-3 border-b border-border bg-muted/30 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
               <span>Quiz</span>
@@ -151,23 +159,22 @@ export default function ProfilePage() {
               <span className="text-center">Time Taken</span>
               <span className="text-right">Date</span>
             </div>
-
             {history?.map((attempt, index) => (
               <motion.div
                 key={attempt.id}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: index * 0.02 }}
-                className="grid grid-cols-2 sm:grid-cols-5 gap-3 px-5 py-3 border-b border-border last:border-0 hover:bg-secondary/30 transition-colors cursor-pointer"
+                className="grid grid-cols-2 sm:grid-cols-5 gap-3 px-5 py-3 border-b border-border last:border-0 hover:bg-muted/30 transition-colors cursor-pointer"
               >
                 <div className="col-span-2 sm:col-span-1">
-                  <p className="text-[14px] font-black tracking-tight text-foreground truncate">{attempt.quizTitle}</p>
-                  <p className="text-[10px] font-bold text-muted-foreground/40 sm:hidden mt-0.5">{attempt.date}</p>
+                  <p className="text-sm font-semibold text-foreground truncate">{attempt.quizTitle}</p>
+                  <p className="text-[10px] text-muted-foreground sm:hidden mt-0.5">{attempt.date}</p>
                 </div>
                 <div className="flex items-center justify-center">
                   <span
                     className={cn(
-                      "text-sm font-black tabular-nums px-2.5 py-1 rounded-lg",
+                      "text-sm font-bold tabular-nums px-2.5 py-0.5 rounded-md",
                       attempt.score >= 80
                         ? "bg-success/10 text-success border border-success/20"
                         : attempt.score >= 50
@@ -181,10 +188,10 @@ export default function ProfilePage() {
                 <div className="flex items-center justify-center">
                   <DifficultyBadge difficulty={attempt.difficulty} />
                 </div>
-                <div className="hidden sm:flex items-center justify-center text-[13px] font-bold text-muted-foreground/60 tabular-nums">
+                <div className="hidden sm:flex items-center justify-center text-sm text-muted-foreground tabular-nums">
                   {Math.floor(attempt.timeTaken / 60)}m {attempt.timeTaken % 60}s
                 </div>
-                <div className="hidden sm:flex items-center justify-end text-[12px] font-bold text-muted-foreground/40">
+                <div className="hidden sm:flex items-center justify-end text-xs text-muted-foreground">
                   {attempt.date}
                 </div>
               </motion.div>
@@ -193,14 +200,11 @@ export default function ProfilePage() {
         </TabsContent>
 
         {/* Analytics */}
-        <TabsContent value="analytics" className="space-y-4">
+        <TabsContent value="analytics" className="space-y-4 mt-2">
           {stats && <PerformanceChart data={stats.weeklyScores} />}
-
           {stats && (
-            <div className="rounded-xl border border-border bg-card p-5">
-              <h3 className="text-sm font-semibold mb-3">
-                Category performance
-              </h3>
+            <div className="rounded-lg border border-border bg-card p-5">
+              <h3 className="text-sm font-semibold mb-3">Category Performance</h3>
               <div className="space-y-3">
                 {stats.categoryPerformance.map((cat) => (
                   <ProgressBar
@@ -222,37 +226,15 @@ export default function ProfilePage() {
               </div>
             </div>
           )}
+        </TabsContent>
 
-          {stats && (
-            <div className="rounded-xl border border-border bg-card p-5">
-              <h3 className="text-sm font-semibold mb-4">Accuracy</h3>
-              <div className="flex items-center gap-5">
-                <div className="relative h-16 w-16">
-                  <svg className="h-16 w-16 -rotate-90" viewBox="0 0 36 36">
-                    <path
-                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                      fill="none"
-                      className="stroke-secondary"
-                      strokeWidth="3"
-                    />
-                    <path
-                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                      fill="none"
-                      className="stroke-primary"
-                      strokeWidth="3"
-                      strokeDasharray={`${Math.round((stats.totalCorrect / stats.totalQuestions) * 100)}, 100`}
-                    />
-                  </svg>
-                  <span className="absolute inset-0 flex items-center justify-center text-sm font-semibold tabular-nums">
-                    {Math.round((stats.totalCorrect / stats.totalQuestions) * 100)}%
-                  </span>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  {stats.totalCorrect} correct out of {stats.totalQuestions} questions
-                </p>
-              </div>
-            </div>
-          )}
+        {/* Achievements (placeholder) */}
+        <TabsContent value="achievements" className="mt-2">
+          <div className="rounded-lg border border-border bg-card p-12 flex flex-col items-center justify-center text-center gap-3">
+            <Trophy className="h-8 w-8 text-muted-foreground/40" />
+            <p className="text-sm font-medium text-muted-foreground">Achievements coming soon</p>
+            <p className="text-xs text-muted-foreground/60">Complete quizzes to unlock badges and milestones.</p>
+          </div>
         </TabsContent>
       </Tabs>
     </div>

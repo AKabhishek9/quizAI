@@ -16,9 +16,9 @@ export function WelcomeBanner({ profile }: WelcomeBannerProps) {
   const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
 
   return (
-    <div className="flex items-center justify-between py-1">
+    <div className="flex items-center justify-between py-2">
       <div>
-        <h1 className="text-lg font-semibold text-foreground">
+        <h1 className="text-2xl font-bold text-foreground tracking-tight">
           {greeting}, {firstName} 👋
         </h1>
         <p className="text-sm text-muted-foreground mt-0.5">
@@ -27,9 +27,9 @@ export function WelcomeBanner({ profile }: WelcomeBannerProps) {
       </div>
 
       <Link href="/quiz">
-        <Button size="sm" className="h-8 px-4 text-sm cursor-pointer">
+        <Button size="sm" className="h-9 px-4 text-sm cursor-pointer gap-1.5">
           Start Quiz
-          <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+          <ArrowRight className="h-3.5 w-3.5" />
         </Button>
       </Link>
     </div>
