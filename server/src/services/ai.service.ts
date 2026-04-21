@@ -213,6 +213,12 @@ export async function generateQuestions(
     } catch (error: unknown) {
       lastError = error;
       const msg = error instanceof Error ? error.message : String(error);
+      // Log full error details for debugging
+      if (error && typeof error === "object" && "status" in error) {
+        const apiErr = error as any;
+        console.error(`[ai] API ERROR — status: ${apiErr.status}, message: ${apiErr.message}`);
+        if (apiErr.error) console.error(`[ai] API error body:`, JSON.stringify(apiErr.error));
+      }
       console.warn(
         `[ai] Attempt ${attempt}/${MAX_ATTEMPTS} failed:`,
         error instanceof z.ZodError ? "Zod validation error" : msg
