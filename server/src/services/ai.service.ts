@@ -105,9 +105,9 @@ Generate ${count} multiple choice questions.
             responseMimeType: "application/json",
           },
         }),
-        // 30s timeout
+        // 50s timeout
         new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error("Gemini API timeout (30s)")), 30000)
+          setTimeout(() => reject(new Error("Gemini API timeout (50s)")), 50000)
         ),
       ]);
 
