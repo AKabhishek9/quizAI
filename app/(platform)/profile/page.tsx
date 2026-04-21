@@ -135,73 +135,64 @@ export default function ProfilePage() {
         </div>
       )}
 
-      {/* ── Tabs ── */}
+      {/* ── Tabs — using variant="line" for underline style ── */}
       <Tabs defaultValue="history" className="space-y-4">
-        <TabsList className="border-b border-border bg-transparent rounded-none p-0 h-auto gap-0 w-full justify-start">
-          {[
-            { value: "history", label: "Quiz History" },
-            { value: "analytics", label: "Detailed Analytics" },
-            { value: "achievements", label: "Achievements" },
-          ].map((tab) => (
-            <TabsTrigger
-              key={tab.value}
-              value={tab.value}
-              className="cursor-pointer text-sm rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-foreground data-[state=active]:shadow-none data-[state=active]:bg-transparent px-4 pb-3 pt-1 text-muted-foreground"
-            >
-              {tab.label}
-            </TabsTrigger>
-          ))}
+        <TabsList variant="line" className="border-b border-border w-full justify-start h-auto p-0">
+          <TabsTrigger value="history" className="cursor-pointer px-4 py-2.5 text-sm">
+            Quiz History
+          </TabsTrigger>
+          <TabsTrigger value="analytics" className="cursor-pointer px-4 py-2.5 text-sm">
+            Detailed Analytics
+          </TabsTrigger>
+          <TabsTrigger value="achievements" className="cursor-pointer px-4 py-2.5 text-sm">
+            Achievements
+          </TabsTrigger>
         </TabsList>
 
         {/* Quiz History Table */}
         <TabsContent value="history" className="mt-2">
-          <div className="rounded-lg border border-border bg-card overflow-hidden">
-            {/* Table header */}
-            <div className="hidden sm:grid grid-cols-5 gap-4 px-6 py-3 border-b border-border bg-muted/30 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-              <span>Quiz</span>
-              <span>Score</span>
-              <span>Difficulty</span>
-              <span>Time Taken</span>
-              <span>Date</span>
-            </div>
-
-            {/* Table rows */}
-            {history?.map((attempt, index) => (
-              <motion.div
-                key={attempt.id}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: index * 0.02 }}
-                className="grid grid-cols-2 sm:grid-cols-5 gap-4 px-6 py-3.5 border-b border-border last:border-0 hover:bg-muted/20 transition-colors"
-              >
-                {/* Quiz name */}
-                <div className="col-span-2 sm:col-span-1 flex items-center">
-                  <p className="text-sm font-medium text-foreground truncate">{attempt.quizTitle}</p>
-                </div>
-
-                {/* Score */}
-                <div className="flex items-center">
-                  <span className="text-sm text-foreground tabular-nums">{attempt.score}%</span>
-                </div>
-
-                {/* Difficulty */}
-                <div className="flex items-center">
-                  <DifficultyBadge difficulty={attempt.difficulty} />
-                </div>
-
-                {/* Time Taken */}
-                <div className="hidden sm:flex items-center">
-                  <span className="text-sm text-muted-foreground tabular-nums">
-                    {Math.floor(attempt.timeTaken / 60)}m {attempt.timeTaken % 60}s
-                  </span>
-                </div>
-
-                {/* Date */}
-                <div className="hidden sm:flex items-center">
-                  <span className="text-sm text-muted-foreground">{attempt.date}</span>
-                </div>
-              </motion.div>
-            ))}
+          <div className="rounded-lg border border-border bg-card overflow-x-auto">
+            {/* Table */}
+            <table className="w-full text-left">
+              <thead>
+                <tr className="border-b border-border bg-muted/30">
+                  <th className="px-6 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Quiz</th>
+                  <th className="px-6 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Score</th>
+                  <th className="px-6 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Difficulty</th>
+                  <th className="px-6 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Time Taken</th>
+                  <th className="px-6 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {history?.map((attempt, index) => (
+                  <motion.tr
+                    key={attempt.id}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: index * 0.02 }}
+                    className="border-b border-border last:border-0 hover:bg-muted/20 transition-colors"
+                  >
+                    <td className="px-6 py-3.5">
+                      <span className="text-sm font-medium text-foreground">{attempt.quizTitle}</span>
+                    </td>
+                    <td className="px-6 py-3.5">
+                      <span className="text-sm text-foreground tabular-nums">{attempt.score}%</span>
+                    </td>
+                    <td className="px-6 py-3.5">
+                      <DifficultyBadge difficulty={attempt.difficulty} />
+                    </td>
+                    <td className="px-6 py-3.5">
+                      <span className="text-sm text-muted-foreground tabular-nums">
+                        {Math.floor(attempt.timeTaken / 60)}m {attempt.timeTaken % 60}s
+                      </span>
+                    </td>
+                    <td className="px-6 py-3.5">
+                      <span className="text-sm text-muted-foreground">{attempt.date}</span>
+                    </td>
+                  </motion.tr>
+                ))}
+              </tbody>
+            </table>
 
             {(!history || history.length === 0) && (
               <div className="px-6 py-12 text-center">
