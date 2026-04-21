@@ -1,7 +1,0 @@
-# fastapi_server/requirements.txt
-fastapi
-uvicorn[standard]
-python-dotenv
-openai
-slowapi
-pydantic
