@@ -1,14 +1,6 @@
 /**
  * OpenRouter AI Service Integration Test
- * 
- * This test verifies:
- * - ✅ API key is properly loaded from environment
- * - ✅ OpenRouter API connectivity
- * - ✅ JSON response validation
- * - ✅ Fallback model logic
- * - ✅ Timeout handling (8 seconds)
- * - ✅ Database fallback mechanism
- * 
+ *
  * Run: npx tsx src/scripts/test-ai-integration.ts
  */
 
@@ -26,22 +18,18 @@ const TEST_CONFIG = {
   topics: ["Arrays", "Linked Lists", "Trees"],
   difficulty: 2,
   count: 5,
-  skipInsert: true, // Don't insert during testing
 };
 
 async function runTests() {
   console.log("🧪 Starting OpenRouter AI Integration Tests\n");
 
-  // Load environment variables 
-  dotenv.config({ override: true });
-
-  // Test 0: DB Connection (Required for fallback logic)
+  // Test 0: DB Connection
   try {
     console.log("Test 0: 🔗 Connecting to MongoDB...");
     await connectDB();
     console.log("   ✓ Database connected\n");
   } catch (err) {
-    console.warn("   ⚠️ Database connection failed. DB fallback tests will fail.\n");
+    console.warn("   ⚠️ Database connection failed.\n");
   }
 
   // Test 1: Environment Check
@@ -53,33 +41,24 @@ async function runTests() {
   }
   console.log(`   ✓ Found API Key: ${apiKey.slice(0, 8)}...\n`);
 
-  // Test 2: Primary Model Generation (useFallback: false)
-  console.log("Test 2: 🚀 Testing Primary Model (useFallback: false)");
-  try {
-    const start = Date.now();
-    const questions = await generateQuestions(TEST_CONFIG, false);
-    console.log(`   ✓ Success! Received ${questions.length} questions in ${Date.now() - start}ms\n`);
-  } catch (err) {
-    console.log(`   ❌ Primary Model failed (Expected if model/key has issues): ${err instanceof Error ? err.message : String(err)}\n`);
-  }
+  const model = process.env.OPENROUTER_MODEL || "meta-llama/llama-3.3-8b-instruct:free";
+  console.log(`   ✓ Model: ${model}\n`);
 
-  // Test 3: Fallback Logic (useFallback: true)
-  console.log("Test 3: 🔄 Testing Fallback Logic (useFallback: true)");
+  // Test 2: AI Generation
+  console.log("Test 2: 🚀 Testing AI Generation");
   try {
     const start = Date.now();
-    const questions = await generateQuestions(TEST_CONFIG, true);
+    const questions = await generateQuestions(TEST_CONFIG);
     console.log(`   ✓ Success! Received ${questions.length} questions in ${Date.now() - start}ms\n`);
-    
     if (questions.length > 0) {
-      console.log(`   Sample Q: ${questions[0].question.slice(0, 60)}...`);
+      console.log(`   Sample Q: ${questions[0].question.slice(0, 80)}...`);
     }
   } catch (err) {
-    console.error(`   ❌ Both models failed: ${err instanceof Error ? err.message : String(err)}`);
+    console.error(`   ❌ Generation failed: ${err instanceof Error ? err.message : String(err)}`);
   }
 
   console.log("\n✅ Integration tests complete!");
   process.exit(0);
 }
 
-// Run tests
 runTests();

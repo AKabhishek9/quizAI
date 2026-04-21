@@ -1,10 +1,7 @@
+import "dotenv/config"; // ← MUST be first: loads .env before any local module runs
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
-import dotenv from "dotenv";
-
-// Load environment variables FIRST before any local modules
-dotenv.config({ override: true });
 
 import { globalLimiter } from "./middleware/rateLimit.middleware.js";
 import cron from "node-cron";
@@ -17,6 +14,7 @@ import { connectDB } from "./config/db.js";
 import quizRoutes from "./routes/quiz.routes.js";
 import userRoutes from "./routes/user.routes.js";
 import { errorHandler } from "./middleware/errorHandler.js";
+
 
 const app = express();
 
