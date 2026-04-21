@@ -2,18 +2,23 @@ import OpenAI from "openai";
 import { QuestionModel } from "../models/Question.js";
 import { z } from "zod";
 
-// ── NVIDIA NIM client (OpenAI-compatible, server-side only) ──────────────────
-// The API key is read from the environment variable NVIDIA_API_KEY.
+// ── OpenRouter API Configuration (Server-side only) ──────────────────────────
+// The API key is read from OPENROUTER_API_KEY environment variable.
 // It is NEVER shipped to the browser — this file only runs on the Express server.
-const NVIDIA_API_KEY = process.env.NVIDIA_API_KEY || "";
-const NVIDIA_BASE_URL =
-  process.env.NVIDIA_BASE_URL || "https://integrate.api.nvidia.com/v1";
-const NVIDIA_MODEL =
-  process.env.NVIDIA_MODEL || "qwen/qwen3-coder-480b-a35b-instruct";
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";
+const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
+
+// Unified OpenRouter Model Configuration
+// Standardized names used by the .env and Render deployment
+const PRIMARY_MODEL = process.env.OPENROUTER_MODEL || "mistralai/mistral-7b-instruct:free";
+const FALLBACK_MODEL = process.env.OPENROUTER_FALLBACK_MODEL || "meta-llama/llama-3-8b-instruct:free";
 
 const openai = new OpenAI({
-  apiKey: NVIDIA_API_KEY,
-  baseURL: NVIDIA_BASE_URL,
+  apiKey: OPENROUTER_API_KEY,
+  baseURL: OPENROUTER_BASE_URL,
+  defaultHeaders: {
+    "HTTP-Referer": "https://quizai.com", // Optional but recommended for OpenRouter
+  },
 });
 
 // ── Zod schema for robust AI response validation ─────────────────────────────
@@ -74,20 +79,23 @@ export interface GeneratedQuestionDoc {
   question: string;
   options: string[];
   answer: number;
+  explanation: string;
   stream: string;
   subject: string;
   topic: string;
   concept: string;
   difficulty: number;
+  isDaily?: boolean;
+  expiresAt?: Date;
 }
 
-// ── Main generation function ──────────────────────────────────────────────────
+// ── Main generation function with OpenRouter + Fallback logic ────────────────
 export async function generateQuestions(
   params: GenerateParams
 ): Promise<GeneratedQuestionDoc[]> {
-  if (!NVIDIA_API_KEY) {
+  if (!OPENROUTER_API_KEY) {
     throw new Error(
-      "[ai] NVIDIA_API_KEY is not set. Cannot generate questions."
+      "[ai] OPENROUTER_API_KEY is not set. Cannot generate questions."
     );
   }
 
@@ -98,106 +106,145 @@ export async function generateQuestions(
 - Focus Topics (distribute evenly): ${params.topics.join(", ")}`;
 
   let lastError: unknown = null;
-  const maxRetries = 2;
+  const models = [PRIMARY_MODEL, FALLBACK_MODEL]; // Try primary first, then fallback
+  const maxRetriesPerModel = 1; // Retry once per model = 2 total attempts
 
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      console.log(
-        `[ai] Attempt ${attempt}/${maxRetries} | model: ${NVIDIA_MODEL} | topics: ${params.topics.join(", ")}`
-      );
-
-      // Non-streaming call — we need the full JSON before we can parse it
-      const response = await Promise.race([
-        openai.chat.completions.create({
-          model: NVIDIA_MODEL,
-          messages: [
-            { role: "system", content: SYSTEM_PROMPT },
-            { role: "user", content: userPrompt },
-          ],
-          temperature: 0.6,
-          top_p: 0.8,
-          max_tokens: 4096,
-          stream: false, // must be false so we get the complete JSON in one shot
-        }),
-        // 60-second hard timeout
-        new Promise<never>((_, reject) =>
-          setTimeout(
-            () => reject(new Error("NVIDIA API timeout after 60s")),
-            60000
-          )
-        ),
-      ]);
-
-      let content =
-        (response as OpenAI.Chat.Completions.ChatCompletion).choices[0]
-          ?.message?.content ?? "";
-
-      // Strip any accidental markdown fences the model may emit
-      content = content
-        .replace(/^```json\s*/m, "")
-        .replace(/^```\s*/m, "")
-        .replace(/```\s*$/m, "")
-        .trim();
-
-      // Validate with Zod
-      const rawParsed = JSON.parse(content);
-      const validated = AIQuizResponseSchema.parse(rawParsed);
-
-      // Map AI output → DB schema
-      const documents = validated.questions.map((q, index) => {
-        let matchedTopic = params.topics.find(
-          (t) => t.toLowerCase() === q.topic.toLowerCase()
+  for (const model of models) {
+    for (let attempt = 1; attempt <= maxRetriesPerModel; attempt++) {
+      try {
+        console.log(
+          `[ai] Attempt (${model}/${attempt}/${maxRetriesPerModel}) | topics: ${params.topics.join(", ")}`
         );
-        if (!matchedTopic) {
-          matchedTopic = params.topics.find(
-            (t) =>
-              q.topic.toLowerCase().includes(t.toLowerCase()) ||
-              t.toLowerCase().includes(q.topic.toLowerCase())
+
+        // Non-streaming call — we need the full JSON before we can parse it
+        const response = await Promise.race([
+          openai.chat.completions.create({
+            model,
+            messages: [
+              { role: "system", content: SYSTEM_PROMPT },
+              { role: "user", content: userPrompt },
+            ],
+            temperature: 0.7,
+            max_tokens: 2048,
+            stream: false,
+          }),
+          // 8-second hard timeout for OpenRouter (faster than NVIDIA)
+          new Promise<never>((_, reject) =>
+            setTimeout(
+              () => reject(new Error(`OpenRouter API timeout after 8s (${model})`)),
+              8000
+            )
+          ),
+        ]);
+
+        let content =
+          (response as OpenAI.Chat.Completions.ChatCompletion).choices[0]
+            ?.message?.content ?? "";
+
+        // Strip any accidental markdown fences the model may emit
+        content = content
+          .replace(/^```json\s*/m, "")
+          .replace(/^```\s*/m, "")
+          .replace(/```\s*$/m, "")
+          .trim();
+
+        // Validate with Zod
+        const rawParsed = JSON.parse(content);
+        const validated = AIQuizResponseSchema.parse(rawParsed);
+
+        // Map AI output → DB schema
+        const documents = validated.questions.map((q, index) => {
+          let matchedTopic = params.topics.find(
+            (t) => t.toLowerCase() === q.topic.toLowerCase()
           );
-        }
-        if (!matchedTopic) {
-          matchedTopic = params.topics[index % params.topics.length];
+          if (!matchedTopic) {
+            matchedTopic = params.topics.find(
+              (t) =>
+                q.topic.toLowerCase().includes(t.toLowerCase()) ||
+                t.toLowerCase().includes(q.topic.toLowerCase())
+            );
+          }
+          if (!matchedTopic) {
+            matchedTopic = params.topics[index % params.topics.length];
+          }
+
+          return {
+            question: q.question,
+            options: q.options,
+            answer: q.answer,
+            explanation: q.explanation,
+            stream: params.stream,
+            subject: params.subject || "Mixed",
+            topic: matchedTopic,
+            concept: q.concept,
+            difficulty: params.difficulty,
+            isDaily: params.isDaily || false,
+            expiresAt: params.expiresAt,
+          };
+        });
+
+        if (documents.length > 0) {
+          if (!params.skipInsert) {
+            await QuestionModel.insertMany(documents);
+            console.log(
+              `[ai] Inserted ${documents.length} questions into the library (model: ${model}).`
+            );
+          } else {
+            console.log(`[ai] Generation complete. DB insert skipped.`);
+          }
+          return documents;
         }
 
-        return {
-          question: q.question,
-          options: q.options,
-          answer: q.answer,
-          explanation: q.explanation,
-          stream: params.stream,
-          subject: params.subject || "Mixed",
-          topic: matchedTopic,
-          concept: q.concept,
-          difficulty: params.difficulty,
-          isDaily: params.isDaily || false,
-          expiresAt: params.expiresAt,
-        };
-      });
+        throw new Error("AI returned 0 valid questions.");
+      } catch (error: unknown) {
+        lastError = error;
+        const msg = error instanceof Error ? error.message : String(error);
+        console.warn(
+          `[ai] ${model} attempt ${attempt} failed:`,
+          error instanceof z.ZodError ? "Zod validation error" : msg
+        );
 
-      if (documents.length > 0) {
-        if (!params.skipInsert) {
-          await QuestionModel.insertMany(documents);
-          console.log(
-            `[ai] Inserted ${documents.length} questions into the library.`
+        // Only retry if it's a potentially transient error
+        if (
+          error instanceof z.ZodError ||
+          (error instanceof Error && 
+            (error.message.includes("timeout") ||
+             error.message.includes("429") ||
+             error.message.includes("500")))
+        ) {
+          // Continue to retry or next model
+        } else if (attempt === maxRetriesPerModel) {
+          // Permanent error, move to fallback model
+          console.warn(
+            `[ai] ${model} failed permanently, trying fallback model...`
           );
-        } else {
-          console.log(`[ai] Generation complete. DB insert skipped.`);
         }
-        return documents;
       }
-
-      throw new Error("AI returned 0 valid questions.");
-    } catch (error: unknown) {
-      lastError = error;
-      const msg = error instanceof Error ? error.message : String(error);
-      console.warn(
-        `[ai] Attempt ${attempt} failed:`,
-        error instanceof z.ZodError ? "Zod validation error" : msg
-      );
     }
   }
 
-  console.error("[ai] All generation attempts failed.");
+  // All models failed - try to get questions from database as fallback
+  console.error("[ai] All generation attempts failed. Attempting database fallback...");
+  
+  try {
+    const fallbackQuestions = await QuestionModel.find({
+      stream: params.stream,
+      difficulty: params.difficulty,
+      topic: { $in: params.topics },
+    })
+      .limit(params.count || 20)
+      .lean();
+
+    if (fallbackQuestions.length > 0) {
+      console.log(
+        `[ai] Database fallback succeeded: returned ${fallbackQuestions.length} cached questions.`
+      );
+      return fallbackQuestions as GeneratedQuestionDoc[];
+    }
+  } catch (dbError) {
+    console.error("[ai] Database fallback also failed:", dbError);
+  }
+
   throw lastError instanceof Error
     ? lastError
     : new Error(String(lastError ?? "Unknown AI error"));
