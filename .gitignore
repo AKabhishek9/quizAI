@@ -42,3 +42,13 @@ next-env.d.ts
 # antigravity
 antigravity/
 
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+.env.python
