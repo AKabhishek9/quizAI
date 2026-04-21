@@ -49,6 +49,7 @@ export const CATEGORIES = [
   },
 ];
 
+export class DailyQuizService {
   private static isRefreshing = false;
   private static lastRefreshAttempt = 0;
   private static REFRESH_COOLDOWN = 5 * 60 * 1000; // 5 minute cooldown

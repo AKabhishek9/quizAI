@@ -1,21 +1,24 @@
 /**
- * Groq AI Integration Verification Tool
+ * AI Integration Verification Tool
  * 
- * Run: npx tsx src/scripts/verify-groq.ts
+ * Run: npm run test-ai
  */
 
 import "dotenv/config";
 import { generateQuestions } from "../services/ai.service.js";
 
 async function verify() {
-  console.log("🧪 Groq AI Integration Check Starting...\n");
+  const provider = (process.env.AI_PROVIDER || "groq").toLowerCase();
+  console.log(`🧪 ${provider.toUpperCase()} AI Integration Check Starting...\n`);
 
-  const apiKey = process.env.GROQ_API_KEY;
-  const model = process.env.AI_MODEL || "llama-3.3-70b-versatile";
+  const apiKeyName = provider === "openrouter" ? "OPENROUTER_API_KEY" : "GROQ_API_KEY";
+  const apiKey = process.env[apiKeyName];
+  const model = process.env.AI_MODEL || (provider === "openrouter" ? "google/gemini-2.0-flash-lite-preview-001:free" : "llama-3.3-70b-versatile");
 
-  if (!apiKey || apiKey === "gsk_your_key_here") {
-    console.error("❌ ERROR: GROQ_API_KEY is missing or using placeholder in .env");
-    console.log("   Please get a key from: https://console.groq.com/keys");
+  if (!apiKey || apiKey.includes("your_key_here")) {
+    console.error(`❌ ERROR: ${apiKeyName} is missing or using placeholder in .env`);
+    const link = provider === "openrouter" ? "https://openrouter.ai/keys" : "https://console.groq.com/keys";
+    console.log(`   Please get a key from: ${link}`);
     process.exit(1);
   }
 

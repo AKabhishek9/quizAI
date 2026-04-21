@@ -2,19 +2,34 @@ import OpenAI from "openai";
 import { QuestionModel } from "../models/Question.js";
 import { z } from "zod";
 
-// ── Groq — OpenAI Compatible SDK ─────────────────────────────────────────────
-// Using Groq for high-speed, reliable inference with Llama models.
-let groqInstance: OpenAI | null = null;
+// ── AI Client Configuration (OpenAI Compatible) ─────────────────────────────
+let aiInstance: OpenAI | null = null;
+let currentProvider: string | null = null;
 
-function getGroqClient(): OpenAI {
-  if (!groqInstance) {
-    const apiKey = process.env.GROQ_API_KEY?.trim() || "";
-    groqInstance = new OpenAI({
-      baseURL: "https://api.groq.com/openai/v1",
-      apiKey: apiKey,
+function getAIClient(): OpenAI {
+  const provider = (process.env.AI_PROVIDER || "groq").toLowerCase();
+  
+  // Re-initialize if provider changed or instance is missing
+  if (!aiInstance || currentProvider !== provider) {
+    let baseURL = "https://api.groq.com/openai/v1";
+    let apiKey = process.env.GROQ_API_KEY?.trim() || "";
+
+    if (provider === "openrouter") {
+      baseURL = "https://openrouter.ai/api/v1";
+      apiKey = process.env.OPENROUTER_API_KEY?.trim() || "";
+    }
+
+    aiInstance = new OpenAI({
+      baseURL,
+      apiKey,
+      defaultHeaders: provider === "openrouter" ? {
+        "HTTP-Referer": "https://github.com/AKabhishek9/quizAI",
+        "X-Title": "QuizAI - Educational Platform",
+      } : {},
     });
+    currentProvider = provider;
   }
-  return groqInstance;
+  return aiInstance;
 }
 
 // ── Zod schema for robust AI response validation ─────────────────────────────
@@ -93,13 +108,15 @@ export interface GeneratedQuestionDoc {
 export async function generateQuestions(
   params: GenerateParams
 ): Promise<GeneratedQuestionDoc[]> {
-  const apiKey = process.env.GROQ_API_KEY?.trim() || "";
-  if (!apiKey) {
-    throw new Error("[ai] GROQ_API_KEY is not set.");
+  const provider = (process.env.AI_PROVIDER || "groq").toLowerCase();
+  const apiKey = (provider === "openrouter" ? process.env.OPENROUTER_API_KEY : process.env.GROQ_API_KEY)?.trim() || "";
+  
+  if (!apiKey || apiKey.includes("your_key_here")) {
+    throw new Error(`[ai] ${provider.toUpperCase()}_API_KEY is not set or still using placeholder.`);
   }
 
-  const modelName = process.env.AI_MODEL?.trim() || "llama-3.3-70b-versatile";
-  const groq = getGroqClient();
+  const modelName = process.env.AI_MODEL?.trim() || (provider === "openrouter" ? "google/gemini-2.0-flash-lite-preview-001:free" : "llama-3.3-70b-versatile");
+  const ai = getAIClient();
   const count = params.count || 20;
 
   const difficultyLabel =
@@ -121,14 +138,14 @@ export async function generateQuestions(
     try {
       console.log(`[ai] Attempt ${attempt}/${MAX_ATTEMPTS} | Model: ${modelName} | Topics: ${params.topics.join(", ")}`);
 
-      const response = await groq.chat.completions.create({
+      const response = await ai.chat.completions.create({
         model: modelName,
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
           { role: "user", content: userPrompt }
         ],
         temperature: 0.7,
-        response_format: { type: "json_object" }
+        response_format: provider === "groq" ? { type: "json_object" } : undefined
       });
 
       let content = response.choices[0]?.message?.content || "";
