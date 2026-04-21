@@ -49,13 +49,29 @@ export const CATEGORIES = [
   },
 ];
 
-export class DailyQuizService {
+  private static isRefreshing = false;
+  private static lastRefreshAttempt = 0;
+  private static REFRESH_COOLDOWN = 5 * 60 * 1000; // 5 minute cooldown
+
   /**
    * Generates new daily quizzes for all categories.
    * Runs at midnight (0 0 * * *).
-   * Implements "Delete & Replace" cycle.
+   * Implemented with a lock to prevent concurrent runs.
    */
   static async refreshDailyQuizzes() {
+    if (this.isRefreshing) {
+      console.log("[daily-quiz] Refresh already in progress. Skipping.");
+      return;
+    }
+
+    const nowTime = Date.now();
+    if (nowTime - this.lastRefreshAttempt < this.REFRESH_COOLDOWN) {
+      console.log("[daily-quiz] Refresh cooldown active. Skipping.");
+      return;
+    }
+
+    this.isRefreshing = true;
+    this.lastRefreshAttempt = nowTime;
     const now = new Date();
     const expiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
@@ -123,8 +139,8 @@ export class DailyQuizService {
         console.warn(`[daily-quiz] No quizzes were generated. Skipping rotation to protect existing content.`);
       }
 
-    } catch (error) {
-      console.error(`[daily-quiz] Major failure during refresh cycle:`, error);
+    } finally {
+      this.isRefreshing = false;
     }
   }
 
@@ -134,11 +150,11 @@ export class DailyQuizService {
   static async getDailyQuizzes() {
     let quizzes = await DailyQuizModel.find({}).lean();
     
-    // Fast Response Fallback: If DB is empty, generate synchronously once.
+    // Background Refresh: If DB is empty, trigger generation but don't block the response.
     if (quizzes.length === 0) {
-      console.log(`[daily-quiz] DB empty on get request. Triggering synchronous generation fallback.`);
-      await this.refreshDailyQuizzes();
-      quizzes = await DailyQuizModel.find({}).lean();
+      console.log(`[daily-quiz] DB empty. Triggering background generation.`);
+      // Run in background, do not await
+      this.refreshDailyQuizzes().catch(err => console.error("[daily-quiz] Background refresh failed:", err));
     }
     
     // Calculate uniform expiration time for the frontend to show a countdown timer

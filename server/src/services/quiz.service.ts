@@ -83,31 +83,51 @@ export async function getDynamicQuiz({
     finalQuestions = [...finalQuestions, ...randomQuestions];
   }
 
-  // If still short, trigger blocking AI generation
+  // If still short, check if we should trigger AI generation
   const deficit = QUIZ_SIZE - finalQuestions.length;
+  
   if (deficit > 0) {
-    logger.info(`Deficit detected: ${deficit}. Triggering sync AI generation (fallback: ${useFallback}).`);
-    try {
-      const { generateQuestions } = await import("./ai.service.js");
-      const generated = await generateQuestions({
-        stream,
-        topics: sanitizedTopics,
-        difficulty: targetedLevel,
-        count: Math.max(15, deficit + 5), // Generate a bit extra for library
-      });
+    const hasSomeQuestions = finalQuestions.length > 0;
+    
+    // If we have some questions, generate the rest in the background to avoid blocking the user
+    // Only block if we have absolutely nothing to show
+    if (hasSomeQuestions) {
+      logger.info(`Deficit of ${deficit} detected, but serving existing ${finalQuestions.length} questions. Triggering background backfill.`);
       
-      if (generated && generated.length > 0) {
-        // Add new questions to our selection
-        const newQuestions = generated.slice(0, deficit);
-        finalQuestions = [...finalQuestions, ...newQuestions];
-        logger.info(`AI successfully filled the deficit with ${newQuestions.length} questions.`);
-      }
-    } catch (err) {
-      logger.error({ err: String(err) }, "Sync AI generation failed");
-      // If we still have at least 1 question, we can let user play a shorter quiz
-      // but usually we want to throw if zero questions are found
-      if (finalQuestions.length === 0) {
-         throw new Error("Could not find or generate questions for this topic. Please try again or choose different topics.");
+      // Fire and forget background generation
+      (async () => {
+        try {
+          const { generateQuestions } = await import("./ai.service.js");
+          await generateQuestions({
+            stream,
+            topics: sanitizedTopics,
+            difficulty: targetedLevel,
+            count: 15, // Fill library for future
+          });
+          logger.info("Background backfill successful.");
+        } catch (err) {
+          logger.warn({ err: String(err) }, "Background backfill failed");
+        }
+      })().catch(err => logger.error({ err: String(err) }, "Unhandled background backfill error"));
+    } else {
+      // Library is empty for this topic, must block and generate
+      logger.info(`Library empty for topics: ${sanitizedTopics.join(", ")}. Triggering synchronous AI generation.`);
+      try {
+        const { generateQuestions } = await import("./ai.service.js");
+        const generated = await generateQuestions({
+          stream,
+          topics: sanitizedTopics,
+          difficulty: targetedLevel,
+          count: 15,
+        });
+        
+        if (generated && generated.length > 0) {
+          const newQuestions = generated.slice(0, QUIZ_SIZE);
+          finalQuestions = [...finalQuestions, ...newQuestions];
+        }
+      } catch (err) {
+        logger.error({ err: String(err) }, "Sync AI generation failed");
+        throw new Error("Could not find or generate questions for this topic. Please try again later.");
       }
     }
   }
