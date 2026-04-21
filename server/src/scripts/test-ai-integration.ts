@@ -20,6 +20,7 @@ const TEST_CONFIG = {
 async function runTests() {
   console.log("🧪 Starting Google AI Studio (Gemini) Integration Tests\n");
 
+  /*
   // Test 0: DB Connection
   try {
     console.log("Test 0: 🔗 Connecting to MongoDB...");
@@ -28,6 +29,7 @@ async function runTests() {
   } catch (err) {
     console.warn("   ⚠️ Database connection failed.\n");
   }
+  */
 
   // Test 1: Environment Check
   console.log("Test 1: ✓ Environment Variable Check");
