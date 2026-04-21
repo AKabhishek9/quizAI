@@ -98,8 +98,7 @@ export interface GeneratedQuestionDoc {
 
 // ── Main generation function with OpenRouter + Fallback logic ────────────────
 export async function generateQuestions(
-  params: GenerateParams,
-  useFallback: boolean = false
+  params: GenerateParams
 ): Promise<GeneratedQuestionDoc[]> {
   const apiKey = process.env.OPENROUTER_API_KEY || "";
   if (!apiKey) {
@@ -108,8 +107,8 @@ export async function generateQuestions(
     );
   }
 
-  const primaryModel = process.env.OPENROUTER_MODEL || "openrouter/free";
-  const fallbackModel = process.env.OPENROUTER_FALLBACK_MODEL || "openrouter/auto";
+  // Use only the primary model — no fallback
+  const model = process.env.OPENROUTER_MODEL || "meta-llama/llama-3.3-8b-instruct:free";
   const openai = getOpenAIClient();
 
   const count = params.count || 20;
@@ -126,107 +125,104 @@ export async function generateQuestions(
 - Focus Topics (distribute evenly): ${params.topics.join(", ")}`;
 
   let lastError: unknown = null;
-  // If useFallback is false, only try the primary model. 
-  // If true, try primary, then start fallback if it fails.
-  const models = useFallback ? [primaryModel, fallbackModel] : [primaryModel];
-  const maxRetriesPerModel = 1;
+  const MAX_ATTEMPTS = 2; // Try the model up to 2 times before giving up
+  const TIMEOUT_MS = 30000; // 30 seconds per attempt
 
-  for (const model of models) {
-    for (let attempt = 1; attempt <= maxRetriesPerModel; attempt++) {
-      try {
-        console.log(
-          `[ai] Attempt (${model}/${attempt}/${maxRetriesPerModel}) | useFallback: ${useFallback} | topics: ${params.topics.join(", ")}`
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    try {
+      console.log(
+        `[ai] Attempt ${attempt}/${MAX_ATTEMPTS} | model: ${model} | topics: ${params.topics.join(", ")}`
+      );
+
+      // Non-streaming call — wait up to 30s
+      const response = await Promise.race([
+        openai.chat.completions.create({
+          model,
+          messages: [
+            { role: "system", content: SYSTEM_PROMPT },
+            { role: "user", content: userPrompt },
+          ],
+          temperature: 0.7,
+          max_tokens: 2048,
+          stream: false,
+        }),
+        new Promise<never>((_, reject) =>
+          setTimeout(
+            () => reject(new Error(`AI generation timed out after 30s`)),
+            TIMEOUT_MS
+          )
+        ),
+      ]);
+
+      let content =
+        (response as OpenAI.Chat.Completions.ChatCompletion).choices[0]
+          ?.message?.content ?? "";
+
+      // Strip any accidental markdown fences the model may emit
+      content = content
+        .replace(/^```json\s*/m, "")
+        .replace(/^```\s*/m, "")
+        .replace(/```\s*$/m, "")
+        .trim();
+
+      // Validate with Zod
+      const rawParsed = JSON.parse(content);
+      const validated = AIQuizResponseSchema.parse(rawParsed);
+
+      // Map AI output → DB schema
+      const documents = validated.questions.map((q, index) => {
+        let matchedTopic = params.topics.find(
+          (t) => t.toLowerCase() === q.topic.toLowerCase()
         );
-
-        // Non-streaming call — we need the full JSON before we can parse it
-        const response = await Promise.race([
-          openai.chat.completions.create({
-            model,
-            messages: [
-              { role: "system", content: SYSTEM_PROMPT },
-              { role: "user", content: userPrompt },
-            ],
-            temperature: 0.7,
-            max_tokens: 2048,
-            stream: false,
-          }),
-          // 30-second hard timeout for primary model as requested
-          new Promise<never>((_, reject) =>
-            setTimeout(
-              () => reject(new Error(`AI generation timeout after 30s (${model})`)),
-              30000
-            )
-          ),
-        ]);
-
-        let content =
-          (response as OpenAI.Chat.Completions.ChatCompletion).choices[0]
-            ?.message?.content ?? "";
-
-        // Strip any accidental markdown fences the model may emit
-        content = content
-          .replace(/^```json\s*/m, "")
-          .replace(/^```\s*/m, "")
-          .replace(/```\s*$/m, "")
-          .trim();
-
-        // Validate with Zod
-        const rawParsed = JSON.parse(content);
-        const validated = AIQuizResponseSchema.parse(rawParsed);
-
-        // Map AI output → DB schema
-        const documents = validated.questions.map((q, index) => {
-          let matchedTopic = params.topics.find(
-            (t) => t.toLowerCase() === q.topic.toLowerCase()
+        if (!matchedTopic) {
+          matchedTopic = params.topics.find(
+            (t) =>
+              q.topic.toLowerCase().includes(t.toLowerCase()) ||
+              t.toLowerCase().includes(q.topic.toLowerCase())
           );
-          if (!matchedTopic) {
-            matchedTopic = params.topics.find(
-              (t) =>
-                q.topic.toLowerCase().includes(t.toLowerCase()) ||
-                t.toLowerCase().includes(q.topic.toLowerCase())
-            );
-          }
-          if (!matchedTopic) {
-            matchedTopic = params.topics[index % params.topics.length];
-          }
-
-          return {
-            question: q.question,
-            options: q.options,
-            answer: q.answer,
-            explanation: q.explanation,
-            stream: params.stream,
-            subject: params.subject || "Mixed",
-            topic: matchedTopic,
-            concept: q.concept,
-            difficulty: params.difficulty,
-            isDaily: params.isDaily || false,
-            expiresAt: params.expiresAt,
-          };
-        });
-
-        if (documents.length > 0) {
-          if (!params.skipInsert) {
-            await QuestionModel.insertMany(documents);
-            console.log(
-              `[ai] Inserted ${documents.length} questions into the library (model: ${model}).`
-            );
-          } else {
-            console.log(`[ai] Generation complete. DB insert skipped.`);
-          }
-          return documents;
+        }
+        if (!matchedTopic) {
+          matchedTopic = params.topics[index % params.topics.length];
         }
 
-        throw new Error("AI returned 0 valid questions.");
-      } catch (error: unknown) {
-        lastError = error;
-        const msg = error instanceof Error ? error.message : String(error);
-        console.warn(
-          `[ai] ${model} attempt ${attempt} failed:`,
-          error instanceof z.ZodError ? "Zod validation error" : msg
-        );
+        return {
+          question: q.question,
+          options: q.options,
+          answer: q.answer,
+          explanation: q.explanation,
+          stream: params.stream,
+          subject: params.subject || "Mixed",
+          topic: matchedTopic,
+          concept: q.concept,
+          difficulty: params.difficulty,
+          isDaily: params.isDaily || false,
+          expiresAt: params.expiresAt,
+        };
+      });
 
-        // Continue to retry or next model if possible
+      if (documents.length > 0) {
+        if (!params.skipInsert) {
+          await QuestionModel.insertMany(documents);
+          console.log(
+            `[ai] Inserted ${documents.length} questions into the library.`
+          );
+        } else {
+          console.log(`[ai] Generation complete. DB insert skipped.`);
+        }
+        return documents;
+      }
+
+      throw new Error("AI returned 0 valid questions.");
+    } catch (error: unknown) {
+      lastError = error;
+      const msg = error instanceof Error ? error.message : String(error);
+      console.warn(
+        `[ai] Attempt ${attempt}/${MAX_ATTEMPTS} failed:`,
+        error instanceof z.ZodError ? "Zod validation error" : msg
+      );
+      // If not on last attempt, wait 2s before retrying
+      if (attempt < MAX_ATTEMPTS) {
+        await new Promise((r) => setTimeout(r, 2000));
       }
     }
   }

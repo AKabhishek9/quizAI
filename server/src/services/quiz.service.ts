@@ -94,7 +94,7 @@ export async function getDynamicQuiz({
         topics: sanitizedTopics,
         difficulty: targetedLevel,
         count: Math.max(15, deficit + 5), // Generate a bit extra for library
-      }, useFallback);
+      });
       
       if (generated && generated.length > 0) {
         // Add new questions to our selection
