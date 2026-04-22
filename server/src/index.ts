@@ -27,8 +27,11 @@ const PORT = parseInt(process.env.PORT || "5000", 10);
 // Security Middleware
 // ──────────────────────────────────────────────
 
-// Helmet: sets security HTTP headers (X-Content-Type-Options, HSTS, etc.)
-app.use(helmet());
+import mongoSanitize from "express-mongo-sanitize";
+import rateLimit from "express-rate-limit";
+
+// Body parser
+app.use(express.json({ limit: "1mb" }));
 
 // CORS: whitelist allowed origins instead of wide-open
 const ALLOWED_ORIGINS = (
@@ -49,18 +52,41 @@ app.use(
   })
 );
 
+
+// Security Hardening
+app.use(helmet());
+app.use(mongoSanitize());
+
+// Global rate limiting
 app.use(globalLimiter);
 
-// Body parser
-app.use(express.json({ limit: "1mb" }));
+// Per-user rate limiting for quiz generation (prevent hammering AI endpoint)
+const perUserQuizLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 5, // 5 quiz requests per user per minute
+  keyGenerator: (req) => {
+    return (req as any).user?.uid || req.ip;
+  },
+  message: {
+    error: "Too many quiz requests. Please wait 60 seconds.",
+    code: "RATE_LIMIT_EXCEEDED"
+  },
+  skip: (req) => req.path !== "/api/get-quiz"
+});
+app.use("/api/get-quiz", perUserQuizLimiter);
+
 
 // ──────────────────────────────────────────────
 // Routes
 // ──────────────────────────────────────────────
 
-// Health check (public, no auth)
+// Health check (public, no auth) - used by UptimeRobot to keep server warm
 app.get("/api/health", (_req, res) => {
-  res.json({ status: "ok", timestamp: new Date().toISOString() });
+  res.json({ 
+    status: "ok", 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
 });
 
 app.use("/api", quizRoutes);
@@ -74,13 +100,34 @@ app.use(errorHandler);
 // ──────────────────────────────────────────────
 async function main() {
   await connectDB();
+  
+  // Recover jobs stuck in 'running' from previous server crash/restart
+  const { recoverStaleJobs } = await import("./services/aiQueue.js");
+  await recoverStaleJobs();
 
   app.listen(PORT, () => {
     console.log(`[server] Running on http://localhost:${PORT}`);
     console.log(`[server] API: http://localhost:${PORT}/api`);
   });
 
+  // ──────────────────────────────────────────────
+  // Render Keep-Alive (Prevent Sleep)
+  // ──────────────────────────────────────────────
+  const RENDER_URL = process.env.RENDER_EXTERNAL_URL;
+  if (RENDER_URL) {
+    console.log(`[server] Keep-alive active: Pinging ${RENDER_URL}/api/health every 14 mins`);
+    setInterval(async () => {
+      try {
+        const res = await fetch(`${RENDER_URL}/api/health`);
+        if (res.ok) console.log("[keep-alive] Self-ping successful");
+      } catch (err) {
+        console.warn("[keep-alive] Self-ping failed:", err);
+      }
+    }, 14 * 60 * 1000); // 14 minutes
+  }
+
   // Daily Quiz Cron (Midnight)
+
   cron.schedule("0 0 * * *", async () => {
     console.log("[cron] Running daily quiz refresh...");
     await DailyQuizService.refreshDailyQuizzes();

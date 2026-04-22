@@ -67,7 +67,36 @@ export function useAdaptiveQuiz(): UseAdaptiveQuizReturn {
       // Single request — the backend handles AI generation synchronously.
       // No polling needed; the backend will block until questions are ready.
       const numericDifficulty = difficultyToNumber(difficulty);
-      const response = await generateQuiz(stream, topics, numericDifficulty, useFallback);
+      let response = await generateQuiz(stream, topics, numericDifficulty, useFallback);
+
+      // If the backend returned a jobId, it means generation is happening in background.
+      // We must poll until it's ready.
+      if (response.status === "generating" && response.jobId) {
+        console.log("[ai] Received jobId, starting polling:", response.jobId);
+        
+        let jobFinished = false;
+        let attempts = 0;
+        const maxAttempts = 30; // 30 * 2s = 60s max polling
+
+        while (!jobFinished && attempts < maxAttempts) {
+          await new Promise(r => setTimeout(r, 2000));
+          attempts++;
+          
+          const { getQuizJobStatus } = await import("@/lib/api-client");
+          const job = await getQuizJobStatus(response.jobId!);
+          
+          if (job.status === "completed" && job.result) {
+            response = { questions: job.result };
+            jobFinished = true;
+          } else if (job.status === "failed") {
+            throw new Error(job.error || "AI generation failed in background");
+          }
+        }
+
+        if (!jobFinished) {
+          throw new Error("AI generation is taking longer than expected. Please try retrying or checking back later.");
+        }
+      }
 
       if (!response.questions || response.questions.length === 0) {
         setError("No questions generated. Try different topics or try again.");

@@ -10,7 +10,7 @@ const dailyQuizSchema = new Schema(
     category: {
       type: String,
       required: true,
-      enum: ["current_affairs", "tech", "aptitude", "maths"],
+      enum: ["general_knowledge", "tech", "aptitude", "maths"],
       unique: true, // Only one document per category for the current day
     },
     questions: [

@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useEffect, useState, useMemo } from "react";
 
 const CATEGORY_MAP: Record<string, { icon: any; label: string }> = {
-  current_affairs: { icon: Globe, label: "Current Affairs" },
+  general_knowledge: { icon: Globe, label: "General Knowledge" },
   tech: { icon: Brain, label: "Tech" },
   aptitude: { icon: Zap, label: "Aptitude" },
   maths: { icon: Calculator, label: "Maths" },

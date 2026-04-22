@@ -8,12 +8,12 @@ import { generateQuestions } from "./ai.service.js";
  */
 export const CATEGORIES = [
   {
-    id: "current_affairs",
-    name: "Current Affairs",
-    prompt: "focus strictly on news from today and yesterday, world events, and politics.",
+    id: "general_knowledge",
+    name: "General Knowledge",
+    prompt: "focus on history, geography, science, and stable world facts.",
     stream: "General",
-    topics: ["Current Events", "World News", "Politics"],
-    subject: "Current Affairs",
+    topics: ["History", "Geography", "Science", "General Culture"],
+    subject: "General Knowledge",
     color: "emerald",
     theme: "emerald"
   },

@@ -138,14 +138,18 @@ export const getUserDashboard = async (
     }));
 
     res.json({
-      profile,
-      stats,
-      history,
+      success: true,
+      data: {
+        profile,
+        stats,
+        history,
+      }
     });
   } catch (err) {
     next(err);
   }
 };
+
 
 export const getLeaderboard = async (
   req: Request,
@@ -187,8 +191,12 @@ export const getLeaderboard = async (
       }
     ]);
 
-    res.json(leaderboard);
+    res.json({
+      success: true,
+      data: leaderboard
+    });
   } catch (error) {
     next(error);
   }
 };
+

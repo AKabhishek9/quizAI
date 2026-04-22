@@ -7,7 +7,8 @@ import {
   getDailyQuiz,
   submitDailyQuiz,
   refreshDailyQuizzes,
-  listQuizzes
+  listQuizzes,
+  getQuizJobStatus
 } from "../controllers/quiz.controller.js";
 import { requireAuth } from "../middleware/auth.middleware.js";
 import {
@@ -26,6 +27,7 @@ const router = Router();
 router.post("/get-quiz", requireAuth, aiLimiter, validateBody(GetQuizSchema), getQuiz);
 router.post("/submit-quiz", requireAuth, validateBody(SubmitQuizSchema), submitQuizHandler);
 router.get("/quiz-attempt/:id", requireAuth, validateParams(AttemptIdParamSchema), getQuizAttempt);
+router.get("/quiz-job/:id", requireAuth, getQuizJobStatus);
 
 // Daily Quiz Routes — IMPORTANT: static routes MUST come before dynamic `:id` routes
 router.get("/daily", requireAuth, getDailyQuizzes);

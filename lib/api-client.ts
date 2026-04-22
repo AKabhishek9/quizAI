@@ -36,13 +36,22 @@ export async function request<T>(
       ...options,
     });
 
+    const body = await res.json().catch(() => ({}));
+
     if (!res.ok) {
-      const body = await res.json().catch(() => ({}));
-      throw new Error(body.error || `Request failed: ${res.status}`);
+      // Use the standardized error message if available
+      const message = body.error || `Request failed: ${res.status}`;
+      throw new Error(message);
     }
 
-    return res.json() as Promise<T>;
+    // Standardized response handling: unwrap 'data' if it exists and success is true
+    if (body.success === true && body.data !== undefined) {
+      return body.data as T;
+    }
+
+    return body as T;
   } catch (err: unknown) {
+
     if (err instanceof DOMException && err.name === "AbortError") {
       throw new Error(
         "Quiz generation is taking longer than expected. The AI model may be busy — please try again in a moment."
@@ -66,8 +75,21 @@ export interface ApiQuestion {
 }
 
 export interface ApiQuizResponse {
-  questions: ApiQuestion[];
+  questions?: ApiQuestion[];
+  status?: "generating";
+  jobId?: string;
 }
+
+export interface JobStatusResponse {
+  status: "pending" | "processing" | "completed" | "failed";
+  error?: string;
+  result?: ApiQuestion[];
+}
+
+export async function getQuizJobStatus(jobId: string): Promise<JobStatusResponse> {
+  return request<JobStatusResponse>(`/quiz-job/${jobId}`);
+}
+
 
 export interface ApiSubmitPayload {
   answers: {
