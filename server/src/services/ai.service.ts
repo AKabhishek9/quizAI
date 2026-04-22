@@ -43,6 +43,7 @@ export interface GeneratedQuestionDoc {
   difficulty: number;
   isDaily?: boolean;
   expiresAt?: Date;
+  _isNew?: boolean;
 }
 
 // ── Providers ───────────────────────────────────────────────────────────────
@@ -195,10 +196,10 @@ Generate ${targetPerProvider} multiple choice questions.
   // Persist new AI questions to DB (background)
   if (!params.skipInsert) {
     // Only save questions that were newly generated (not pulled from fallback DB)
-    const newQuestions = result.filter(q => (q as any)._isNew);
+    const newQuestions = result.filter(q => q._isNew);
     if (newQuestions.length > 0) {
       // Remove the temporary flag before saving
-      const cleaned = newQuestions.map(({ _isNew, ...rest }: any) => rest);
+      const cleaned = newQuestions.map(({ _isNew, ...rest }) => rest);
       QuestionModel.insertMany(cleaned).catch(err => logger.error("[ai] DB Insert Error:", err));
     }
   }

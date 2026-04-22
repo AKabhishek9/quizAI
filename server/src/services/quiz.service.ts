@@ -225,13 +225,15 @@ export async function submitQuiz(payload: SubmitPayload): Promise<SubmitResponse
   user.currentLevel = prevLevel + levelChange;
 
   // Push attempted questions (capped FIFO)
-  const currentSubmissionIds = answers.map(a => a.questionId);
+  // Ensure all IDs are cast to MongoDB ObjectIds to satisfy TypeScript and Schema requirements
+  const currentSubmissionIds = answers.map(a => new mongoose.Types.ObjectId(a.questionId));
   const newAttempted = [...(user.attemptedQuestions ?? []), ...currentSubmissionIds];
+  
   if (newAttempted.length > MAX_ATTEMPTED) {
     // Trim from the front (oldest)
     user.attemptedQuestions = newAttempted.slice(newAttempted.length - MAX_ATTEMPTED);
   } else {
-    user.attemptedQuestions = newAttempted;
+    user.attemptedQuestions = newAttempted as mongoose.Types.ObjectId[];
   }
 
   // Award XP
