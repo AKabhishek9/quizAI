@@ -27,8 +27,7 @@ const PORT = parseInt(process.env.PORT || "5000", 10);
 // Security Middleware
 // ──────────────────────────────────────────────
 
-import mongoSanitize from "express-mongo-sanitize";
-import rateLimit from "express-rate-limit";
+import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 
 // Body parser
 app.use(express.json({ limit: "1mb" }));
@@ -55,7 +54,6 @@ app.use(
 
 // Security Hardening
 app.use(helmet());
-app.use(mongoSanitize());
 
 // Global rate limiting
 app.use(globalLimiter);
@@ -65,7 +63,7 @@ const perUserQuizLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
   max: 5, // 5 quiz requests per user per minute
   keyGenerator: (req) => {
-    return (req as any).user?.uid || req.ip;
+    return (req as any).user?.uid || ipKeyGenerator(req);
   },
   message: {
     error: "Too many quiz requests. Please wait 60 seconds.",
