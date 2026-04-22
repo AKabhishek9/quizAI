@@ -83,71 +83,54 @@ export async function getDynamicQuiz({
     finalQuestions = [...finalQuestions, ...randomQuestions];
   }
 
-  // If still short, check if we should trigger AI generation
+  // If still short, trigger AI generation to reach the full QUIZ_SIZE
   const deficit = QUIZ_SIZE - finalQuestions.length;
   
   if (deficit > 0) {
-    const hasSomeQuestions = finalQuestions.length > 0;
-    
-    // If we have some questions, generate the rest in the background to avoid blocking the user
-    // Only block if we have absolutely nothing to show
-    if (hasSomeQuestions) {
-      logger.info(`Deficit of ${deficit} detected, but serving existing ${finalQuestions.length} questions. Triggering background backfill.`);
+    logger.info(`Quiz short by ${deficit} questions. Triggering synchronous AI generation to reach target of ${QUIZ_SIZE}.`);
+    try {
+      const { generateQuestions } = await import("./ai.service.js");
       
-      // Fire and forget background generation
-      (async () => {
-        try {
-          const { generateQuestions } = await import("./ai.service.js");
-          await generateQuestions({
-            stream,
-            topics: sanitizedTopics,
-            difficulty: targetedLevel,
-            count: QUIZ_SIZE, // Fill library for future
-          });
-          logger.info("Background backfill successful.");
-        } catch (err) {
-          logger.warn({ err: String(err) }, "Background backfill failed");
-        }
-      })().catch(err => logger.error({ err: String(err) }, "Unhandled background backfill error"));
-    } else {
-      // Library is empty for this topic, must block and generate
-      logger.info(`Library empty for topics: ${sanitizedTopics.join(", ")}. Triggering guarded synchronous AI generation.`);
-      try {
-        const { generateQuestions } = await import("./ai.service.js");
+      // Timeout guard: 15 seconds
+      const generationPromise = generateQuestions({
+        stream,
+        topics: sanitizedTopics,
+        difficulty: targetedLevel,
+        count: QUIZ_SIZE, // Request a full batch to ensure quality/diversity
+      });
+
+      const timeoutPromise = new Promise<null>((_, reject) => 
+        setTimeout(() => reject(new Error("TIMEOUT")), 15000)
+      );
+
+      const generated = await Promise.race([generationPromise, timeoutPromise]);
+      
+      if (generated && generated.length > 0) {
+        // Use generated questions to fill the deficit
+        // We filter out any that we might have already pulled from the DB
+        const existingIds = new Set(finalQuestions.map(q => String(q._id)));
+        const newQuestions = generated.filter(q => !existingIds.has(String(q._id)));
         
-        // Timeout guard: 15 seconds
-        const generationPromise = generateQuestions({
+        finalQuestions = [...finalQuestions, ...newQuestions];
+      }
+    } catch (err: any) {
+      if (err.message === "TIMEOUT") {
+        logger.warn("[ai] Synchronous generation timed out. Queueing job for client polling.");
+        const { addJob } = await import("./aiQueue.js");
+        const jobId = await addJob({
           stream,
           topics: sanitizedTopics,
           difficulty: targetedLevel,
           count: QUIZ_SIZE,
         });
-
-        const timeoutPromise = new Promise<null>((_, reject) => 
-          setTimeout(() => reject(new Error("TIMEOUT")), 15000)
-        );
-
-        const generated = await Promise.race([generationPromise, timeoutPromise]);
-        
-        if (generated && generated.length > 0) {
-          const newQuestions = generated.slice(0, QUIZ_SIZE);
-          finalQuestions = [...finalQuestions, ...newQuestions];
-        }
-      } catch (err: any) {
-        if (err.message === "TIMEOUT") {
-          logger.warn("[ai] Synchronous generation timed out. Queueing job for client polling.");
-          const { addJob } = await import("./aiQueue.js");
-          const jobId = await addJob({
-            stream,
-            topics: sanitizedTopics,
-            difficulty: targetedLevel,
-            count: QUIZ_SIZE,
-          });
-          // Return a specific object that the controller can detect to send 202
-          return { status: "generating", jobId } as any;
-        }
-        
-        logger.error({ err: String(err) }, "Sync AI generation failed");
+        return { status: "generating", jobId } as any;
+      }
+      
+      logger.error({ err: String(err) }, "Sync AI generation failed");
+      
+      // If AI failed but we have SOME questions (like the 5 from DB), just serve those
+      // instead of throwing an error. Only throw if we have 0 questions.
+      if (finalQuestions.length === 0) {
         throw new Error("Could not find or generate questions for this topic. Please try again later.");
       }
     }
