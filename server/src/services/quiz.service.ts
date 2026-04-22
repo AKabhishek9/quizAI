@@ -185,9 +185,24 @@ export async function submitQuiz(payload: SubmitPayload): Promise<SubmitResponse
     user = await UserModel.create({ userId });
   }
 
-  // Fetch the questions
-  const questionIds = answers.map((a) => new mongoose.Types.ObjectId(a.questionId));
-  const questions = await QuestionModel.find({ _id: { $in: questionIds } }).lean();
+  // Fetch the questions. Some might be ObjectIds (DB), some might be UUIDs (AI).
+  const mongoIds: mongoose.Types.ObjectId[] = [];
+  const stringIds: string[] = [];
+  
+  for (const a of answers) {
+    if (/^[a-f0-9]{24}$/.test(a.questionId)) {
+      mongoIds.push(new mongoose.Types.ObjectId(a.questionId));
+    } else {
+      stringIds.push(a.questionId);
+    }
+  }
+
+  const questions = await QuestionModel.find({ 
+    $or: [
+      { _id: { $in: mongoIds } },
+      { _id: { $in: stringIds } }
+    ] 
+  }).lean();
 
   const questionMap = new Map(questions.map((q) => [String(q._id), q]));
 
@@ -210,7 +225,8 @@ export async function submitQuiz(payload: SubmitPayload): Promise<SubmitResponse
   user.currentLevel = prevLevel + levelChange;
 
   // Push attempted questions (capped FIFO)
-  const newAttempted = [...(user.attemptedQuestions ?? []), ...questionIds];
+  const currentSubmissionIds = answers.map(a => a.questionId);
+  const newAttempted = [...(user.attemptedQuestions ?? []), ...currentSubmissionIds];
   if (newAttempted.length > MAX_ATTEMPTED) {
     // Trim from the front (oldest)
     user.attemptedQuestions = newAttempted.slice(newAttempted.length - MAX_ATTEMPTED);

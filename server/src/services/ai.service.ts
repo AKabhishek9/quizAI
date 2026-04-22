@@ -194,9 +194,12 @@ Generate ${targetPerProvider} multiple choice questions.
 
   // Persist new AI questions to DB (background)
   if (!params.skipInsert) {
-    const newQuestions = result.filter(q => !q._id.includes("-")); // Filter out Mongo IDs if they were strings or something
+    // Only save questions that were newly generated (not pulled from fallback DB)
+    const newQuestions = result.filter(q => (q as any)._isNew);
     if (newQuestions.length > 0) {
-      QuestionModel.insertMany(newQuestions).catch(err => logger.error("[ai] DB Insert Error:", err));
+      // Remove the temporary flag before saving
+      const cleaned = newQuestions.map(({ _isNew, ...rest }: any) => rest);
+      QuestionModel.insertMany(cleaned).catch(err => logger.error("[ai] DB Insert Error:", err));
     }
   }
 
@@ -209,7 +212,8 @@ function parseAndProcess(content: string, params: GenerateParams): GeneratedQues
   const validated = AIQuizResponseSchema.parse(rawParsed);
 
   return validated.questions.map((q, idx) => ({
-    _id: crypto.randomUUID(),
+    _id: crypto.randomBytes(12).toString("hex"),
+    _isNew: true, // Internal flag to identify AI-generated questions
     question: q.question,
     options: q.options,
     answer: q.answer,
