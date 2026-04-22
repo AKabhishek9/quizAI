@@ -62,9 +62,9 @@ app.use(globalLimiter);
 const perUserQuizLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
   max: 5, // 5 quiz requests per user per minute
-  keyGenerator: (req) => {
-    return (req as any).user?.uid || ipKeyGenerator(req);
-  },
+    keyGenerator: (req) => {
+      return String((req as any).user?.uid || ipKeyGenerator(req));
+    },
   message: {
     error: "Too many quiz requests. Please wait 60 seconds.",
     code: "RATE_LIMIT_EXCEEDED"
