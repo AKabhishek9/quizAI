@@ -245,9 +245,9 @@ export default function ReviewPage({ params }: ReviewPageProps) {
                     className={cn(
                         "text-sm p-3.5 rounded-lg border transition-all flex items-center justify-between",
                         isCorrectAnswer 
-                            ? "bg-success/20 border-success/60 text-success-foreground font-semibold dark:bg-success/15" 
+                            ? "bg-success border-success/60 text-white font-semibold" 
                             : isSelected && !answer.isCorrect
-                                ? "bg-destructive/10 border-destructive/40 text-destructive-foreground"
+                                ? "bg-destructive border-destructive/40 text-white"
                                 : "bg-background border-border text-muted-foreground hover:border-foreground/20"
                     )}
                   >
@@ -262,10 +262,10 @@ export default function ReviewPage({ params }: ReviewPageProps) {
                         {opt}
                     </div>
                     {isCorrectAnswer && (
-                        <CheckCircle2 className="h-4 w-4 text-success" />
+                        <CheckCircle2 className="h-4 w-4 text-white" />
                     )}
                     {isSelected && !answer.isCorrect && (
-                        <span className="text-[10px] uppercase font-bold text-destructive">Your Choice</span>
+                        <span className="text-[10px] uppercase font-bold text-white">Your Choice</span>
                     )}
                   </div>
                 );

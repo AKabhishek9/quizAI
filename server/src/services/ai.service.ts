@@ -221,8 +221,9 @@ function parseAndProcess(content: string, params: GenerateParams): GeneratedQues
     explanation: q.explanation,
     stream: params.stream,
     subject: params.subject || "Mixed",
-    topic: q.topic || params.topics[idx % params.topics.length],
-    concept: q.concept,
+    // Prioritize the requested topic that best matches the AI-generated one, or default to the first requested topic
+    topic: params.topics.find(t => q.topic?.toLowerCase().includes(t.toLowerCase())) || params.topics[idx % params.topics.length],
+    concept: q.topic || q.concept, // Keep the AI's specific topic as the concept
     difficulty: params.difficulty,
     isDaily: params.isDaily || false,
     expiresAt: params.expiresAt,

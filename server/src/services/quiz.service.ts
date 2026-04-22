@@ -243,8 +243,22 @@ export async function submitQuiz(payload: SubmitPayload): Promise<SubmitResponse
   await user.save();
 
   // Create a QuizAttempt historical record for the dashboard
-  const uniqueTopics = Array.from(new Set(questions.map((q) => q.topic).filter(Boolean)));
+  // Smart Topic Normalization: If all questions share one primary topic, use it as the title.
+  const rawTopics = questions.map((q) => q.topic).filter(Boolean);
+  const normalizedTopics = Array.from(new Set(rawTopics.map(t => t.trim().toLowerCase())));
   
+  // Find the original casing for the dominant topic
+  const uniqueTopics = Array.from(new Set(rawTopics.map(t => t.trim())))
+    .filter((t, i, arr) => arr.findIndex(x => x.toLowerCase() === t.toLowerCase()) === i);
+
+  let streamTitle = "Mixed Assessment";
+  if (normalizedTopics.length === 1) {
+    streamTitle = uniqueTopics[0];
+  } else if (normalizedTopics.length > 0 && normalizedTopics.length <= 3) {
+    // If only a few topics, we can list them or keep "Mixed"
+    streamTitle = "Mixed Assessment";
+  }
+
   const attemptAnswers = answers.map(ans => {
     const q = questionMap.get(ans.questionId);
     return {
@@ -256,7 +270,7 @@ export async function submitQuiz(payload: SubmitPayload): Promise<SubmitResponse
 
   const attempt = await QuizAttemptModel.create({
     userId,
-    stream: "Mixed", 
+    stream: streamTitle, 
     topics: uniqueTopics.length > 0 ? uniqueTopics : ["General"],
     score: Math.round(accuracy * 100),
     totalQuestions: total,
