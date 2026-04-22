@@ -27,7 +27,7 @@ const PORT = parseInt(process.env.PORT || "5000", 10);
 // Security Middleware
 // ──────────────────────────────────────────────
 
-import rateLimit, { ipKeyGenerator } from "express-rate-limit";
+import rateLimit from "express-rate-limit";
 
 // Body parser
 app.use(express.json({ limit: "1mb" }));
@@ -62,9 +62,10 @@ app.use(globalLimiter);
 const perUserQuizLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
   max: 5, // 5 quiz requests per user per minute
-    keyGenerator: (req) => {
-      return String((req as any).user?.uid || ipKeyGenerator(req));
-    },
+  validate: { ip: false },
+  keyGenerator: (req) => {
+    return String((req as any).user?.uid || req.ip || "unknown");
+  },
   message: {
     error: "Too many quiz requests. Please wait 60 seconds.",
     code: "RATE_LIMIT_EXCEEDED"
