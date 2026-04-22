@@ -1,4 +1,5 @@
 import admin from "firebase-admin";
+import type { Auth } from "firebase-admin/auth";
 
 if (!admin.apps.length) {
   try {
@@ -16,4 +17,4 @@ if (!admin.apps.length) {
   }
 }
 
-export const auth = admin.apps.length ? admin.auth() : null;
+export const auth: Auth | null = admin.apps.length ? admin.auth() : null;
