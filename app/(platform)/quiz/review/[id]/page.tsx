@@ -245,17 +245,17 @@ export default function ReviewPage({ params }: ReviewPageProps) {
                     className={cn(
                         "text-sm p-3.5 rounded-lg border transition-all flex items-center justify-between",
                         isCorrectAnswer 
-                            ? "bg-success/5 border-success/30 text-success-foreground font-medium" 
+                            ? "bg-success/20 border-success/60 text-success-foreground font-semibold dark:bg-success/15" 
                             : isSelected && !answer.isCorrect
-                                ? "bg-destructive/5 border-destructive/30 text-destructive-foreground"
+                                ? "bg-destructive/10 border-destructive/40 text-destructive-foreground"
                                 : "bg-background border-border text-muted-foreground hover:border-foreground/20"
                     )}
                   >
                     <div className="flex items-center gap-3">
                         <span className={cn(
-                            "w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-bold",
-                            isCorrectAnswer ? "bg-success text-success-foreground" : 
-                            isSelected ? "bg-destructive text-destructive-foreground" : "bg-secondary text-secondary-foreground"
+                            "w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-bold shadow-sm",
+                            isCorrectAnswer ? "bg-gradient-to-br from-success to-success/80 text-white" : 
+                            isSelected ? "bg-gradient-to-br from-destructive to-destructive/80 text-white" : "bg-secondary text-secondary-foreground"
                         )}>
                             {String.fromCharCode(65 + optIdx)}
                         </span>
