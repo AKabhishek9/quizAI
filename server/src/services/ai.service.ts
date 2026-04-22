@@ -3,6 +3,7 @@ import OpenAI from "openai";
 import { QuestionModel } from "../models/Question.js";
 import { z } from "zod";
 import { logger } from "../utils/logger.js";
+import crypto from "crypto";
 
 // ── AI Response Validation Schemas ──────────────────────────────────────────
 const AIQuestionSchema = z.object({
@@ -30,6 +31,7 @@ export interface GenerateParams {
 }
 
 export interface GeneratedQuestionDoc {
+  _id: string;
   question: string;
   options: string[];
   answer: number;
@@ -207,6 +209,7 @@ function parseAndProcess(content: string, params: GenerateParams): GeneratedQues
   const validated = AIQuizResponseSchema.parse(rawParsed);
 
   return validated.questions.map((q, idx) => ({
+    _id: crypto.randomUUID(),
     question: q.question,
     options: q.options,
     answer: q.answer,
