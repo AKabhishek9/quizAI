@@ -60,8 +60,8 @@ app.use(globalLimiter);
 
 // Per-user rate limiting for quiz generation (prevent hammering AI endpoint)
 const perUserQuizLimiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
-  max: 5, // 5 quiz requests per user per minute
+  windowMs: 60 * 1000,
+  max: 5,
   validate: { ip: false },
   keyGenerator: (req) => {
     return String((req as any).user?.uid || req.ip || "unknown");
@@ -81,8 +81,8 @@ app.use("/api/get-quiz", perUserQuizLimiter);
 
 // Health check (public, no auth) - used by UptimeRobot to keep server warm
 app.get("/api/health", (_req, res) => {
-  res.json({ 
-    status: "ok", 
+  res.json({
+    status: "ok",
     timestamp: new Date().toISOString(),
     uptime: process.uptime()
   });
@@ -99,7 +99,7 @@ app.use(errorHandler);
 // ──────────────────────────────────────────────
 async function main() {
   await connectDB();
-  
+
   // Recover jobs stuck in 'running' from previous server crash/restart
   const { recoverStaleJobs } = await import("./services/aiQueue.js");
   await recoverStaleJobs();
