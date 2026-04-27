@@ -67,7 +67,7 @@ async function callGroq(prompt: string): Promise<string> {
 
   const isGroq = !!process.env.GROQ_API_KEY;
   const baseURL = isGroq ? "https://api.groq.com/openai/v1" : "https://openrouter.ai/api/v1";
-  
+
   const openai = new OpenAI({
     apiKey: apiKey,
     baseURL: baseURL,
@@ -87,14 +87,14 @@ async function callGroq(prompt: string): Promise<string> {
 // ── Helpers ─────────────────────────────────────────────────────────────────
 async function fetchFallbackFromDB(params: GenerateParams, count: number, excludeIds: string[] = []): Promise<GeneratedQuestionDoc[]> {
   logger.info(`[ai] Fetching ${count} questions from DB fallback...`);
-  
+
   const questions = await QuestionModel.aggregate([
-    { 
-      $match: { 
+    {
+      $match: {
         stream: params.stream,
         difficulty: { $gte: params.difficulty - 1, $lte: params.difficulty + 1 }, // Range for better matching
         _id: { $nin: excludeIds }
-      } 
+      }
     },
     { $sample: { size: count } }
   ]);
@@ -108,16 +108,16 @@ async function fetchFallbackFromDB(params: GenerateParams, count: number, exclud
 // ── Main logic ──────────────────────────────────────────────────────────────
 export async function generateQuestions(params: GenerateParams): Promise<GeneratedQuestionDoc[]> {
   const totalCount = params.count || 10;
-  
+
   const difficultyLabel =
     params.difficulty <= 1 ? "Easy (Level 1)"
-    : params.difficulty <= 2 ? "Easy-Medium (Level 2)"
-    : params.difficulty <= 3 ? "Medium (Level 3)"
-    : params.difficulty <= 4 ? "Hard (Level 4)"
-    : "Expert (Level 5)";
+      : params.difficulty <= 2 ? "Easy-Medium (Level 2)"
+        : params.difficulty <= 3 ? "Medium (Level 3)"
+          : params.difficulty <= 4 ? "Hard (Level 4)"
+            : "Expert (Level 5)";
 
   // Request slightly more than half from each to ensure we hit the target after dedup
-  const targetPerProvider = Math.ceil(totalCount * 0.7); 
+  const targetPerProvider = Math.ceil(totalCount * 0.7);
 
   const userPrompt = `You are an expert technical assessor generating high-quality multiple choice questions.
 Your ONLY output must be valid JSON.
@@ -210,20 +210,31 @@ Generate ${targetPerProvider} multiple choice questions.
 function parseAndProcess(content: string, params: GenerateParams): GeneratedQuestionDoc[] {
   const cleaned = content.replace(/^```json\s*/m, "").replace(/```\s*$/m, "").trim();
   const rawParsed = JSON.parse(cleaned);
+
+  // Clamp answer indices before Zod validates them.
+  // Groq occasionally returns answer:6 for a 4-option question.
+  if (Array.isArray(rawParsed.questions)) {
+    rawParsed.questions = rawParsed.questions.map((q: any) => ({
+      ...q,
+      answer: typeof q.answer === "number" && Array.isArray(q.options)
+        ? Math.min(Math.max(0, q.answer), q.options.length - 1)
+        : 0,
+    }));
+  }
+
   const validated = AIQuizResponseSchema.parse(rawParsed);
 
   return validated.questions.map((q, idx) => ({
     _id: crypto.randomBytes(12).toString("hex"),
-    _isNew: true, // Internal flag to identify AI-generated questions
+    _isNew: true,
     question: q.question,
     options: q.options,
     answer: q.answer,
     explanation: q.explanation,
     stream: params.stream,
     subject: params.subject || "Mixed",
-    // Prioritize the requested topic that best matches the AI-generated one, or default to the first requested topic
     topic: params.topics.find(t => q.topic?.toLowerCase().includes(t.toLowerCase())) || params.topics[idx % params.topics.length],
-    concept: q.topic || q.concept, // Keep the AI's specific topic as the concept
+    concept: q.topic || q.concept,
     difficulty: params.difficulty,
     isDaily: params.isDaily || false,
     expiresAt: params.expiresAt,
