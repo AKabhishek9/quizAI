@@ -62,7 +62,7 @@ app.use(globalLimiter);
 const perUserQuizLimiter = rateLimit({
   windowMs: 60 * 1000,
   max: 5,
-  validate: { ip: false },
+  validate: false,
   keyGenerator: (req) => {
     return String((req as any).user?.uid || req.ip || "unknown");
   },
