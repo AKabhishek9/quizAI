@@ -12,7 +12,7 @@ export async function getAuthHeaders() {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
-  
+
   if (auth && auth.currentUser) {
     const token = await auth.currentUser.getIdToken();
     headers["Authorization"] = `Bearer ${token}`;
@@ -200,10 +200,10 @@ export async function checkHealth(): Promise<{ status: string }> {
  * Solves the triple-fetch problem where Profile, Stats, and History 
  * previously made separate API calls to the same endpoint.
  */
-export async function getUserDashboard(): Promise<{ 
-  profile: UserProfile; 
-  stats: UserStats; 
-  history: QuizAttempt[] 
+export async function getUserDashboard(): Promise<{
+  profile: UserProfile;
+  stats: UserStats;
+  history: QuizAttempt[]
 }> {
   return request<{
     profile: UserProfile;
@@ -231,7 +231,8 @@ export async function getQuizById(id: string): Promise<Quiz | null> {
 
 /** Get today's active daily quizzes mapped by category */
 export async function getDailyQuizzes(): Promise<Record<string, DailyQuizSummary>> {
-  return request<Record<string, DailyQuizSummary>>("/daily");
+  const result = await request<{ quizzes: Record<string, DailyQuizSummary>; expiresAt: string | null }>("/daily");
+  return result.quizzes ?? {};
 }
 
 /** Get a specific daily quiz by its ID (alias for getDailyQuiz) */
