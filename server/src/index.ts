@@ -95,12 +95,12 @@ async function main() {
   // ──────────────────────────────────────────────
   // Render Keep-Alive (Prevent Sleep)
   // ──────────────────────────────────────────────
-  const RENDER_URL = process.env.RENDER_EXTERNAL_URL;
-  if (RENDER_URL) {
-    console.log(`[server] Keep-alive active: Pinging ${RENDER_URL}/api/health every 14 mins`);
+  const BACKEND_URL = process.env.RENDER_EXTERNAL_URL || process.env.BACKEND_URL;
+  if (BACKEND_URL) {
+    console.log(`[server] Keep-alive active: Pinging ${BACKEND_URL}/api/health every 14 mins`);
     setInterval(async () => {
       try {
-        const res = await fetch(`${RENDER_URL}/api/health`);
+        const res = await fetch(`${BACKEND_URL}/api/health`);
         if (res.ok) console.log("[keep-alive] Self-ping successful");
       } catch (err) {
         console.warn("[keep-alive] Self-ping failed:", err);

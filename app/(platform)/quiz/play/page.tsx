@@ -7,6 +7,7 @@ import { ArrowRight, ArrowLeft, AlertCircle, Loader2, TrendingUp, TrendingDown, 
 import { Button } from "@/components/ui/button";
 import { QuizOption } from "@/components/quiz/quiz-option";
 import { ProgressBar } from "@/components/dashboard/progress-bar";
+import { ErrorBoundary } from "@/components/shared/error-boundary";
 import { useAdaptiveQuiz } from "@/hooks/use-adaptive-quiz";
 import type { DifficultyLabel } from "@/hooks/use-adaptive-quiz";
 import { cn } from "@/lib/utils";
@@ -396,6 +397,43 @@ function PlayQuizEngine() {
   );
 }
 
+function QuizErrorState({ onRetry }: { onRetry: () => void }) {
+  const router = useRouter();
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="max-w-md mx-auto text-center py-16"
+    >
+      <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-8 text-center">
+        <AlertCircle className="h-8 w-8 text-destructive mx-auto mb-3" />
+        <h2 className="text-base font-semibold text-foreground mb-1">Quiz player crashed</h2>
+        <p className="text-sm text-muted-foreground mb-5">
+          Something unexpected happened while rendering this assessment.
+        </p>
+        <div className="flex justify-center gap-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => router.push("/quiz/stream")}
+            className="cursor-pointer h-8 text-xs"
+          >
+            Change Topics
+          </Button>
+          <Button
+            onClick={onRetry}
+            size="sm"
+            className="cursor-pointer bg-foreground text-background hover:bg-foreground/90 h-8 text-xs"
+          >
+            Retry
+          </Button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 export default function PlayQuizPage() {
   return (
     <Suspense
@@ -405,7 +443,9 @@ export default function PlayQuizPage() {
         </div>
       }
     >
-      <PlayQuizEngine />
+      <ErrorBoundary fallback={({ reset }) => <QuizErrorState onRetry={reset} />}>
+        <PlayQuizEngine />
+      </ErrorBoundary>
     </Suspense>
   );
 }

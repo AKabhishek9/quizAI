@@ -13,7 +13,7 @@ const QUIZ_SIZE = 10;
  * GET QUIZ — Adaptive question selection
  * ──────────────────────────────────────────────
  * Strategy:
- *   1. Identify weak concepts (accuracy < 0.5)
+ *   1. Identify weak concepts (accuracy < 0.7)
  *   2. Pull 60% from weak concepts at user level
  *   3. Fill remaining 40% randomly at user level
  *   4. Exclude already-attempted questions
@@ -46,7 +46,7 @@ export async function getDynamicQuiz({
 
   // Get weak concepts
   const weakConcepts = Array.from(user.conceptStats.entries())
-    .filter(([, stat]) => stat.accuracy < 0.5)
+    .filter(([, stat]) => stat.accuracy < 0.7)
     .map(([concept]) => concept);
 
   const topicCount = topics.length;

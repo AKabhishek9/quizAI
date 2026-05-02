@@ -75,5 +75,8 @@ export function calculateXPAwarded(accuracy: number, isDaily: boolean = false): 
   if (accuracy >= 0.8) {
     xpAwarded += 50;
   }
+  if (isDaily) {
+    xpAwarded += 25;
+  }
   return xpAwarded;
 }

@@ -20,6 +20,7 @@ interface ReviewAnswer {
     question?: string;
     options?: string[];
     answer?: number;
+    explanation?: string;
     concept?: string;
   };
 }
@@ -66,6 +67,7 @@ export default function ReviewPage({ params }: ReviewPageProps) {
                       question: String((ar.question as Record<string, unknown>).question ?? ""),
                       options: Array.isArray((ar.question as Record<string, unknown>).options) ? ((ar.question as Record<string, unknown>).options as string[]) : [],
                       answer: Number((ar.question as Record<string, unknown>).answer ?? 0),
+                      explanation: String((ar.question as Record<string, unknown>).explanation ?? ""),
                       concept: String((ar.question as Record<string, unknown>).concept ?? ""),
                     } : undefined,
                   } as ReviewAnswer;
@@ -271,6 +273,13 @@ export default function ReviewPage({ params }: ReviewPageProps) {
                 );
               })}
             </div>
+
+            {answer.question?.explanation && (
+              <div className="mt-3 p-3 rounded-lg bg-primary/5 border border-primary/10">
+                <p className="text-xs font-semibold text-primary mb-1">Explanation</p>
+                <p className="text-sm text-muted-foreground">{answer.question.explanation}</p>
+              </div>
+            )}
           </motion.div>
         ))}
       </div>

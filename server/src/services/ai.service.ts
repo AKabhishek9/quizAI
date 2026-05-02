@@ -123,8 +123,7 @@ export async function generateQuestions(params: GenerateParams): Promise<Generat
           : params.difficulty <= 4 ? "Hard (Level 4)"
             : "Expert (Level 5)";
 
-  // Request slightly more than half from each to ensure we hit the target after dedup
-  const targetPerProvider = Math.ceil(totalCount * 0.7);
+  const requestedCount = totalCount;
 
   const userPrompt = `You are an expert technical assessor generating high-quality multiple choice questions.
 Your ONLY output must be valid JSON.
@@ -149,41 +148,32 @@ Use this exact structure:
   ]
 }
 
-Generate ${targetPerProvider} multiple choice questions.
+Generate ${requestedCount} multiple choice questions.
 - Stream: ${params.stream}
 - Difficulty: ${difficultyLabel}
 - Topics: ${params.topics.join(", ")}`;
 
-  logger.info(`[ai] Starting parallel generation (${targetPerProvider} Qs per provider)`);
+  logger.info(`[ai] Starting primary generation (${requestedCount} Qs)`);
   const startTime = Date.now();
 
-  const [geminiResult, openRouterResult] = await Promise.allSettled([
-    callGemini(userPrompt),
-    callOpenRouter(userPrompt)
-  ]);
-
-  const elapsed = Date.now() - startTime;
   let allQuestions: GeneratedQuestionDoc[] = [];
 
-  // Parse Gemini
-  if (geminiResult.status === "fulfilled") {
+  try {
+    const geminiResponse = await callGemini(userPrompt);
+    allQuestions = parseAndProcess(geminiResponse, params);
+    logger.info(`[ai] Gemini delivered ${allQuestions.length} questions`);
+  } catch (err) {
+    logger.warn(`[ai] Gemini failed, falling back to secondary provider: ${err}`);
     try {
-      const qs = parseAndProcess(geminiResult.value, params);
-      allQuestions.push(...qs);
-    } catch (err) {
-      logger.warn(`[ai] Gemini parse failed: ${err}`);
+      const secondaryResponse = await callOpenRouter(userPrompt);
+      allQuestions = parseAndProcess(secondaryResponse, params);
+      logger.info(`[ai] Secondary provider delivered ${allQuestions.length} questions`);
+    } catch (secondaryErr) {
+      logger.error(`[ai] Both providers failed: ${secondaryErr}`);
     }
   }
 
-  // Parse OpenRouter
-  if (openRouterResult.status === "fulfilled") {
-    try {
-      const qs = parseAndProcess(openRouterResult.value, params);
-      allQuestions.push(...qs);
-    } catch (err) {
-      logger.warn(`[ai] OpenRouter parse failed: ${err}`);
-    }
-  }
+  const elapsed = Date.now() - startTime;
 
   // Pipeline: Validate -> Deduplicate
   const validated = validateQuestions(allQuestions);

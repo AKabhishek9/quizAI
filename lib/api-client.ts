@@ -224,11 +224,6 @@ export async function getQuizzes(): Promise<Quiz[]> {
   return request<Quiz[]>("/quiz/all");
 }
 
-export async function getQuizById(id: string): Promise<Quiz | null> {
-  // Dynamic fetching by ID is not yet implemented on backend
-  return null;
-}
-
 /** Get today's active daily quizzes mapped by category */
 export async function getDailyQuizzes(): Promise<Record<string, DailyQuizSummary>> {
   const result = await request<{ quizzes: Record<string, DailyQuizSummary>; expiresAt: string | null }>("/daily");
