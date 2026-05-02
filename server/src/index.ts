@@ -27,8 +27,6 @@ const PORT = parseInt(process.env.PORT || "5000", 10);
 // Security Middleware
 // ──────────────────────────────────────────────
 
-import rateLimit from "express-rate-limit";
-
 // Body parser
 app.use(express.json({ limit: "1mb" }));
 
@@ -58,21 +56,6 @@ app.use(helmet());
 // Global rate limiting
 app.use(globalLimiter);
 
-// Per-user rate limiting for quiz generation (prevent hammering AI endpoint)
-const perUserQuizLimiter = rateLimit({
-  windowMs: 60 * 1000,
-  max: 5,
-  validate: false,
-  keyGenerator: (req) => {
-    return String((req as any).user?.uid || req.ip || "unknown");
-  },
-  message: {
-    error: "Too many quiz requests. Please wait 60 seconds.",
-    code: "RATE_LIMIT_EXCEEDED"
-  },
-  skip: (req) => req.path !== "/api/get-quiz"
-});
-app.use("/api/get-quiz", perUserQuizLimiter);
 
 
 // ──────────────────────────────────────────────

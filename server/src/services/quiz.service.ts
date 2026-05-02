@@ -5,7 +5,7 @@ import { QuizAttemptModel } from "../models/QuizAttempt.js";
 import type { SubmitPayload, SubmitResponse, QuizResponse, DynamicQuizRequest } from "../types/index.js";
 import { logger } from "../utils/logger.js";
 import { fetchWeakQuestions, fetchRandomQuestions, type SelectionCriteria } from "../utils/quiz-selection.js";
-import { gradeQuizAnswers, updateConceptStats, calculateLevelChange, calculateXPAwarded } from "../utils/quiz-scoring.js";
+import { gradeQuizAnswers, updateConceptStats, calculateXPAwarded } from "../utils/quiz-scoring.js";
 
 const QUIZ_SIZE = 10;
 
@@ -219,11 +219,6 @@ export async function submitQuiz(payload: SubmitPayload): Promise<SubmitResponse
   if (!user.conceptStats) user.conceptStats = new Map();
   updateConceptStats(user.conceptStats, conceptTally);
 
-  // Adjust difficulty level
-  const prevLevel = user.currentLevel;
-  const levelChange = calculateLevelChange(accuracy, prevLevel);
-  user.currentLevel = prevLevel + levelChange;
-
   // Push attempted questions (capped FIFO)
   // Ensure all IDs are cast to MongoDB ObjectIds to satisfy TypeScript and Schema requirements
   const currentSubmissionIds = answers.map(a => new mongoose.Types.ObjectId(a.questionId));
@@ -237,8 +232,12 @@ export async function submitQuiz(payload: SubmitPayload): Promise<SubmitResponse
   }
 
   // Award XP
+  const prevLevel = user.currentLevel || 1;
   const xpAwarded = calculateXPAwarded(accuracy);
   user.xp = (user.xp ?? 0) + xpAwarded;
+  const newLevel = Math.floor(user.xp / 100) + 1;
+  const levelChange = newLevel - prevLevel;
+  user.currentLevel = Math.max(1, newLevel);
 
   await user.save();
 

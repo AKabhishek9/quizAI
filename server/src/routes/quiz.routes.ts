@@ -1,4 +1,5 @@
 import { Router } from "express";
+import rateLimit from "express-rate-limit";
 import { 
   getQuiz, 
   submitQuizHandler, 
@@ -23,8 +24,22 @@ import { aiLimiter } from "../middleware/rateLimit.middleware.js";
 
 const router = Router();
 
+// Per-user rate limiting for quiz generation (prevent hammering AI endpoint)
+const perUserQuizLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 5,
+  validate: false,
+  keyGenerator: (req) => {
+    return String((req as any).user?.uid || req.ip || "unknown");
+  },
+  message: {
+    error: "Too many quiz requests. Please wait 60 seconds.",
+    code: "RATE_LIMIT_EXCEEDED"
+  },
+});
+
 // Securing endpoints via Firebase JWT + Zod validation + rate limiting
-router.post("/get-quiz", requireAuth, aiLimiter, validateBody(GetQuizSchema), getQuiz);
+router.post("/get-quiz", requireAuth, perUserQuizLimiter, aiLimiter, validateBody(GetQuizSchema), getQuiz);
 router.post("/submit-quiz", requireAuth, validateBody(SubmitQuizSchema), submitQuizHandler);
 router.get("/quiz-attempt/:id", requireAuth, validateParams(AttemptIdParamSchema), getQuizAttempt);
 router.get("/quiz-job/:id", requireAuth, getQuizJobStatus);

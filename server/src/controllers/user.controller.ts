@@ -28,6 +28,25 @@ interface UserStatsResponse {
   categoryPerformance: CategoryPerformance[];
 }
 
+const rankCache = new Map<string, { rank: number; ts: number }>();
+const RANK_TTL = 5 * 60 * 1000;
+
+async function getUserRank(userId: string, totalScore: number): Promise<number> {
+  const cached = rankCache.get(userId);
+  if (cached && Date.now() - cached.ts < RANK_TTL) return cached.rank;
+
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  const agg = await QuizAttemptModel.aggregate([
+    { $match: { createdAt: { $gte: sevenDaysAgo } } },
+    { $group: { _id: "$userId", s: { $sum: "$score" } } },
+    { $match: { s: { $gt: totalScore } } },
+    { $count: "n" }
+  ]);
+  const rank = agg[0]?.n + 1 || 1;
+  rankCache.set(userId, { rank, ts: Date.now() });
+  return rank;
+}
+
 export const getUserDashboard = async (
   req: Request,
   res: Response,
@@ -107,14 +126,7 @@ export const getUserDashboard = async (
     const totalCorrect = Array.from(user.conceptStats.values()).reduce((sum, stat) => sum + stat.correct, 0);
 
     // Calculate actual global rank dynamically
-    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    const rankAggregation = await QuizAttemptModel.aggregate([
-      { $match: { createdAt: { $gte: thirtyDaysAgo } } },
-      { $group: { _id: "$userId", userScore: { $sum: "$score" } } },
-      { $match: { userScore: { $gt: totalScore } } },
-      { $count: "higherRanked" }
-    ]);
-    const rank = rankAggregation.length > 0 ? rankAggregation[0].higherRanked + 1 : 1;
+    const rank = await getUserRank(userId, totalScore);
 
     const stats: UserStatsResponse = {
       totalQuizzes: attempts.length,
