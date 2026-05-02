@@ -3,7 +3,7 @@ import OpenAI from "openai";
 import { QuestionModel } from "../models/Question.js";
 import { z } from "zod";
 import { logger } from "../utils/logger.js";
-import crypto from "crypto";
+import { Types } from "mongoose";
 
 // ── AI Response Validation Schemas ──────────────────────────────────────────
 const AIQuestionSchema = z.object({
@@ -53,7 +53,7 @@ async function callGemini(prompt: string): Promise<string> {
 
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({
-    model: "gemini-1.5-flash",
+    model: process.env.GEMINI_MODEL?.trim() || "gemini-2.0-flash",
     generationConfig: { responseMimeType: "application/json", temperature: 0.4 },
   });
 
@@ -268,7 +268,7 @@ function parseAndProcess(content: string, params: GenerateParams): GeneratedQues
 
   // Step 5: Map to GeneratedQuestionDoc
   return sanitized.map((q, idx) => ({
-    _id: crypto.randomBytes(12).toString("hex"),
+    _id: new Types.ObjectId().toString(),
     _isNew: true,
     question: q.question,
     options: q.options,

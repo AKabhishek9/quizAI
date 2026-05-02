@@ -85,7 +85,7 @@ export function useAdaptiveQuiz(): UseAdaptiveQuizReturn {
           const { getQuizJobStatus } = await import("@/lib/api-client");
           const job = await getQuizJobStatus(response.jobId!);
           
-          if (job.status === "completed" && job.result) {
+          if (job.status === "done" && job.result) {
             response = { questions: job.result };
             jobFinished = true;
           } else if (job.status === "failed") {

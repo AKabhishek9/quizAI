@@ -132,8 +132,14 @@ export class DailyQuizService {
 
       // 2. SAFE ROTATION: Insert new first, then delete old (no zero-quiz window)
       if (newDailyQuizzes.length > 0) {
-        // Insert new batch. Older documents will be naturally purged by MongoDB TTL when Date.now() >= expiresAt
-        await DailyQuizModel.insertMany(newDailyQuizzes);
+        // Upsert by category so TTL lag cannot block the daily refresh.
+        for (const quiz of newDailyQuizzes) {
+          await DailyQuizModel.findOneAndReplace(
+            { category: quiz.category },
+            quiz,
+            { upsert: true, new: true }
+          );
+        }
         
         console.log(`[daily-quiz] Refresh cycle complete. Site is updated.`);
       } else {

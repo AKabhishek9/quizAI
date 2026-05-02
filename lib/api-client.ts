@@ -81,7 +81,7 @@ export interface ApiQuizResponse {
 }
 
 export interface JobStatusResponse {
-  status: "pending" | "processing" | "completed" | "failed";
+  status: "queued" | "running" | "done" | "failed";
   error?: string;
   result?: ApiQuestion[];
 }
