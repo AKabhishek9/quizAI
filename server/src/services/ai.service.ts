@@ -61,21 +61,28 @@ async function callGemini(prompt: string): Promise<string> {
   return result.response.text();
 }
 
-async function callGroq(prompt: string): Promise<string> {
-  const apiKey = (process.env.GROQ_API_KEY || process.env.OPENROUTER_API_KEY)?.trim();
-  if (!apiKey) throw new Error("Fallback API key (GROQ/OPENROUTER) not found");
+async function callOpenRouter(prompt: string): Promise<string> {
+  const apiKey = (process.env.OPENROUTER_API_KEY || process.env.GROQ_API_KEY)?.trim();
+  if (!apiKey) throw new Error("AI API key (OPENROUTER/GROQ) not found");
 
-  const isGroq = !!process.env.GROQ_API_KEY;
-  const baseURL = isGroq ? "https://api.groq.com/openai/v1" : "https://openrouter.ai/api/v1";
+  const isOpenRouter = !!process.env.OPENROUTER_API_KEY;
+  const baseURL = isOpenRouter ? "https://openrouter.ai/api/v1" : "https://api.groq.com/openai/v1";
+  
+  // Use user-specified model or defaults
+  const defaultModel = isOpenRouter ? "meta-llama/llama-3.1-8b-instruct:free" : "llama-3.1-8b-instant";
+  const model = process.env.AI_MODEL || defaultModel;
 
   const openai = new OpenAI({
     apiKey: apiKey,
     baseURL: baseURL,
-    defaultHeaders: { "HTTP-Referer": "https://quizai.com", "X-Title": "QuizAI" }
+    defaultHeaders: { 
+      "HTTP-Referer": "https://quizai.com", 
+      "X-Title": "QuizAI" 
+    }
   });
 
   const response = await openai.chat.completions.create({
-    model: isGroq ? "llama-3.1-8b-instant" : "meta-llama/llama-3.1-8b-instruct:free",
+    model: model,
     messages: [{ role: "user", content: prompt }],
     temperature: 0.4,
     response_format: { type: "json_object" },
@@ -122,6 +129,8 @@ export async function generateQuestions(params: GenerateParams): Promise<Generat
   const userPrompt = `You are an expert technical assessor generating high-quality multiple choice questions.
 Your ONLY output must be valid JSON.
 
+CRITICAL: The 'answer' field must be the 0-based index of the CORRECT option in the 'options' array. The explanation must describe WHY that indexed option is correct. Double-check: options[answer] must be the factually correct answer. Never set answer to an index that contradicts the explanation.
+
 Use this exact structure:
 {
   "questions": [
@@ -129,7 +138,7 @@ Use this exact structure:
       "question": "A clear, unambiguous question text",
       "options": ["Option A", "Option B", "Option C", "Option D"],
       "answer": 2,
-      "explanation": "A concise explanation.",
+      "explanation": "A concise explanation of why Option C (index 2) is correct.",
       "topic": "General topic",
       "concept": "Precise sub-topic"
     }
@@ -144,9 +153,9 @@ Generate ${targetPerProvider} multiple choice questions.
   logger.info(`[ai] Starting parallel generation (${targetPerProvider} Qs per provider)`);
   const startTime = Date.now();
 
-  const [geminiResult, groqResult] = await Promise.allSettled([
+  const [geminiResult, openRouterResult] = await Promise.allSettled([
     callGemini(userPrompt),
-    callGroq(userPrompt)
+    callOpenRouter(userPrompt)
   ]);
 
   const elapsed = Date.now() - startTime;
@@ -162,13 +171,13 @@ Generate ${targetPerProvider} multiple choice questions.
     }
   }
 
-  // Parse Groq
-  if (groqResult.status === "fulfilled") {
+  // Parse OpenRouter
+  if (openRouterResult.status === "fulfilled") {
     try {
-      const qs = parseAndProcess(groqResult.value, params);
+      const qs = parseAndProcess(openRouterResult.value, params);
       allQuestions.push(...qs);
     } catch (err) {
-      logger.warn(`[ai] Groq parse failed: ${err}`);
+      logger.warn(`[ai] OpenRouter parse failed: ${err}`);
     }
   }
 
@@ -224,7 +233,21 @@ function parseAndProcess(content: string, params: GenerateParams): GeneratedQues
 
   const validated = AIQuizResponseSchema.parse(rawParsed);
 
-  return validated.questions.map((q, idx) => ({
+  // Post-validation: cross-check explanation vs answer
+  // Discard questions where the explanation mentions a wrong option more than the correct one
+  const sanitized = validated.questions.filter(q => {
+    const markedAnswer = q.options[q.answer];
+    if (!markedAnswer) return false;
+    const otherOptions = q.options.filter((_, i) => i !== q.answer);
+    const explanationMentionsWrongOption = otherOptions.some(opt =>
+      opt.length > 4 &&
+      q.explanation?.toLowerCase().includes(opt.toLowerCase()) &&
+      !q.explanation?.toLowerCase().includes(markedAnswer.toLowerCase())
+    );
+    return !explanationMentionsWrongOption;
+  });
+
+  return sanitized.map((q, idx) => ({
     _id: crypto.randomBytes(12).toString("hex"),
     _isNew: true,
     question: q.question,
