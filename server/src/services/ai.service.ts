@@ -129,7 +129,11 @@ export async function generateQuestions(params: GenerateParams): Promise<Generat
   const userPrompt = `You are an expert technical assessor generating high-quality multiple choice questions.
 Your ONLY output must be valid JSON.
 
-CRITICAL: The 'answer' field must be the 0-based index of the CORRECT option in the 'options' array. The explanation must describe WHY that indexed option is correct. Double-check: options[answer] must be the factually correct answer. Never set answer to an index that contradicts the explanation.
+CRITICAL RULES:
+- "answer" must be the 0-based index of the CORRECT option in the "options" array
+- options[answer] MUST be the factually correct answer
+- The explanation MUST describe why options[answer] is correct
+- NEVER let the explanation name a different option than the one at index "answer"
 
 Use this exact structure:
 {
@@ -217,11 +221,11 @@ Generate ${targetPerProvider} multiple choice questions.
 }
 
 function parseAndProcess(content: string, params: GenerateParams): GeneratedQuestionDoc[] {
+  // Step 1: Clean JSON fence
   const cleaned = content.replace(/^```json\s*/m, "").replace(/```\s*$/m, "").trim();
   const rawParsed = JSON.parse(cleaned);
 
-  // Clamp answer indices before Zod validates them.
-  // Groq occasionally returns answer:6 for a 4-option question.
+  // Step 2: Clamp answer indices BEFORE Zod validation
   if (Array.isArray(rawParsed.questions)) {
     rawParsed.questions = rawParsed.questions.map((q: any) => ({
       ...q,
@@ -231,22 +235,38 @@ function parseAndProcess(content: string, params: GenerateParams): GeneratedQues
     }));
   }
 
+  // Step 3: Zod schema validation
   const validated = AIQuizResponseSchema.parse(rawParsed);
 
-  // Post-validation: cross-check explanation vs answer
-  // Discard questions where the explanation mentions a wrong option more than the correct one
-  const sanitized = validated.questions.filter(q => {
-    const markedAnswer = q.options[q.answer];
-    if (!markedAnswer) return false;
-    const otherOptions = q.options.filter((_, i) => i !== q.answer);
-    const explanationMentionsWrongOption = otherOptions.some(opt =>
-      opt.length > 4 &&
-      q.explanation?.toLowerCase().includes(opt.toLowerCase()) &&
-      !q.explanation?.toLowerCase().includes(markedAnswer.toLowerCase())
-    );
-    return !explanationMentionsWrongOption;
+  // Step 4: Sanitizer — cross-check answer index vs explanation
+  const sanitized = validated.questions.filter((q) => {
+    const markedOption = q.options[q.answer];
+    if (!markedOption) return false;
+    if (!q.explanation || q.explanation.trim().length < 5) return true;
+
+    const explanationLower = q.explanation.toLowerCase();
+    const markedLower = markedOption.toLowerCase();
+
+    if (explanationLower.includes(markedLower)) return true;
+
+    const contradictingIndex = q.options.findIndex((opt, i) => {
+      if (i === q.answer) return false;
+      const optLower = opt.toLowerCase();
+      return optLower.length > 4 && explanationLower.includes(optLower);
+    });
+
+    if (contradictingIndex !== -1) {
+      logger.warn(
+        `[ai] Answer mismatch fixed: was ${q.answer} ("${markedOption}"), ` +
+        `corrected to ${contradictingIndex} ("${q.options[contradictingIndex]}")`
+      );
+      (q as any).answer = contradictingIndex;
+    }
+
+    return true;
   });
 
+  // Step 5: Map to GeneratedQuestionDoc
   return sanitized.map((q, idx) => ({
     _id: crypto.randomBytes(12).toString("hex"),
     _isNew: true,
@@ -256,7 +276,10 @@ function parseAndProcess(content: string, params: GenerateParams): GeneratedQues
     explanation: q.explanation,
     stream: params.stream,
     subject: params.subject || "Mixed",
-    topic: params.topics.find(t => q.topic?.toLowerCase().includes(t.toLowerCase())) || params.topics[idx % params.topics.length],
+    topic:
+      params.topics.find((t) =>
+        q.topic?.toLowerCase().includes(t.toLowerCase())
+      ) || params.topics[idx % params.topics.length],
     concept: q.topic || q.concept,
     difficulty: params.difficulty,
     isDaily: params.isDaily || false,
