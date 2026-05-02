@@ -42,6 +42,9 @@ next-env.d.ts
 # antigravity
 antigravity/
 
+# graphify
+graphify-out/
+
 
 # Python
 __pycache__/
