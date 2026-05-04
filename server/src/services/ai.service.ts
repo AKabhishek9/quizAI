@@ -131,17 +131,29 @@ async function fetchFallbackFromDB(params: GenerateParams, count: number, exclud
 // ── Main logic ──────────────────────────────────────────────────────────────
 export async function generateQuestions(params: GenerateParams): Promise<GeneratedQuestionDoc[]> {
   const totalCount = params.count || 10;
+  let finalPool: GeneratedQuestionDoc[] = [];
 
-  const difficultyLabel =
-    params.difficulty <= 1 ? "Easy (Level 1)"
-      : params.difficulty <= 2 ? "Easy-Medium (Level 2)"
-        : params.difficulty <= 3 ? "Medium (Level 3)"
-          : params.difficulty <= 4 ? "Hard (Level 4)"
-            : "Expert (Level 5)";
+  // Step 1: ALWAYS try DB first, specifically for the selected topics
+  try {
+    const dbFallback = await fetchFallbackFromDB(params, totalCount, []);
+    finalPool.push(...dbFallback);
+    logger.info(`[ai] DB provided ${finalPool.length}/${totalCount} questions matching topics: ${params.topics.join(", ")}`);
+  } catch (err) {
+    logger.error(`[ai] DB fetch error: ${err}`);
+  }
 
-  const requestedCount = totalCount;
+  // Step 2: If DB didn't have enough questions, ask AI to generate the exact remaining amount
+  const neededCount = totalCount - finalPool.length;
+  
+  if (neededCount > 0) {
+    const difficultyLabel =
+      params.difficulty <= 1 ? "Easy (Level 1)"
+        : params.difficulty <= 2 ? "Easy-Medium (Level 2)"
+          : params.difficulty <= 3 ? "Medium (Level 3)"
+            : params.difficulty <= 4 ? "Hard (Level 4)"
+              : "Expert (Level 5)";
 
-  const userPrompt = `You are an expert technical assessor generating high-quality multiple choice questions.
+    const userPrompt = `You are an expert technical assessor generating high-quality multiple choice questions.
 Your ONLY output must be valid JSON.
 
 CRITICAL RULES:
@@ -164,63 +176,59 @@ Use this exact structure:
   ]
 }
 
-Generate ${requestedCount} multiple choice questions.
+Generate exactly ${neededCount} multiple choice questions.
 - Stream: ${params.stream}
 - Difficulty: ${difficultyLabel}
-- Topics: ${params.topics.join(", ")}`;
+- Topics: ${params.topics.join(", ")}
+These questions MUST strictly belong to the specified Topics.`;
 
-  logger.info(`[ai] Starting primary generation (${requestedCount} Qs)`);
-  const startTime = Date.now();
+    logger.info(`[ai] DB gap found. Starting AI generation for remaining ${neededCount} Qs`);
+    const startTime = Date.now();
 
-  let allQuestions: GeneratedQuestionDoc[] = [];
+    let aiQuestions: GeneratedQuestionDoc[] = [];
 
-  try {
-    const geminiResponse = await callGemini(userPrompt);
-    allQuestions = parseAndProcess(geminiResponse, params);
-    logger.info(`[ai] Gemini delivered ${allQuestions.length} questions`);
-  } catch (err) {
-    logger.warn(`[ai] Gemini failed, falling back to secondary provider: ${err}`);
     try {
-      const secondaryResponse = await callOpenRouter(userPrompt);
-      allQuestions = parseAndProcess(secondaryResponse, params);
-      logger.info(`[ai] Secondary provider delivered ${allQuestions.length} questions`);
-    } catch (secondaryErr) {
-      logger.error(`[ai] Both providers failed: ${secondaryErr}`);
+      const geminiResponse = await callGemini(userPrompt);
+      aiQuestions = parseAndProcess(geminiResponse, params);
+      logger.info(`[ai] Gemini delivered ${aiQuestions.length} questions`);
+    } catch (err) {
+      logger.warn(`[ai] Gemini failed, falling back to Groq: ${err}`);
+      try {
+        const secondaryResponse = await callOpenRouter(userPrompt);
+        aiQuestions = parseAndProcess(secondaryResponse, params);
+        logger.info(`[ai] Groq delivered ${aiQuestions.length} questions`);
+      } catch (secondaryErr) {
+        logger.error(`[ai] Both Gemini and Groq failed: ${secondaryErr}`);
+      }
     }
-  }
 
-  const elapsed = Date.now() - startTime;
+    const elapsed = Date.now() - startTime;
 
-  // Pipeline: Validate -> Deduplicate
-  const validated = validateQuestions(allQuestions);
-  let finalPool = deduplicateQuestions(validated);
+    // Pipeline: Validate -> Deduplicate AI questions
+    const validated = validateQuestions(aiQuestions);
+    const newPool = deduplicateQuestions(validated);
 
-  logger.info(`[ai] AI provided ${finalPool.length}/${totalCount} unique questions in ${elapsed}ms`);
+    logger.info(`[ai] AI provided ${newPool.length}/${neededCount} valid unique questions in ${elapsed}ms`);
 
-  // Fill the gap from DB if needed
-  if (finalPool.length < totalCount) {
-    const needed = totalCount - finalPool.length;
-    const dbFallback = await fetchFallbackFromDB(params, needed, finalPool.map(q => q._id));
-    finalPool.push(...dbFallback);
+    // Add new questions to our final pool
+    finalPool.push(...newPool);
+
+    // Persist new AI questions to DB (background)
+    if (!params.skipInsert) {
+      const newToSave = newPool.filter(q => q._isNew);
+      if (newToSave.length > 0) {
+        const cleaned = newToSave.map(({ _isNew, ...rest }) => rest);
+        QuestionModel.insertMany(cleaned).catch(err => logger.error("[ai] DB Insert Error:", err));
+      }
+    }
   }
 
   // Final shuffling and trimming
   const result = shuffle(finalPool).slice(0, totalCount);
 
-  // If we still have nothing, throw error
+  // If everything failed and we have 0 questions, throw the user-friendly error
   if (result.length === 0) {
-    throw new Error("Failed to generate or fetch any questions for this topic.");
-  }
-
-  // Persist new AI questions to DB (background)
-  if (!params.skipInsert) {
-    // Only save questions that were newly generated (not pulled from fallback DB)
-    const newQuestions = result.filter(q => q._isNew);
-    if (newQuestions.length > 0) {
-      // Remove the temporary flag before saving
-      const cleaned = newQuestions.map(({ _isNew, ...rest }) => rest);
-      QuestionModel.insertMany(cleaned).catch(err => logger.error("[ai] DB Insert Error:", err));
-    }
+    throw new Error("Unable to generate quiz for this topic at the moment. Please try again after some time.");
   }
 
   return result;
