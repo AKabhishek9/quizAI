@@ -69,7 +69,7 @@ async function callOpenRouter(prompt: string): Promise<string> {
   const baseURL = isOpenRouter ? "https://openrouter.ai/api/v1" : "https://api.groq.com/openai/v1";
   
   // Use user-specified model or defaults
-  const defaultModel = isOpenRouter ? "meta-llama/llama-3.1-8b-instruct:free" : "llama-3.1-8b-instant";
+  const defaultModel = isOpenRouter ? "meta-llama/llama-3.3-70b-instruct:free" : "llama-3.1-8b-instant";
   const model = process.env.AI_MODEL || defaultModel;
 
   const openai = new OpenAI({
@@ -95,14 +95,25 @@ async function callOpenRouter(prompt: string): Promise<string> {
 async function fetchFallbackFromDB(params: GenerateParams, count: number, excludeIds: string[] = []): Promise<GeneratedQuestionDoc[]> {
   logger.info(`[ai] Fetching ${count} questions from DB fallback...`);
 
+  const matchStage: any = {
+    stream: params.stream,
+    difficulty: { $gte: params.difficulty - 1, $lte: params.difficulty + 1 }, // Range for better matching
+    _id: { $nin: excludeIds.map(id => {
+      try { return new Types.ObjectId(id); } catch { return id; }
+    }) }
+  };
+
+  if (params.topics && params.topics.length > 0) {
+    matchStage.$or = params.topics.map(t => ({ 
+      $or: [
+        { topic: { $regex: new RegExp(t, 'i') } },
+        { concept: { $regex: new RegExp(t, 'i') } }
+      ]
+    }));
+  }
+
   const questions = await QuestionModel.aggregate([
-    {
-      $match: {
-        stream: params.stream,
-        difficulty: { $gte: params.difficulty - 1, $lte: params.difficulty + 1 }, // Range for better matching
-        _id: { $nin: excludeIds }
-      }
-    },
+    { $match: matchStage },
     { $sample: { size: count } }
   ]);
 
