@@ -62,14 +62,19 @@ async function callGemini(prompt: string): Promise<string> {
 }
 
 async function callOpenRouter(prompt: string): Promise<string> {
-  const apiKey = (process.env.OPENROUTER_API_KEY || process.env.GROQ_API_KEY)?.trim();
-  if (!apiKey) throw new Error("AI API key (OPENROUTER/GROQ) not found");
+  const groqKey = process.env.GROQ_API_KEY?.trim();
+  const openRouterKey = process.env.OPENROUTER_API_KEY?.trim();
+  
+  // Explicitly prefer Groq as requested by user
+  const useGroq = !!groqKey;
+  const apiKey = useGroq ? groqKey : openRouterKey;
 
-  const isOpenRouter = !!process.env.OPENROUTER_API_KEY;
-  const baseURL = isOpenRouter ? "https://openrouter.ai/api/v1" : "https://api.groq.com/openai/v1";
+  if (!apiKey) throw new Error("AI API key (GROQ/OPENROUTER) not found");
+
+  const baseURL = useGroq ? "https://api.groq.com/openai/v1" : "https://openrouter.ai/api/v1";
   
   // Use user-specified model or defaults
-  const defaultModel = isOpenRouter ? "meta-llama/llama-3.3-70b-instruct:free" : "llama-3.1-8b-instant";
+  const defaultModel = useGroq ? "llama-3.1-8b-instant" : "meta-llama/llama-3.3-70b-instruct:free";
   const model = process.env.AI_MODEL || defaultModel;
 
   const openai = new OpenAI({
