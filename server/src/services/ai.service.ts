@@ -57,10 +57,12 @@ async function callPrimaryAI(prompt: string): Promise<string> {
   const openai = new OpenAI({
     apiKey: apiKey,
     baseURL: baseURL,
-    defaultHeaders: { 
-      "HTTP-Referer": "https://quizai.com", 
-      "X-Title": "QuizAI" 
-    }
+    ...(baseURL.includes("openrouter") && {
+      defaultHeaders: { 
+        "HTTP-Referer": "https://quizai.com", 
+        "X-Title": "QuizAI" 
+      }
+    })
   });
 
   const response = await openai.chat.completions.create({
