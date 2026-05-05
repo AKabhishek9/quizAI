@@ -46,21 +46,22 @@ export interface GeneratedQuestionDoc {
 }
 
 // ── Providers ───────────────────────────────────────────────────────────────
-async function callOpenRouter(prompt: string): Promise<string> {
-  const apiKey = process.env.OPENROUTER_API_KEY?.trim();
-  if (!apiKey) throw new Error("OPENROUTER_API_KEY not found");
+async function callPrimaryAI(prompt: string): Promise<string> {
+  const apiKey = process.env.API_KEY_1?.trim();
+  if (!apiKey) throw new Error("API_KEY_1 not found");
+
+  const baseURL = process.env.BASE_URL_1?.trim() || "https://openrouter.ai/api/v1";
+  const model = process.env.MODEL_1?.trim();
+  if (!model) throw new Error("MODEL_1 not found");
 
   const openai = new OpenAI({
     apiKey: apiKey,
-    baseURL: "https://openrouter.ai/api/v1",
+    baseURL: baseURL,
     defaultHeaders: { 
       "HTTP-Referer": "https://quizai.com", 
       "X-Title": "QuizAI" 
     }
   });
-
-  const model = process.env.OPENROUTER_MODEL?.trim();
-  if (!model) throw new Error("OPENROUTER_MODEL not found");
 
   const response = await openai.chat.completions.create({
     model: model,
@@ -72,17 +73,18 @@ async function callOpenRouter(prompt: string): Promise<string> {
   return response.choices[0]?.message?.content ?? "";
 }
 
-async function callGroq(prompt: string): Promise<string> {
-  const apiKey = process.env.GROQ_API_KEY?.trim();
-  if (!apiKey) throw new Error("GROQ_API_KEY not found");
+async function callSecondaryAI(prompt: string): Promise<string> {
+  const apiKey = process.env.API_KEY_2?.trim();
+  if (!apiKey) throw new Error("API_KEY_2 not found");
+
+  const baseURL = process.env.BASE_URL_2?.trim() || "https://api.groq.com/openai/v1";
+  const model = process.env.MODEL_2?.trim();
+  if (!model) throw new Error("MODEL_2 not found");
 
   const openai = new OpenAI({
     apiKey: apiKey,
-    baseURL: "https://api.groq.com/openai/v1",
+    baseURL: baseURL,
   });
-
-  const model = process.env.GROQ_MODEL?.trim();
-  if (!model) throw new Error("GROQ_MODEL not found");
 
   const response = await openai.chat.completions.create({
     model: model,
@@ -186,17 +188,17 @@ These questions MUST strictly belong to the specified Topics.`;
     let aiQuestions: GeneratedQuestionDoc[] = [];
 
     try {
-      const openRouterResponse = await callOpenRouter(userPrompt);
-      aiQuestions = parseAndProcess(openRouterResponse, params);
-      logger.info(`[ai] OpenRouter delivered ${aiQuestions.length} questions`);
+      const primaryResponse = await callPrimaryAI(userPrompt);
+      aiQuestions = parseAndProcess(primaryResponse, params);
+      logger.info(`[ai] Primary AI delivered ${aiQuestions.length} questions`);
     } catch (err) {
-      logger.warn(`[ai] OpenRouter failed, falling back to Groq: ${err}`);
+      logger.warn(`[ai] Primary AI failed, falling back to Secondary AI: ${err}`);
       try {
-        const groqResponse = await callGroq(userPrompt);
-        aiQuestions = parseAndProcess(groqResponse, params);
-        logger.info(`[ai] Groq delivered ${aiQuestions.length} questions`);
+        const secondaryResponse = await callSecondaryAI(userPrompt);
+        aiQuestions = parseAndProcess(secondaryResponse, params);
+        logger.info(`[ai] Secondary AI delivered ${aiQuestions.length} questions`);
       } catch (secondaryErr) {
-        logger.error(`[ai] Both OpenRouter and Groq failed: ${secondaryErr}`);
+        logger.error(`[ai] Both Primary and Secondary AI failed: ${secondaryErr}`);
       }
     }
 
