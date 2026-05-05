@@ -1,4 +1,3 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import OpenAI from "openai";
 import { QuestionModel } from "../models/Question.js";
 import { z } from "zod";
@@ -47,44 +46,43 @@ export interface GeneratedQuestionDoc {
 }
 
 // ── Providers ───────────────────────────────────────────────────────────────
-async function callGemini(prompt: string): Promise<string> {
-  const apiKey = process.env.GEMINI_API_KEY?.trim();
-  if (!apiKey) throw new Error("GEMINI_API_KEY not found");
-
-  const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({
-    model: process.env.GEMINI_MODEL?.trim() || "gemini-2.0-flash",
-    generationConfig: { responseMimeType: "application/json", temperature: 0.4 },
-  });
-
-  const result = await model.generateContent(prompt);
-  return result.response.text();
-}
-
 async function callOpenRouter(prompt: string): Promise<string> {
-  const groqKey = process.env.GROQ_API_KEY?.trim();
-  const openRouterKey = process.env.OPENROUTER_API_KEY?.trim();
-  
-  // Explicitly prefer Groq as requested by user
-  const useGroq = !!groqKey;
-  const apiKey = useGroq ? groqKey : openRouterKey;
-
-  if (!apiKey) throw new Error("AI API key (GROQ/OPENROUTER) not found");
-
-  const baseURL = useGroq ? "https://api.groq.com/openai/v1" : "https://openrouter.ai/api/v1";
-  
-  // Use user-specified model or defaults
-  const defaultModel = useGroq ? "llama-3.1-8b-instant" : "meta-llama/llama-3.3-70b-instruct:free";
-  const model = process.env.AI_MODEL || defaultModel;
+  const apiKey = process.env.OPENROUTER_API_KEY?.trim();
+  if (!apiKey) throw new Error("OPENROUTER_API_KEY not found");
 
   const openai = new OpenAI({
     apiKey: apiKey,
-    baseURL: baseURL,
+    baseURL: "https://openrouter.ai/api/v1",
     defaultHeaders: { 
       "HTTP-Referer": "https://quizai.com", 
       "X-Title": "QuizAI" 
     }
   });
+
+  const model = process.env.OPENROUTER_MODEL?.trim();
+  if (!model) throw new Error("OPENROUTER_MODEL not found");
+
+  const response = await openai.chat.completions.create({
+    model: model,
+    messages: [{ role: "user", content: prompt }],
+    temperature: 0.4,
+    response_format: { type: "json_object" },
+  });
+
+  return response.choices[0]?.message?.content ?? "";
+}
+
+async function callGroq(prompt: string): Promise<string> {
+  const apiKey = process.env.GROQ_API_KEY?.trim();
+  if (!apiKey) throw new Error("GROQ_API_KEY not found");
+
+  const openai = new OpenAI({
+    apiKey: apiKey,
+    baseURL: "https://api.groq.com/openai/v1",
+  });
+
+  const model = process.env.GROQ_MODEL?.trim();
+  if (!model) throw new Error("GROQ_MODEL not found");
 
   const response = await openai.chat.completions.create({
     model: model,
@@ -188,17 +186,17 @@ These questions MUST strictly belong to the specified Topics.`;
     let aiQuestions: GeneratedQuestionDoc[] = [];
 
     try {
-      const geminiResponse = await callGemini(userPrompt);
-      aiQuestions = parseAndProcess(geminiResponse, params);
-      logger.info(`[ai] Gemini delivered ${aiQuestions.length} questions`);
+      const openRouterResponse = await callOpenRouter(userPrompt);
+      aiQuestions = parseAndProcess(openRouterResponse, params);
+      logger.info(`[ai] OpenRouter delivered ${aiQuestions.length} questions`);
     } catch (err) {
-      logger.warn(`[ai] Gemini failed, falling back to Groq: ${err}`);
+      logger.warn(`[ai] OpenRouter failed, falling back to Groq: ${err}`);
       try {
-        const secondaryResponse = await callOpenRouter(userPrompt);
-        aiQuestions = parseAndProcess(secondaryResponse, params);
+        const groqResponse = await callGroq(userPrompt);
+        aiQuestions = parseAndProcess(groqResponse, params);
         logger.info(`[ai] Groq delivered ${aiQuestions.length} questions`);
       } catch (secondaryErr) {
-        logger.error(`[ai] Both Gemini and Groq failed: ${secondaryErr}`);
+        logger.error(`[ai] Both OpenRouter and Groq failed: ${secondaryErr}`);
       }
     }
 
