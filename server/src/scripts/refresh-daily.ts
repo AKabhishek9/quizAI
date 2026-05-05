@@ -10,14 +10,14 @@ dotenv.config({ path: path.join(__dirname, "../../../server/.env") });
 
 async function run() {
   const uri = process.env.MONGODB_URI;
-  const aiKey = process.env.GEMINI_API_KEY;
+  const aiKey = process.env.API_KEY_1;
 
   if (!uri || uri.includes("<user>")) {
     console.warn("⚠️  WARNING: MONGODB_URI is using a placeholder. Falling back to local (127.0.0.1)");
   }
   
-  if (!aiKey || aiKey.includes("your_gemini_api_key")) {
-    console.warn("⚠️  WARNING: GEMINI_API_KEY is missing. Real AI questions cannot be generated.");
+  if (!aiKey) {
+    console.warn("⚠️  WARNING: API_KEY_1 is missing. Real AI questions cannot be generated.");
   }
 
   console.log("🚀 Connecting to database...");

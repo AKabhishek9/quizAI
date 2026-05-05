@@ -8,17 +8,14 @@ import "dotenv/config";
 import { generateQuestions } from "../services/ai.service.js";
 
 async function verify() {
-  const provider = (process.env.AI_PROVIDER || "groq").toLowerCase();
-  console.log(`🧪 ${provider.toUpperCase()} AI Integration Check Starting...\n`);
+  console.log(`🧪 AI Integration Check Starting...\n`);
 
-  const apiKeyName = provider === "openrouter" ? "OPENROUTER_API_KEY" : "GROQ_API_KEY";
+  const apiKeyName = "API_KEY_1";
   const apiKey = process.env[apiKeyName];
-  const model = process.env.AI_MODEL || (provider === "openrouter" ? "google/gemini-2.0-flash-lite-preview-001:free" : "llama-3.3-70b-versatile");
+  const model = process.env.MODEL_1 || "meta-llama/llama-3.3-70b-instruct:free";
 
   if (!apiKey || apiKey.includes("your_key_here")) {
     console.error(`❌ ERROR: ${apiKeyName} is missing or using placeholder in .env`);
-    const link = provider === "openrouter" ? "https://openrouter.ai/keys" : "https://console.groq.com/keys";
-    console.log(`   Please get a key from: ${link}`);
     process.exit(1);
   }
 
