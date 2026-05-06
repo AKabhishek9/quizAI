@@ -73,16 +73,17 @@ export function MobileNav() {
         </nav>
 
         <div className="border-t border-border p-2 space-y-0.5">
-          <button
+          <Button
+            variant="ghost"
             onClick={() => {
               setOpen(false);
               logout();
             }}
-            className="w-full flex items-center gap-2.5 px-2.5 py-2 text-sm text-destructive/70 hover:text-destructive hover:bg-destructive/10 rounded-md transition-colors duration-150 cursor-pointer"
+            className="w-full flex justify-start items-center gap-2.5 px-2.5 py-2 text-sm text-destructive/70 hover:text-destructive hover:bg-destructive/10 rounded-md transition-colors duration-150 cursor-pointer"
           >
             <LogOut className="h-4 w-4" />
             Logout
-          </button>
+          </Button>
         </div>
       </SheetContent>
     </Sheet>

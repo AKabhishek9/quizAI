@@ -60,12 +60,14 @@ export function LevelUpToast({ level, xpGained, onClose, show }: LevelUpToastPro
               ))}
             </div>
 
-            <button
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={onClose}
-              className="absolute top-6 right-6 p-2 rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+              className="absolute top-6 right-6 p-2 rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground cursor-pointer"
             >
               <X className="w-5 h-5" />
-            </button>
+            </Button>
 
             <div className="relative z-10 text-center space-y-8">
               {/* Level Badge Animation */}

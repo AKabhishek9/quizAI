@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export function CtaSection() {
   return (
@@ -24,10 +25,10 @@ export function CtaSection() {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/login" className="w-full sm:w-auto">
-              <button className="w-full sm:w-auto px-5 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-all duration-200 flex items-center justify-center gap-2">
+              <Button size="lg" className="w-full sm:w-auto flex items-center justify-center gap-2">
                 Get started for free
                 <ArrowRight className="h-4 w-4" />
-              </button>
+              </Button>
             </Link>
           </div>
         </div>

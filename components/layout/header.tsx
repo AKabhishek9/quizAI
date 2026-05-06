@@ -15,6 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
 const tabs = [
   { label: "Explore", href: "/dashboard" },
@@ -61,10 +62,10 @@ export function Header() {
           </div>
 
           <div className="flex items-center gap-2">
-            <button className="p-2.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-full transition-all relative group">
+            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-full transition-all relative group">
               <Bell className="h-4.5 w-4.5 group-hover:scale-110 transition-transform" />
-              <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-primary rounded-full border-2 border-background animate-pulse" />
-            </button>
+              <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full border-2 border-background animate-pulse" />
+            </Button>
             <ThemeToggle />
           </div>
 

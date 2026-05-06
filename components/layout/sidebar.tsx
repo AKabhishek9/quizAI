@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { useAuth } from "@/components/providers/auth-provider";
 import { ThemeToggle } from "./theme-toggle";
+import { Button } from "@/components/ui/button";
 import { 
   LayoutDashboard, 
   BookOpen, 
@@ -91,22 +92,24 @@ export function Sidebar() {
           <ThemeToggle />
         </div>
 
-        <button
+        <Button
+          variant="ghost"
           onClick={() => logout()}
           title={collapsed ? "Logout" : undefined}
           className={cn(
-            "w-full flex items-center gap-2.5 px-2.5 py-2 text-sm text-destructive/70 hover:text-destructive hover:bg-destructive/10 rounded-md transition-colors duration-150 cursor-pointer",
+            "w-full flex items-center justify-start gap-2.5 px-2.5 py-2 text-sm text-destructive/70 hover:text-destructive hover:bg-destructive/10 rounded-md transition-colors duration-150 cursor-pointer",
             collapsed && "justify-center"
           )}
         >
           <LogOut className="h-4 w-4 shrink-0" />
           {!collapsed && <span>Logout</span>}
-        </button>
+        </Button>
 
-        <button
+        <Button
+          variant="ghost"
           onClick={() => setCollapsed(!collapsed)}
           className={cn(
-            "w-full flex items-center gap-2.5 px-2.5 py-2 text-sm text-sidebar-foreground/40 hover:text-sidebar-foreground hover:bg-sidebar-accent rounded-md transition-colors duration-150 cursor-pointer",
+            "w-full flex items-center justify-start gap-2.5 px-2.5 py-2 text-sm text-sidebar-foreground/40 hover:text-sidebar-foreground hover:bg-sidebar-accent rounded-md transition-colors duration-150 cursor-pointer",
             collapsed && "justify-center"
           )}
           title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
@@ -115,8 +118,8 @@ export function Sidebar() {
             "h-4 w-4 shrink-0 transition-transform duration-300",
             collapsed && "rotate-180"
           )} />
-          {!collapsed && <span className="text-xs">Collapse</span>}
-        </button>
+          {!collapsed && <span>Collapse</span>}
+        </Button>
       </div>
     </aside>
   );

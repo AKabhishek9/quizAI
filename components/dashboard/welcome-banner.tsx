@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface WelcomeBannerProps {
   profile?: {
@@ -21,13 +22,10 @@ export function WelcomeBanner({ profile }: WelcomeBannerProps) {
         {greeting}, {firstName} 👋
       </h1>
       <div>
-        <Link
-          href="/quiz"
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground text-sm font-semibold rounded-lg hover:bg-primary/90 transition-colors cursor-pointer"
-        >
+        <Button render={<Link href="/quiz" />} size="lg" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-colors cursor-pointer">
           Start Quiz
           <ArrowRight className="h-4 w-4" />
-        </Link>
+        </Button>
       </div>
     </div>
   );
