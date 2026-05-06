@@ -38,24 +38,24 @@ const features = [
 
 export function Features() {
   return (
-    <section className="py-20 relative bg-neutral-50 dark:bg-neutral-800 border-y border-neutral-200 dark:border-neutral-700" id="features">
+    <section className="py-20 relative bg-muted/30 border-y border-border" id="features">
       <div className="max-w-2xl lg:max-w-7xl mx-auto px-4 relative z-10">
         <div className="mb-16">
           <motion.div 
             initial={{ opacity: 0, x: -10 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 mb-6"
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-card border border-border mb-6"
           >
-            <div className="w-1.5 h-1.5 rounded-full bg-indigo-600" />
-            <span className="text-[11px] font-medium tracking-wider text-neutral-600 dark:text-neutral-400 uppercase">Core Paradigms</span>
+            <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+            <span className="text-[11px] font-medium tracking-wider text-muted-foreground uppercase">Core Paradigms</span>
           </motion.div>
           <motion.h2 
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50"
+            className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground"
           >
             Engineered for growth.
           </motion.h2>
@@ -69,13 +69,13 @@ export function Features() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 }}
-              className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 p-8 rounded-2xl transition-all duration-200 hover:border-neutral-300 dark:hover:border-neutral-600"
+              className="bg-card border border-border p-8 rounded-2xl transition-all duration-200 hover:border-primary/40"
             >
-              <div className="w-12 h-12 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center mb-6 transition-all duration-200">
-                <feature.icon className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-6 transition-all duration-200">
+                <feature.icon className="h-6 w-6 text-primary" />
               </div>
-              <h3 className="text-lg font-semibold tracking-tight text-neutral-900 dark:text-neutral-100 mb-3">{feature.title}</h3>
-              <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
+              <h3 className="text-lg font-semibold tracking-tight text-foreground mb-3">{feature.title}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
                 {feature.description}
               </p>
             </motion.div>

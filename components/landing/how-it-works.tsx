@@ -22,14 +22,14 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section className="py-20 bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-700">
+    <section className="py-20 bg-background border-b border-border">
       <div className="max-w-2xl lg:max-w-7xl mx-auto px-4">
         <div className="mb-16">
           <motion.span 
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="text-[11px] font-medium tracking-widest text-indigo-600 dark:text-indigo-400 mb-4 block uppercase"
+            className="text-[11px] font-medium tracking-widest text-primary mb-4 block uppercase"
           >
             Process
           </motion.span>
@@ -38,7 +38,7 @@ export function HowItWorks() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50"
+            className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground"
           >
             Three steps to mastery.
           </motion.h2>
@@ -54,11 +54,11 @@ export function HowItWorks() {
               transition={{ delay: idx * 0.1 + 0.2 }}
               className="space-y-6"
             >
-               <div className="w-10 h-10 border border-neutral-200 dark:border-neutral-700 flex items-center justify-center font-semibold text-indigo-600 dark:text-indigo-400 rounded-lg bg-neutral-50 dark:bg-neutral-800 shadow-sm">
+               <div className="w-10 h-10 border border-border flex items-center justify-center font-semibold text-primary rounded-lg bg-muted shadow-sm">
                 {step.number}
               </div>
-              <h3 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100 tracking-tight">{step.title}</h3>
-              <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed text-sm">{step.description}</p>
+              <h3 className="text-xl font-semibold text-foreground tracking-tight">{step.title}</h3>
+              <p className="text-muted-foreground leading-relaxed text-sm">{step.description}</p>
             </motion.div>
           ))}
         </div>

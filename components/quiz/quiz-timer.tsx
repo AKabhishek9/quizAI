@@ -32,7 +32,7 @@ export function QuizTimer({
               ? "text-red-500"
               : isWarning
               ? "text-yellow-500"
-              : "text-neutral-500 dark:text-neutral-400"
+              : "text-muted-foreground"
           )}
         />
         <span
@@ -42,14 +42,14 @@ export function QuizTimer({
               ? "text-red-500"
               : isWarning
               ? "text-yellow-500"
-              : "text-neutral-900 dark:text-neutral-100"
+              : "text-foreground"
           )}
         >
           {minutes}:{seconds.toString().padStart(2, "0")}
         </span>
       </div>
 
-      <div className="flex-1 h-1 rounded-full bg-neutral-100 dark:bg-neutral-800 overflow-hidden">
+      <div className="flex-1 h-1 rounded-full bg-secondary overflow-hidden">
         <motion.div
           className={cn(
             "h-full rounded-full transition-colors",
@@ -57,7 +57,7 @@ export function QuizTimer({
               ? "bg-red-500"
               : isWarning
               ? "bg-yellow-500"
-              : "bg-indigo-600"
+              : "bg-primary"
           )}
           initial={{ width: "100%" }}
           animate={{ width: `${percentage}%` }}

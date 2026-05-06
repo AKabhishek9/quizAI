@@ -10,10 +10,10 @@ const ease = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
 
 export function Hero() {
   return (
-    <header className="relative pt-32 pb-24 overflow-hidden bg-white dark:bg-neutral-900">
+    <header className="relative pt-32 pb-24 overflow-hidden bg-background">
       {/* Background Ambience - Simplified */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-[10%] -left-[10%] w-[60%] h-[60%] rounded-full bg-indigo-500/5 blur-[120px] opacity-30" />
+        <div className="absolute -top-[10%] -left-[10%] w-[60%] h-[60%] rounded-full bg-primary/5 blur-[120px] opacity-30" />
       </div>
 
       <div className="max-w-2xl mx-auto text-center px-4 relative z-10">
@@ -21,9 +21,9 @@ export function Hero() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-[11px] font-medium tracking-wider text-neutral-600 dark:text-neutral-400 uppercase mb-8"
+          className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-muted text-[11px] font-medium tracking-wider text-muted-foreground uppercase mb-8"
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 animate-pulse"></span>
+          <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
           Now in Public Beta
         </motion.div>
 
@@ -31,7 +31,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-          className="text-3xl md:text-5xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100 mb-6"
+          className="text-3xl md:text-5xl font-semibold tracking-tight text-foreground mb-6"
         >
           Master the Technical Horizon.
         </motion.h1>
@@ -40,7 +40,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className="text-base text-neutral-600 dark:text-neutral-400 max-w-xl mx-auto mb-10 leading-relaxed"
+          className="text-base text-muted-foreground max-w-xl mx-auto mb-10 leading-relaxed"
         >
           Adaptive assessment telemetry that identifies conceptual gaps. Synchronize your knowledge graph, neutralize weak points, and ship with absolute confidence.
         </motion.p>
@@ -52,13 +52,13 @@ export function Hero() {
           className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10"
         >
           <Link href="/login" className="w-full sm:w-auto">
-            <Button className="w-full sm:w-auto h-auto px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition-all duration-200 border-0 font-medium text-sm cursor-pointer group">
+            <Button className="w-full sm:w-auto h-auto px-5 py-2.5 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-200 border-0 font-medium text-sm cursor-pointer group">
               Initiate Discovery
               <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Button>
           </Link>
           <Link href="/quiz" className="w-full sm:w-auto">
-            <Button variant="outline" className="w-full sm:w-auto h-auto px-5 py-2.5 rounded-lg border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-all duration-200 font-medium text-sm cursor-pointer text-neutral-900 dark:text-neutral-100">
+            <Button variant="outline" className="w-full sm:w-auto h-auto px-5 py-2.5 rounded-lg border-border bg-card hover:bg-accent transition-all duration-200 font-medium text-sm cursor-pointer text-foreground">
               Explore Repository
             </Button>
           </Link>
@@ -71,7 +71,7 @@ export function Hero() {
           transition={{ duration: 1, delay: 0.5 }}
           className="mt-20"
         >
-          <p className="text-[10px] font-medium tracking-widest text-neutral-400 uppercase mb-8">Synchronized with Industry Standards</p>
+          <p className="text-[10px] font-medium tracking-widest text-muted-foreground uppercase mb-8">Synchronized with Industry Standards</p>
           <div className="flex flex-wrap justify-center items-center gap-12 opacity-30 grayscale transition-all hover:opacity-50 hover:grayscale-0">
             <Image alt="GitHub" width={100} height={24} className="h-5 w-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvdMzjlG6tWvMDf7xo3pBuMfadklyDPGYNmYUh_N5LS87bP_A1qbC4dFUh4KchiBo1SfXB0-VPGZBdnoDd7zm6r8XSjbLdl5BIDDN0HMUuhk1MW7IqlFsm07MkJOG4FHdKHoCFbOq3fdqniG28SHMNSUud2FBDzGXZkEtsG48L5P99Sh-wZ6uuGyarufxqybskPdSL4aPDhzFvlyt2K5mv5Zn3lK2X_PjJHZ5xu1a6kiT3Lslqw_AfXmiViw_pFKOrFjG4f7dDV6GS"/>
             <Image alt="Vercel" width={100} height={20} className="h-4 w-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDE12aS7gZh-dfHg1Cdc9PR-UfZEziEuTnCd-uLfT_0Mye-LBqnGROHfE2AeaNecQppBOTdbuXB7GTDg4RcrH97tUE3y3iNyktcAkONuISBZlfbmHXE7vBLQf9O6_9OMXBgtlnTWmrYzD6oM7AmBS4z_1n8aiR3nprSDlWF1rf-MkFynuTbQ8N3e0_7Pkc3WB36XeAHHyLcrecRvqJB9g69I4LgclnZueDhbjn1anz0OXgQVU7DNy6nHXwAMecAguZ8ON93b_W16qpn"/>

@@ -35,11 +35,11 @@ export function QuizOption({
       disabled={disabled}
       className={cn(
         "w-full flex items-center gap-3 py-2 px-3 rounded-lg border text-left transition-all duration-150 cursor-pointer overflow-hidden leading-tight",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         // Default
-        !isSelected && !isRevealed && "border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-800/80 hover:border-neutral-300 dark:hover:border-neutral-600",
+        !isSelected && !isRevealed && "border-border bg-card hover:bg-accent hover:border-border",
         // Selected
-        isSelected && !isRevealed && "border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20",
+        isSelected && !isRevealed && "border-primary bg-primary/10",
         // Correct
         isThisCorrectAnswer && "border-green-500/50 bg-green-50 dark:bg-green-900/20",
         // Wrong
@@ -54,8 +54,8 @@ export function QuizOption({
       <span
         className={cn(
           "flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-xs font-semibold transition-colors duration-150",
-          !isSelected && !isRevealed && "bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400",
-          isSelected && !isRevealed && "bg-indigo-600 text-white",
+          !isSelected && !isRevealed && "bg-muted text-muted-foreground",
+          isSelected && !isRevealed && "bg-primary text-primary-foreground",
           isThisCorrectAnswer && "bg-green-500 text-white",
           isThisWrongSelected && "bg-red-500 text-white"
         )}
@@ -71,8 +71,8 @@ export function QuizOption({
 
       <span className={cn(
         "text-sm font-medium flex-1",
-        !isSelected && !isRevealed ? "text-neutral-900 dark:text-neutral-100" : 
-        isSelected && !isRevealed ? "text-indigo-900 dark:text-indigo-100" :
+        !isSelected && !isRevealed ? "text-foreground" : 
+        isSelected && !isRevealed ? "text-primary" :
         isThisCorrectAnswer ? "text-green-900 dark:text-green-100" :
         "text-red-900 dark:text-red-100"
       )}>{option.text}</span>
