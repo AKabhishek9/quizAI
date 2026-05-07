@@ -132,7 +132,7 @@ The hero has a headline, subtitle, and two buttons — but no visual representat
 
 ---
 
-### LAND-02 · Hero copy uses technical jargon instead of benefits
+### LAND-02 · [COMPLETED] Hero copy uses technical jargon instead of benefits
 **Severity:** High  
 
 ```
@@ -182,7 +182,7 @@ The hero uses hardcoded `lh3.googleusercontent.com/aida-public/AB6AXu...` URLs f
 
 ---
 
-### LAND-04 · CTA buttons lead to wrong pages
+### LAND-04 · [COMPLETED] CTA buttons lead to wrong pages
 **Severity:** Medium  
 
 - "Initiate Discovery" → goes to `/login` ✓ (correct)

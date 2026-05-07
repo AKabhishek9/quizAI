@@ -35,7 +35,7 @@ export function Hero() {
           transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
           className="text-3xl md:text-5xl font-semibold tracking-tight text-foreground mb-6 font-heading"
         >
-          Master the Technical Horizon.
+          Master Any Subject with AI-Generated Quizzes
         </motion.h1>
 
         <motion.p 
@@ -44,7 +44,7 @@ export function Hero() {
           transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
           className="text-base text-muted-foreground max-w-xl mx-auto mb-10 leading-relaxed"
         >
-          Adaptive assessment telemetry that identifies conceptual gaps. Synchronize your knowledge graph, neutralize weak points, and ship with absolute confidence.
+          Get personalized quiz questions on any topic instantly. Track weak areas, improve daily, and never run out of practice material.
         </motion.p>
 
         <motion.div 
@@ -55,13 +55,13 @@ export function Hero() {
         >
           <Link href="/login" className="w-full sm:w-auto">
             <Button className="w-full sm:w-auto h-auto px-5 py-2.5 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-200 border-0 font-medium text-sm cursor-pointer group">
-              Initiate Discovery
+              Start Learning Free
               <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Button>
           </Link>
-          <Link href="/quiz" className="w-full sm:w-auto">
+          <Link href="/#features" className="w-full sm:w-auto">
             <Button variant="outline" className="w-full sm:w-auto h-auto px-5 py-2.5 rounded-lg border-border bg-card hover:bg-accent transition-all duration-200 font-medium text-sm cursor-pointer text-foreground">
-              Explore Repository
+              See How It Works
             </Button>
           </Link>
         </motion.div>
