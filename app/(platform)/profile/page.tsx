@@ -68,9 +68,9 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 pb-20">
+    <div className="max-w-5xl mx-auto space-y-8 pb-20 min-w-0">
       {/* ── Profile Header Card ── */}
-      <div className="rounded-lg border border-border bg-card p-6">
+      <div className="rounded-2xl border border-border bg-card p-6 md:p-8 shadow-sm min-w-0">
         <div className="flex flex-col md:flex-row md:items-center gap-6">
           {/* Avatar with level badge */}
           <div className="relative shrink-0 self-center md:self-start">
@@ -153,7 +153,7 @@ export default function ProfilePage() {
 
           {/* Mastery XP — right side */}
           {profile && (
-            <div className="shrink-0 w-full md:w-56 border border-border rounded-lg p-4 bg-card">
+            <div className="shrink-0 w-full md:w-64 border border-border rounded-2xl p-5 bg-muted/30">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-semibold text-foreground">Mastery XP</span>
                 <span className="text-xs tabular-nums text-muted-foreground">
@@ -177,9 +177,9 @@ export default function ProfilePage() {
 
       {/* ── Detailed Stats Grid ── */}
       {stats && (
-        <div className="space-y-3">
-          <h2 className="text-base font-bold text-foreground font-heading">Your Performance</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        <div className="space-y-4 min-w-0">
+          <h2 className="text-lg font-bold text-foreground font-heading">Your Performance</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-6">
             <StatsCard title="Quizzes" value={stats.totalQuizzes} icon={BookOpen} />
             <StatsCard title="Avg. Score" value={`${stats.averageScore}%`} icon={Target} />
             <StatsCard
@@ -195,22 +195,24 @@ export default function ProfilePage() {
       )}
 
       {/* ── Tabs — using variant="line" for underline style ── */}
-      <Tabs defaultValue="history" className="space-y-4">
-        <TabsList variant="line" className="border-b border-border w-full justify-start h-auto p-0">
-          <TabsTrigger value="history" className="cursor-pointer px-4 py-2.5 text-sm">
-            Quiz History
-          </TabsTrigger>
-          <TabsTrigger value="analytics" className="cursor-pointer px-4 py-2.5 text-sm">
-            Detailed Analytics
-          </TabsTrigger>
-          <TabsTrigger value="achievements" className="cursor-pointer px-4 py-2.5 text-sm">
-            Achievements
-          </TabsTrigger>
-        </TabsList>
+      <Tabs defaultValue="history" className="space-y-6 min-w-0">
+        <div className="w-full overflow-x-auto pb-px scrollbar-hide">
+          <TabsList variant="line" className="border-b border-border w-full justify-start h-12 p-0 flex flex-row flex-nowrap min-w-max">
+            <TabsTrigger value="history" className="cursor-pointer px-4 py-2.5 text-sm whitespace-nowrap">
+              Quiz History
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="cursor-pointer px-4 py-2.5 text-sm whitespace-nowrap">
+              Detailed Analytics
+            </TabsTrigger>
+            <TabsTrigger value="achievements" className="cursor-pointer px-4 py-2.5 text-sm whitespace-nowrap">
+              Achievements
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* Quiz History Table */}
-        <TabsContent value="history" className="mt-2">
-          <div className="rounded-lg border border-border bg-card overflow-x-auto">
+        <TabsContent value="history" className="mt-2 outline-none">
+          <div className="rounded-2xl border border-border bg-card overflow-x-auto shadow-sm">
             {/* Table */}
             <table className="w-full text-left">
               <thead>
@@ -262,58 +264,73 @@ export default function ProfilePage() {
         </TabsContent>
 
         {/* Detailed Analytics */}
-        <TabsContent value="analytics" className="space-y-4 mt-2">
-          {stats && (
-            <div className="rounded-lg border border-border bg-card p-5">
-              <h3 className="text-sm font-semibold mb-3">Performance Trend</h3>
-              <PerformanceChart data={stats.weeklyScores} />
-            </div>
-          )}
-          {stats && (
-            <div className="rounded-lg border border-border bg-card p-5">
-              <h3 className="text-sm font-semibold mb-3">Category Performance</h3>
-              <div className="space-y-3">
-                {stats.categoryPerformance.map((cat) => (
-                  <ProgressBar
-                    key={cat.category}
-                    label={cat.category}
-                    value={cat.percentage}
-                    color={
-                      cat.percentage >= 80
-                        ? "success"
-                        : cat.percentage >= 60
-                        ? "primary"
-                        : cat.percentage >= 40
-                        ? "warning"
-                        : "destructive"
-                    }
-                    size="sm"
-                  />
-                ))}
+        <TabsContent value="analytics" className="space-y-6 mt-6 outline-none">
+          {stats ? (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 min-w-0">
+              <div className="rounded-2xl border border-border bg-card p-6 shadow-sm flex flex-col min-w-0 lg:col-span-2">
+                <h3 className="text-base font-semibold mb-6 text-foreground font-heading">Performance Trend</h3>
+                <div className="h-[250px] w-full relative">
+                  {stats.weeklyScores && stats.weeklyScores.length > 0 ? (
+                    <PerformanceChart data={stats.weeklyScores} />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-sm border-2 border-dashed border-border rounded-xl">
+                      No performance data available yet
+                    </div>
+                  )}
+                </div>
               </div>
+              <div className="rounded-2xl border border-border bg-card p-6 shadow-sm flex flex-col min-w-0 lg:col-span-1">
+                <h3 className="text-base font-semibold mb-6 text-foreground font-heading">Category Performance</h3>
+                <div className="space-y-5 h-[250px] overflow-y-auto pr-2">
+                  {stats.categoryPerformance && stats.categoryPerformance.length > 0 ? (
+                    stats.categoryPerformance.map((cat) => (
+                      <ProgressBar
+                        key={cat.category}
+                        label={cat.category}
+                        value={cat.percentage}
+                        color={
+                          cat.percentage >= 80 ? "success" :
+                          cat.percentage >= 60 ? "primary" :
+                          cat.percentage >= 40 ? "warning" : "destructive"
+                        }
+                        size="sm"
+                      />
+                    ))
+                  ) : (
+                    <div className="h-full flex items-center justify-center text-muted-foreground text-sm border-2 border-dashed border-border rounded-xl">
+                      No category data available yet
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <SkeletonCard className="h-[300px] lg:col-span-2" />
+              <SkeletonCard className="h-[300px] lg:col-span-1" />
             </div>
           )}
         </TabsContent>
 
         {/* Achievements */}
-        <TabsContent value="achievements" className="mt-2">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <TabsContent value="achievements" className="mt-6 outline-none">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               { id: "first_quiz", name: "First Steps", icon: "🎯", desc: "Complete your first quiz" },
               { id: "streak_7", name: "Week Warrior", icon: "🔥", desc: "7-day streak" },
               { id: "perfect_score", name: "Flawless", icon: "✨", desc: "Get a 100% score" },
               { id: "level_10", name: "Mastery", icon: "👑", desc: "Reach Level 10" },
             ].map((ach) => (
-              <div key={ach.id} className="rounded-lg border border-border bg-card p-5 flex flex-col items-center justify-center text-center gap-3 opacity-60 hover:opacity-100 transition-opacity">
-                <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center">
+              <div key={ach.id} className="rounded-2xl border border-border bg-card p-6 flex flex-col items-center justify-center text-center gap-4 opacity-70 hover:opacity-100 transition-all shadow-sm overflow-hidden min-w-0">
+                <div className="h-12 w-12 shrink-0 rounded-full bg-muted flex items-center justify-center">
                   {ach.id === "first_quiz" && <Target className="h-5 w-5 text-muted-foreground" />}
                   {ach.id === "streak_7" && <Flame className="h-5 w-5 text-muted-foreground" />}
                   {ach.id === "perfect_score" && <Trophy className="h-5 w-5 text-muted-foreground" />}
                   {ach.id === "level_10" && <BookOpen className="h-5 w-5 text-muted-foreground" />}
                 </div>
-                <div>
-                  <h4 className="text-sm font-semibold text-foreground">{ach.name}</h4>
-                  <p className="text-xs text-muted-foreground mt-1">{ach.desc}</p>
+                <div className="min-w-0 w-full">
+                  <h4 className="text-sm font-semibold text-foreground truncate">{ach.name}</h4>
+                  <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{ach.desc}</p>
                 </div>
               </div>
             ))}
