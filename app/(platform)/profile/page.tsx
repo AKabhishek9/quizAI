@@ -1,5 +1,13 @@
 "use client";
 
+import { useState } from "react";
+import { updateProfile } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -18,6 +26,10 @@ import { cn } from "@/lib/utils";
 export default function ProfilePage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
+  
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["dashboard"],
@@ -78,17 +90,62 @@ export default function ProfilePage() {
               {profile?.name}
             </h1>
             <div className="flex flex-wrap items-center gap-3 justify-center md:justify-start">
-              <button
-                type="button"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border text-xs font-medium text-foreground hover:bg-muted transition-colors cursor-pointer"
-              >
-                <Pencil className="h-3 w-3" />
-                Edit Profile
-              </button>
-              <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <Calendar className="h-3 w-3" />
-                Joined {profile?.memberSince}
-              </span>
+              <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+                <DialogTrigger render={
+                  <button
+                    type="button"
+                    onClick={() => setEditName(profile?.name || "")}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border text-xs font-medium text-foreground hover:bg-muted transition-colors cursor-pointer"
+                  />
+                }>
+                  <Pencil className="h-3 w-3" />
+                  Edit Profile
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Edit Profile</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4 py-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="name">Display Name</Label>
+                      <Input
+                        id="name"
+                        value={editName}
+                        onChange={(e) => setEditName(e.target.value)}
+                        placeholder="Your name"
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button variant="outline" onClick={() => setIsEditOpen(false)}>Cancel</Button>
+                    <Button 
+                      disabled={isSaving || !editName.trim()} 
+                      onClick={async () => {
+                        if (!auth?.currentUser || !editName.trim()) return;
+                        setIsSaving(true);
+                        try {
+                          await updateProfile(auth.currentUser, { displayName: editName.trim() });
+                          toast.success("Profile updated successfully");
+                          setIsEditOpen(false);
+                          window.location.reload();
+                        } catch (err) {
+                          toast.error("Failed to update profile");
+                        } finally {
+                          setIsSaving(false);
+                        }
+                      }}
+                    >
+                      {isSaving ? "Saving..." : "Save Changes"}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+              {profile?.memberSince && (
+                <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Calendar className="h-3 w-3" />
+                  Joined {profile.memberSince}
+                </span>
+              )}
             </div>
           </div>
 
@@ -108,8 +165,8 @@ export default function ProfilePage() {
                 showPercentage={false}
               />
               <div className="flex items-center justify-between mt-1.5">
-                <span className="text-[10px] text-muted-foreground">text-neutral-400</span>
-                <span className="text-[10px] text-muted-foreground">text-neutral-400</span>
+                <span className="text-[10px] text-muted-foreground">Level {profile.level}</span>
+                <span className="text-[10px] text-muted-foreground">Level {profile.level + 1}</span>
               </div>
             </div>
           )}
@@ -119,7 +176,7 @@ export default function ProfilePage() {
       {/* ── Detailed Stats Grid ── */}
       {stats && (
         <div className="space-y-3">
-          <h2 className="text-base font-bold text-foreground font-heading">Detailed Stats Grid</h2>
+          <h2 className="text-base font-bold text-foreground font-heading">Your Performance</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             <StatsCard title="Quizzes" value={stats.totalQuizzes} icon={BookOpen} />
             <StatsCard title="Avg. Score" value={`${stats.averageScore}%`} icon={Target} />
@@ -159,7 +216,7 @@ export default function ProfilePage() {
                   <th className="px-6 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Quiz</th>
                   <th className="px-6 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Score</th>
                   <th className="px-6 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Difficulty</th>
-                  <th className="px-6 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Time Taken</th>
+                  <th className="px-6 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Topics</th>
                   <th className="px-6 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Date</th>
                 </tr>
               </thead>
@@ -182,8 +239,8 @@ export default function ProfilePage() {
                       <DifficultyBadge difficulty={attempt.difficulty} />
                     </td>
                     <td className="px-6 py-3.5">
-                      <span className="text-sm text-muted-foreground tabular-nums">
-                        {Math.floor(attempt.timeTaken / 60)}m {attempt.timeTaken % 60}s
+                      <span className="text-sm text-muted-foreground truncate max-w-[200px] inline-block">
+                        {(attempt as any).topics?.join(", ") || attempt.category || "General"}
                       </span>
                     </td>
                     <td className="px-6 py-3.5">
@@ -236,12 +293,25 @@ export default function ProfilePage() {
           )}
         </TabsContent>
 
-        {/* Achievements (placeholder) */}
+        {/* Achievements */}
         <TabsContent value="achievements" className="mt-2">
-          <div className="rounded-lg border border-border bg-card p-12 flex flex-col items-center justify-center text-center gap-3">
-            <Trophy className="h-8 w-8 text-muted-foreground/40" />
-            <p className="text-sm font-medium text-muted-foreground">Achievements coming soon</p>
-            <p className="text-xs text-muted-foreground/60">Complete quizzes to unlock badges and milestones.</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { id: "first_quiz", name: "First Steps", icon: "🎯", desc: "Complete your first quiz" },
+              { id: "streak_7", name: "Week Warrior", icon: "🔥", desc: "7-day streak" },
+              { id: "perfect_score", name: "Flawless", icon: "✨", desc: "Get a 100% score" },
+              { id: "level_10", name: "Mastery", icon: "👑", desc: "Reach Level 10" },
+            ].map((ach) => (
+              <div key={ach.id} className="rounded-lg border border-border bg-card p-5 flex flex-col items-center justify-center text-center gap-3 opacity-60 hover:opacity-100 transition-opacity">
+                <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center text-2xl grayscale">
+                  {ach.icon}
+                </div>
+                <div>
+                  <h4 className="text-sm font-semibold text-foreground">{ach.name}</h4>
+                  <p className="text-xs text-muted-foreground mt-1">{ach.desc}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </TabsContent>
       </Tabs>
