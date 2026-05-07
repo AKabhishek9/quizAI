@@ -151,7 +151,7 @@ export function QuizPlayingState({
                   <div className="flex items-center gap-2 mb-1.5">
                     <div className={cn(
                       "h-1.5 w-1.5 rounded-full",
-                      isCorrect ? "bg-green-500" : "bg-red-500"
+                      isCorrect ? "bg-success" : "bg-destructive"
                     )} />
                     <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                       Explanation

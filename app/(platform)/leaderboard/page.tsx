@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/components/providers/auth-provider";
 
 interface LeaderboardUser {
   userId: string;
@@ -20,6 +21,7 @@ interface LeaderboardUser {
 }
 
 export default function LeaderboardPage() {
+  const { user: currentUser } = useAuth();
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState<LeaderboardUser[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -62,11 +64,17 @@ export default function LeaderboardPage() {
         <>
           {/* Podium (Top 3) */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end pt-2 pb-6">
-            {/* Mobile: natural order */}
-            <div className="block md:hidden space-y-4">
-              <PodiumItem user={topThree[0]} position={1} />
-              <PodiumItem user={topThree[1]} position={2} />
-              <PodiumItem user={topThree[2]} position={3} />
+            {/* Mobile: horizontal scroll */}
+            <div className="flex md:hidden overflow-x-auto gap-4 pb-4 snap-x">
+              <div className="min-w-[200px] snap-center">
+                <PodiumItem user={topThree[0]} position={1} />
+              </div>
+              <div className="min-w-[180px] snap-center">
+                <PodiumItem user={topThree[1]} position={2} />
+              </div>
+              <div className="min-w-[180px] snap-center">
+                <PodiumItem user={topThree[2]} position={3} />
+              </div>
             </div>
 
             {/* Desktop: 2, 1, 3 visual hierarchy */}
@@ -93,7 +101,7 @@ export default function LeaderboardPage() {
           <Card className="border-border shadow-sm overflow-hidden bg-card">
             <CardContent className="p-0">
               <div className="overflow-x-auto">
-                <table className="w-full">
+                <table className="w-full min-w-[560px]">
                   <thead>
                     <tr className="border-b border-border text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
                       <th className="px-6 py-4 text-left w-16">Rank</th>
@@ -105,26 +113,34 @@ export default function LeaderboardPage() {
                   </thead>
                   <tbody className="divide-y divide-border/50">
                     <AnimatePresence mode="popLayout">
-                      {filteredUsers.map((user, index) => (
-                        <motion.tr
-                          key={user.userId}
-                          initial={{ opacity: 0, y: 8 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: index * 0.04 }}
-                          className={cn(
-                            "hover:bg-primary/[0.03] transition-colors",
-                            user.rank === 1 && "bg-yellow-500/[0.03]"
-                          )}
-                        >
+                      {filteredUsers.length === 0 ? (
+                        <tr>
+                          <td colSpan={5} className="px-6 py-12 text-center text-sm text-muted-foreground">
+                            No users found matching &quot;{searchTerm}&quot;
+                          </td>
+                        </tr>
+                      ) : (
+                        filteredUsers.map((user, index) => (
+                          <motion.tr
+                            key={user.userId}
+                            initial={{ opacity: 0, y: 8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.04 }}
+                            className={cn(
+                              "hover:bg-primary/[0.03] transition-colors",
+                              user.rank === 1 && "bg-warning/[0.03]",
+                              user.userId === currentUser?.uid && "bg-primary/5 border-l-2 border-primary"
+                            )}
+                          >
                           {/* Rank */}
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-2">
                               {user.rank === 1 ? (
-                                <span className="w-6 h-6 rounded-full bg-yellow-500/20 text-yellow-500 text-xs font-black flex items-center justify-center">1</span>
+                                <span className="w-6 h-6 rounded-full bg-warning/20 text-warning text-xs font-black flex items-center justify-center">1</span>
                               ) : user.rank === 2 ? (
-                                <span className="w-6 h-6 rounded-full bg-slate-400/20 text-slate-400 text-xs font-black flex items-center justify-center">2</span>
+                                <span className="w-6 h-6 rounded-full bg-muted text-muted-foreground text-xs font-black flex items-center justify-center">2</span>
                               ) : user.rank === 3 ? (
-                                <span className="w-6 h-6 rounded-full bg-amber-600/20 text-amber-600 text-xs font-black flex items-center justify-center">3</span>
+                                <span className="w-6 h-6 rounded-full bg-primary/15 text-primary text-xs font-black flex items-center justify-center">3</span>
                               ) : (
                                 <span className="text-sm font-bold text-muted-foreground tabular-nums">
                                   {user.rank}
@@ -158,13 +174,16 @@ export default function LeaderboardPage() {
                           </td>
                           {/* Accuracy */}
                           <td className="px-6 py-4 text-right">
-                            <div className="flex items-center justify-end gap-1.5 text-success font-bold text-sm">
+                            <div className={cn("flex items-center justify-end gap-1.5 font-bold text-sm",
+                              user.avgAccuracy >= 70 ? "text-success" : 
+                              user.avgAccuracy >= 50 ? "text-warning" : "text-destructive"
+                            )}>
                               <TrendingUp className="h-3.5 w-3.5" />
                               {user.avgAccuracy}%
                             </div>
                           </td>
                         </motion.tr>
-                      ))}
+                      )))}
                     </AnimatePresence>
                   </tbody>
                 </table>
@@ -184,20 +203,20 @@ function PodiumItem({ user, position }: { user?: LeaderboardUser; position: numb
 
   const config = {
     1: {
-      icon: <Trophy className="h-5 w-5 text-yellow-500" />,
-      cardColor: "border-yellow-500/30 bg-yellow-500/5 dark:bg-yellow-500/[0.08]",
-      badgeColor: "bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 border-yellow-500/30",
-      avatarRing: "ring-2 ring-yellow-500/30",
+      icon: <Trophy className="h-5 w-5 text-warning" />,
+      cardColor: "border-warning/30 bg-warning/5",
+      badgeColor: "bg-warning/20 text-warning border-warning/30",
+      avatarRing: "ring-2 ring-warning/30",
     },
     2: {
-      icon: <Medal className="h-5 w-5 text-slate-400" />,
-      cardColor: "border-slate-400/20 bg-card",
+      icon: <Medal className="h-5 w-5 text-muted-foreground" />,
+      cardColor: "border-border bg-card",
       badgeColor: "bg-muted text-muted-foreground border-border",
       avatarRing: "",
     },
     3: {
-      icon: <Medal className="h-5 w-5 text-amber-600" />,
-      cardColor: "border-amber-600/20 bg-card",
+      icon: <Medal className="h-5 w-5 text-primary" />,
+      cardColor: "border-primary/20 bg-card",
       badgeColor: "bg-muted text-muted-foreground border-border",
       avatarRing: "",
     },
@@ -213,7 +232,7 @@ function PodiumItem({ user, position }: { user?: LeaderboardUser; position: numb
         className={cn(
           "w-full flex flex-col items-center gap-3 rounded-xl border p-5 transition-all",
           config.cardColor,
-          isFirst && "shadow-lg shadow-yellow-500/10"
+          isFirst && "shadow-lg shadow-warning/10"
         )}
       >
         {/* Trophy icon */}
@@ -250,13 +269,25 @@ function PodiumItem({ user, position }: { user?: LeaderboardUser; position: numb
 function LeaderboardSkeleton() {
   return (
     <div className="space-y-6 animate-pulse">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end pt-2 pb-6">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="bg-muted/40 rounded-xl border border-border h-48" />
+          <div key={i} className={cn("bg-muted/40 rounded-xl border border-border h-48", i === 2 && "md:h-56")} />
         ))}
       </div>
       <Skeleton className="h-10 w-full rounded-xl" />
-      <div className="h-60 bg-muted/30 rounded-xl border border-border" />
+      <div className="bg-card rounded-xl border border-border overflow-hidden">
+        <div className="border-b border-border bg-muted/20 h-12" />
+        {[1, 2, 3, 4, 5].map((i) => (
+          <div key={i} className="border-b border-border/50 h-16 flex items-center px-6">
+            <div className="w-8 h-4 bg-muted/40 rounded mr-8" />
+            <div className="w-8 h-8 rounded-full bg-muted/40 mr-3" />
+            <div className="w-32 h-4 bg-muted/40 rounded mr-auto" />
+            <div className="w-12 h-4 bg-muted/40 rounded mr-16" />
+            <div className="w-16 h-4 bg-muted/40 rounded mr-16" />
+            <div className="w-12 h-4 bg-muted/40 rounded" />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

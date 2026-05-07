@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
 import { useAuth } from "@/components/providers/auth-provider";
 import { ThemeToggle } from "./theme-toggle";
 import { Button } from "@/components/ui/button";
@@ -11,7 +10,6 @@ import {
   LayoutDashboard, 
   BookOpen, 
   Trophy, 
-  ClipboardCheck, 
   User, 
   LogOut, 
   ChevronLeft,
@@ -25,9 +23,14 @@ export const sidebarLinks = [
   { href: "/profile", label: "Profile", icon: User },
 ];
 
-export function Sidebar() {
+export function Sidebar({ 
+  collapsed, 
+  onToggle 
+}: { 
+  collapsed: boolean; 
+  onToggle: () => void; 
+}) {
   const pathname = usePathname();
-  const [collapsed, setCollapsed] = useState(false);
   const { logout } = useAuth();
 
   return (
@@ -66,6 +69,7 @@ export function Sidebar() {
               className={cn(
                 "group flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm transition-colors duration-150",
                 collapsed && "justify-center",
+                isActive && !collapsed && "border-l-2 border-primary pl-2",
                 isActive 
                   ? "bg-primary/10 text-primary font-medium" 
                   : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent"
@@ -107,7 +111,7 @@ export function Sidebar() {
 
         <Button
           variant="ghost"
-          onClick={() => setCollapsed(!collapsed)}
+          onClick={() => onToggle()}
           className={cn(
             "w-full flex items-center justify-start gap-2.5 px-2.5 py-2 text-sm text-sidebar-foreground/40 hover:text-sidebar-foreground hover:bg-sidebar-accent rounded-md transition-colors duration-150 cursor-pointer",
             collapsed && "justify-center"

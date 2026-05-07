@@ -20,8 +20,7 @@ import { useAuth } from "@/components/providers/auth-provider";
 
 const marketingLinks = [
   { href: "/", label: "Home" },
-  { href: "/features", label: "Features" },
-  { href: "/pricing", label: "Pricing" },
+  { href: "/#features", label: "Features" },
 ];
 
 export function Navbar() {
@@ -139,7 +138,7 @@ export function Navbar() {
                           {('icon' in link) && (
                             <div className={cn(
                               "w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500",
-                              isActive ? "bg-white/10" : "bg-primary/5 group-hover:bg-primary/10"
+                              isActive ? "bg-primary/10" : "bg-primary/5 group-hover:bg-primary/10"
                             )}>
                               {/* @ts-expect-error - Runtime check with 'icon' in link ensures it's safe */}
                               <link.icon className="h-6 w-6" />
@@ -171,7 +170,7 @@ export function Navbar() {
                         setMobileOpen(false);
                       }}
                       variant="destructive"
-                      className="w-full h-12 text-base font-medium rounded-xl bg-red-600 text-white hover:bg-red-700 border-0 group"
+                      className="w-full h-12 text-base font-medium rounded-xl group"
                     >
                       Terminate Session
                       <LogOut className="ml-2 h-4 w-4 transition-transform group-hover:scale-110" />

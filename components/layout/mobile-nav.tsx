@@ -31,11 +31,11 @@ export function MobileNav() {
             size="icon"
             className="h-8 w-8 text-muted-foreground hover:text-foreground lg:hidden"
             aria-label="Toggle navigation menu"
-          />
+          >
+            <Menu className="h-4 w-4" aria-hidden="true" />
+          </Button>
         }
-      >
-        <Menu className="h-4 w-4" />
-      </SheetTrigger>
+      />
       <SheetContent side="right" className="w-[260px] p-0 border-l border-border bg-sidebar flex flex-col">
         <SheetHeader className="px-4 h-14 border-b border-border flex flex-row items-center space-y-0">
           <SheetTitle>

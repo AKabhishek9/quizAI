@@ -10,13 +10,11 @@ interface RecentActivityProps {
 
 // Deterministic colour from a string — cycles through a set of tailwind colours
 const COLOURS = [
-  "bg-violet-500",
-  "bg-rose-500",
-  "bg-sky-500",
-  "bg-amber-500",
-  "bg-emerald-500",
-  "bg-pink-500",
-  "bg-indigo-500",
+  "bg-primary text-primary-foreground",
+  "bg-success text-success-foreground",
+  "bg-warning text-warning-foreground",
+  "bg-destructive text-destructive-foreground",
+  "bg-secondary text-secondary-foreground",
 ];
 
 function dotColour(title: string) {
@@ -34,7 +32,7 @@ function statusLabel(score: number) {
 export function RecentActivity({ attempts }: RecentActivityProps) {
   return (
     <section className="border border-border rounded-lg bg-card p-4 flex flex-col gap-1">
-      <h2 className="text-sm font-medium text-foreground mb-2">Recent Activity</h2>
+      <h2 className="text-sm font-medium text-foreground mb-2 font-heading">Recent Activity</h2>
 
       {attempts.length === 0 && (
         <div className="flex-1 flex items-center justify-center py-8">
@@ -58,7 +56,7 @@ export function RecentActivity({ attempts }: RecentActivityProps) {
             {/* Coloured icon square */}
             <div
               className={cn(
-                "h-8 w-8 rounded-md shrink-0 flex items-center justify-center text-white text-[10px] font-bold",
+                "h-8 w-8 rounded-md shrink-0 flex items-center justify-center text-[10px] font-bold",
                 colour
               )}
             >

@@ -38,9 +38,9 @@ const QUESTS = [
 ];
 
 const ACTIVITIES = [
-  { title: "Data Structures Quiz", status: "Completed quiz", dot: "bg-violet-500" },
-  { title: "General Knowledge", status: "Completed quiz", dot: "bg-emerald-500" },
-  { title: "React Fundamentals", status: "Mixed", dot: "bg-sky-500" },
+  { title: "Data Structures Quiz", status: "Completed quiz", dot: "bg-primary text-primary-foreground" },
+  { title: "General Knowledge", status: "Completed quiz", dot: "bg-success text-success-foreground" },
+  { title: "React Fundamentals", status: "Mixed", dot: "bg-warning text-warning-foreground" },
 ];
 
 export function HeroProductPreview() {
@@ -177,7 +177,7 @@ export function HeroProductPreview() {
                   className="flex items-center gap-2.5 py-1.5 border-b border-border last:border-0"
                 >
                   <div
-                    className={`h-6 w-6 rounded-md shrink-0 flex items-center justify-center text-white text-[8px] font-bold ${a.dot}`}
+                    className={`h-6 w-6 rounded-md shrink-0 flex items-center justify-center text-[8px] font-bold ${a.dot}`}
                   >
                     {a.title[0]}
                   </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { BookOpen, Target, Trophy, type LucideIcon } from "lucide-react";
+import { motion } from "framer-motion";
 import { StatsCard } from "@/components/dashboard/stats-card";
 
 interface DashboardStatsProps {
@@ -13,28 +14,51 @@ interface DashboardStatsProps {
 }
 
 export function DashboardStats({ stats, weeklyEvolution }: DashboardStatsProps) {
+  const scoreClass =
+    stats.averageScore >= 80
+      ? "border-success/25 bg-success/5"
+      : stats.averageScore >= 50
+      ? "border-warning/25 bg-warning/5"
+      : "border-destructive/25 bg-destructive/5";
+
+  const cards = [
+    {
+      title: "Quizzes Completed",
+      value: stats.totalQuizzes,
+      icon: BookOpen as unknown as LucideIcon,
+      trend: { value: weeklyEvolution, isPositive: weeklyEvolution >= 0 },
+      description: "Total sessions",
+      className: "border-primary/25 bg-primary/5",
+    },
+    {
+      title: "Average Score",
+      value: `${stats.averageScore}%`,
+      icon: Target as unknown as LucideIcon,
+      description: "Global accuracy",
+      className: scoreClass,
+    },
+    {
+      title: "Ranking",
+      value: `#${stats.rank}`,
+      total: "2.4k",
+      icon: Trophy as unknown as LucideIcon,
+      description: "Current position",
+      className: "border-warning/25 bg-warning/5",
+    },
+  ];
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <StatsCard
-        title="Quizzes Completed"
-        value={stats.totalQuizzes}
-        icon={BookOpen as unknown as LucideIcon}
-        trend={{ value: weeklyEvolution, isPositive: weeklyEvolution >= 0 }}
-        description="Total sessions"
-      />
-      <StatsCard
-        title="Average Score"
-        value={`${stats.averageScore}%`}
-        icon={Target as unknown as LucideIcon}
-        description="Global accuracy"
-      />
-      <StatsCard
-        title="Ranking"
-        value={`#${stats.rank}`}
-        total="2.4k"
-        icon={Trophy as unknown as LucideIcon}
-        description="Current position"
-      />
+      {cards.map((card, index) => (
+        <motion.div
+          key={card.title}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: index * 0.06 }}
+        >
+          <StatsCard {...card} />
+        </motion.div>
+      ))}
     </div>
   );
 }

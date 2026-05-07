@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Terminal } from "lucide-react";
 
 export function Footer() {
   return (
@@ -6,7 +7,7 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-8">
         <div className="flex items-center gap-2">
           <div className="w-6 h-6 bg-primary rounded flex items-center justify-center">
-            <span className="material-symbols-outlined text-primary-foreground text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>terminal</span>
+            <Terminal className="h-3.5 w-3.5 text-primary-foreground" />
           </div>
           <span className="text-xl font-semibold tracking-tight text-foreground">QuizAI</span>
         </div>

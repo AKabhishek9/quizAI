@@ -21,14 +21,14 @@ const manrope = Manrope({
 
 export const metadata: Metadata = {
   title: {
-    default: "QuizAI — Intelligent Quiz Platform",
+    default: "QuizAI | Intelligent Quiz Platform",
     template: "%s | QuizAI",
   },
   description:
     "Master any topic with AI-powered quizzes. Track your progress, identify weak areas, and level up your knowledge.",
   keywords: ["quiz", "learning", "AI", "education", "practice"],
   openGraph: {
-    title: "QuizAI — Intelligent Quiz Platform",
+    title: "QuizAI | Intelligent Quiz Platform",
     description:
       "Master any topic with AI-powered quizzes. Track your progress and level up your knowledge.",
     type: "website",
@@ -47,9 +47,6 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${inter.variable} ${manrope.variable} h-full antialiased`}
     >
-      <head>
-        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-      </head>
       <body className="min-h-full flex flex-col font-sans">
         <QueryProvider>
           <ThemeProvider
@@ -59,9 +56,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <TooltipProvider>
-              <AuthProvider>
-                {children}
-              </AuthProvider>
+              <AuthProvider>{children}</AuthProvider>
             </TooltipProvider>
           </ThemeProvider>
         </QueryProvider>

@@ -99,7 +99,7 @@ export function LevelUpToast({ level, xpGained, onClose, show }: LevelUpToastPro
                   transition={{ delay: 0.3 }}
                 >
                   <h2 className="text-3xl font-black tracking-tight flex items-center justify-center gap-3 font-heading">
-                    <Trophy className="w-8 h-8 text-amber-500" />
+                    <Trophy className="w-8 h-8 text-warning" />
                     LEVEL UP!
                   </h2>
                   <p className="text-muted-foreground text-lg">

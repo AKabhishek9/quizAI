@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -57,34 +57,35 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-4">
-      {/*
-        TOP ROW — 2-column split:
-          Left (~55%): Greeting + Stats + Level bar
-          Right (~45%): Performance Trend (3fr) | Recent Activity (2fr)
-      */}
-      <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,55fr)_minmax(0,45fr)] gap-4">
-        {/* ── LEFT COLUMN ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,55fr)_minmax(0,45fr)] gap-4">
         <div className="flex flex-col gap-4">
-          {/* Greeting + Start Quiz */}
-          <WelcomeBanner profile={profile} />
+          <WelcomeBanner profile={profile} stats={stats} />
 
-          {/* Stats Cards */}
+          {stats && stats.totalQuizzes === 0 && (
+            <div className="rounded-xl border border-primary/20 bg-primary/5 p-6 shadow-sm">
+              <h3 className="text-lg font-semibold text-foreground mb-2 font-heading">Welcome to QuizAI!</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Your dashboard is currently empty. Take your first quiz to see your personalized stats, level progress, and performance trends come alive.
+              </p>
+              <Button render={<Link href="/quiz/stream" />} className="cursor-pointer">
+                Take Your First Quiz
+              </Button>
+            </div>
+          )}
+
           {isLoading ? <SkeletonStatsGrid /> : stats ? (
             <DashboardStats stats={stats} weeklyEvolution={weeklyEvolution} />
           ) : null}
 
-          {/* Level Bar */}
           {profile && <LevelProgressBanner profile={profile} stats={stats} />}
         </div>
 
-        {/* ── RIGHT COLUMN: Performance Trend + Recent Activity side by side ── */}
         <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] gap-4">
-          {/* Performance Trend */}
           <div className="border border-border rounded-lg bg-card p-4 flex flex-col gap-3">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-medium text-foreground font-heading">Performance Trend</h2>
               <span className="text-[10px] font-medium text-muted-foreground border border-border rounded-md px-2 py-0.5">
-                Database data
+                Last 10 sessions
               </span>
             </div>
             {isLoading ? <SkeletonChart /> : stats ? (
@@ -92,7 +93,6 @@ export default function DashboardPage() {
             ) : null}
           </div>
 
-          {/* Recent Activity */}
           {isLoading ? (
             <SkeletonCard />
           ) : history ? (
@@ -101,16 +101,8 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/*
-        BOTTOM ROW — 2-column split:
-          Left (~40%): Daily Quests
-          Right (~60%): Category Breakdown
-      */}
-      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,40fr)_minmax(0,60fr)] gap-4">
-        {/* Daily Quests */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[minmax(0,40fr)_minmax(0,60fr)] gap-4">
         <DailyQuizWidget />
-
-        {/* Category Breakdown */}
         {stats && <SkillEquilibrium stats={stats} />}
       </div>
     </div>

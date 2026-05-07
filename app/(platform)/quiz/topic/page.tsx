@@ -1,16 +1,18 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useMemo, useState, Suspense } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, X, ArrowRight, Zap, Lightbulb, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { getQuizzes } from "@/lib/api-client";
 import { cn } from "@/lib/utils";
 
-// Hardcoded suggestions based on stream. In a real app, this could come from the DB.
 const SUGGESTIONS: Record<string, string[]> = {
+  General: ["Current Affairs", "Aptitude", "Reasoning", "General Knowledge", "World Geography"],
   "Tech & Software": ["React", "Node.js", "Docker", "Algorithms", "System Design", "AWS", "Python", "TypeScript", "Graph Theory", "Kubernetes"],
   "Pure Sciences": ["Quantum Mechanics", "Organic Chemistry", "Genetics", "Thermodynamics", "Cellular Biology"],
   "Commerce & Finance": ["Microeconomics", "Financial Accounting", "Corporate Finance", "Macroeconomics"],
@@ -20,9 +22,9 @@ const SUGGESTIONS: Record<string, string[]> = {
 type DifficultyLabel = "easy" | "medium" | "hard";
 
 const DIFFICULTY_OPTIONS: { label: DifficultyLabel; display: string; description: string }[] = [
-  { label: "easy",   display: "Easy",   description: "Core concepts & definitions" },
+  { label: "easy", display: "Easy", description: "Core concepts & definitions" },
   { label: "medium", display: "Medium", description: "Applied & practical problems" },
-  { label: "hard",   display: "Hard",   description: "Advanced & problem-solving" },
+  { label: "hard", display: "Hard", description: "Advanced & problem-solving" },
 ];
 
 function TopicSelectionEngine() {
@@ -33,10 +35,35 @@ function TopicSelectionEngine() {
   const [topics, setTopics] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [difficulty, setDifficulty] = useState<DifficultyLabel>("medium");
-  const [suggestions] = useState<string[]>(SUGGESTIONS[stream] || SUGGESTIONS["Tech & Software"]);
 
-  // Filter out suggestions that are already picked
-  const availableSuggestions = suggestions.filter((s) => !topics.includes(s));
+  const { data: availableQuizzes } = useQuery({
+    queryKey: ["available-quizzes"],
+    queryFn: getQuizzes,
+  });
+
+  const suggestions = useMemo(() => {
+    const streamTokens = stream
+      .toLowerCase()
+      .split(/[^a-z0-9]+/)
+      .filter((token) => token.length > 2);
+
+    const dynamic = (availableQuizzes ?? [])
+      .filter((quiz) => {
+        const haystack = `${quiz.title} ${quiz.description} ${quiz.category}`.toLowerCase();
+        return streamTokens.some((token) => haystack.includes(token));
+      })
+      .flatMap((quiz) => [
+        quiz.title,
+        quiz.category,
+        ...(quiz.questions ?? []).map((question) => question.topic),
+      ])
+      .filter((topic): topic is string => Boolean(topic?.trim()));
+
+    const unique = Array.from(new Set(dynamic)).slice(0, 10);
+    return unique.length ? unique : SUGGESTIONS[stream] || SUGGESTIONS["Tech & Software"];
+  }, [availableQuizzes, stream]);
+
+  const availableSuggestions = suggestions.filter((suggestion) => !topics.includes(suggestion));
 
   const addTopic = (topic: string) => {
     const cleanTopic = topic.trim();
@@ -47,7 +74,7 @@ function TopicSelectionEngine() {
   };
 
   const removeTopic = (topic: string) => {
-    setTopics(topics.filter((t) => t !== topic));
+    setTopics(topics.filter((item) => item !== topic));
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -67,7 +94,6 @@ function TopicSelectionEngine() {
 
   return (
     <div className="max-w-3xl mx-auto py-12 px-4 space-y-8">
-      {/* Header */}
       <div className="text-center space-y-4">
         <Badge variant="outline" className="mb-2 bg-secondary text-secondary-foreground uppercase tracking-wider text-[10px]">
           {stream}
@@ -75,7 +101,7 @@ function TopicSelectionEngine() {
         <motion.h1
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-3xl font-semibold tracking-tight"
+          className="text-3xl font-semibold tracking-tight font-heading"
         >
           Select Your Topics
         </motion.h1>
@@ -85,7 +111,7 @@ function TopicSelectionEngine() {
           transition={{ delay: 0.1 }}
           className="text-muted-foreground text-sm max-w-lg mx-auto"
         >
-          Choose up to 5 topics. Our engine will blend them together seamlessly. If a topic is not in our database, our AI will generate questions for it on the fly.
+          Choose up to 5 topics. If a topic is not in the library, the AI will generate questions for it.
         </motion.p>
       </div>
 
@@ -93,16 +119,15 @@ function TopicSelectionEngine() {
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.2 }}
-        className="bg-card border border-border rounded-2xl p-6 sm:p-8 elevated space-y-8 relative overflow-hidden"
+        className="bg-card border border-border rounded-2xl p-4 sm:p-8 elevated space-y-8 relative overflow-hidden"
       >
         <div className="absolute inset-0 mesh-gradient opacity-[0.03] pointer-events-none" />
 
-        {/* Input Area */}
         <div className="relative z-10 space-y-3">
           <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             Search or Type Custom Topic
           </label>
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <div className="relative flex-1">
               <Zap className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary" />
               <Input
@@ -117,7 +142,7 @@ function TopicSelectionEngine() {
             <Button
               onClick={() => addTopic(inputValue)}
               disabled={!inputValue.trim() || topics.length >= 5}
-              className="h-11 px-6 shadow-sm"
+              className="h-11 px-6 shadow-sm w-full sm:w-auto"
             >
               <Plus className="w-4 h-4 mr-1" />
               Add
@@ -129,30 +154,31 @@ function TopicSelectionEngine() {
           </p>
         </div>
 
-        {/* Selected Pool */}
-        <div className="relative z-10 bg-background/40 border border-border/40 rounded-xl p-5 min-h-[120px]">
+        <div className="relative z-10 bg-background/40 border border-border/40 rounded-xl p-4 sm:p-5 min-h-[120px]">
           {topics.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-center space-y-2 opacity-50 pt-3">
-              <p className="text-sm">Your mixture is empty.</p>
+            <div className="flex flex-col items-center justify-center h-full text-center space-y-2 opacity-60 pt-3">
+              <p className="text-sm">Your topic list is empty.</p>
               <p className="text-xs text-muted-foreground">Select from suggestions below or type your own.</p>
             </div>
           ) : (
             <div className="flex items-center gap-4 flex-wrap">
               <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest shrink-0">
-                Mixture ({topics.length}/5):
+                Topics ({topics.length}/5):
               </span>
               <AnimatePresence>
-                {topics.map((t) => (
+                {topics.map((topic) => (
                   <motion.div
-                    key={t}
+                    key={topic}
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.8 }}
                     className="bg-primary text-primary-foreground px-3 py-1.5 rounded-full text-sm font-medium flex items-center gap-2 shadow-sm"
                   >
-                    {t}
+                    {topic}
                     <button
-                      onClick={() => removeTopic(t)}
+                      type="button"
+                      onClick={() => removeTopic(topic)}
+                      aria-label={`Remove ${topic}`}
                       className="opacity-70 hover:opacity-100 transition-opacity bg-primary-foreground/10 rounded-full p-0.5"
                     >
                       <X className="w-3.5 h-3.5" />
@@ -164,7 +190,6 @@ function TopicSelectionEngine() {
           )}
         </div>
 
-        {/* Difficulty Selector */}
         <div className="relative z-10 space-y-3">
           <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             Difficulty Level
@@ -173,6 +198,7 @@ function TopicSelectionEngine() {
             {DIFFICULTY_OPTIONS.map((opt) => (
               <button
                 key={opt.label}
+                type="button"
                 onClick={() => setDifficulty(opt.label)}
                 className={cn(
                   "group relative px-4 py-2 rounded-lg border text-sm font-medium transition-all duration-150",
@@ -200,27 +226,26 @@ function TopicSelectionEngine() {
           </div>
         </div>
 
-        {/* Suggestions */}
         <div className="relative z-10 space-y-3">
           <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             Suggested for {stream}
           </label>
           <div className="flex flex-wrap gap-2">
-            {availableSuggestions.map((s) => (
+            {availableSuggestions.map((suggestion) => (
               <button
-                key={s}
-                onClick={() => addTopic(s)}
+                key={suggestion}
+                type="button"
+                onClick={() => addTopic(suggestion)}
                 disabled={topics.length >= 5}
                 className="bg-secondary text-secondary-foreground hover:bg-secondary/80 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                + {s}
+                + {suggestion}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Action */}
-        <div className="relative z-10 pt-6 border-t border-border/50 flex justify-between items-center">
+        <div className="relative z-10 pt-6 border-t border-border/50 flex flex-col-reverse sm:flex-row gap-3 sm:justify-between sm:items-center">
           <Button
             variant="ghost"
             onClick={() => router.back()}

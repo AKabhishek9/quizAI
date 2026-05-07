@@ -7,6 +7,8 @@ import {
   signInWithPopup,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  sendPasswordResetEmail,
+  updateProfile,
 } from "firebase/auth";
 import { auth, googleProvider } from "@/lib/firebase";
 import type { Auth, GoogleAuthProvider } from "firebase/auth";
@@ -14,6 +16,7 @@ import { Loader2, AlertCircle, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/components/providers/auth-provider";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 export default function LoginPage() {
   const { user } = useAuth();
@@ -46,7 +49,10 @@ export default function LoginPage() {
       if (isLogin) {
         await signInWithEmailAndPassword(safeAuth, email, password);
       } else {
-        await createUserWithEmailAndPassword(safeAuth, email, password);
+        const result = await createUserWithEmailAndPassword(safeAuth, email, password);
+        if (name) {
+          await updateProfile(result.user, { displayName: name });
+        }
       }
       router.push("/dashboard");
     } catch (err: unknown) {
@@ -78,8 +84,27 @@ export default function LoginPage() {
     }
   };
 
+  const handleForgotPassword = async () => {
+    if (!email) {
+      setError("Please enter your email address first to reset your password");
+      return;
+    }
+    if (!auth) return;
+    try {
+      setIsLoading(true);
+      await sendPasswordResetEmail(auth as Auth, email);
+      toast.success("Password reset email sent! Please check your inbox.");
+      setError(null);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Something went wrong";
+      setError(msg);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-[oklch(0.97_0.005_264)] dark:bg-background">
+    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-background">
       {/* Logo */}
       <motion.div
         initial={{ opacity: 0, y: -8 }}
@@ -107,8 +132,8 @@ export default function LoginPage() {
           </h1>
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
             {isLogin
-              ? "Enter your credentials to access the monolith"
-              : "Join the monolith today"}
+              ? "Sign in to start learning"
+              : "Create your free account"}
           </p>
         </div>
 
@@ -162,7 +187,8 @@ export default function LoginPage() {
               {isLogin && (
                 <button
                   type="button"
-                  className="text-[11px] font-bold uppercase tracking-wider text-primary hover:opacity-70 transition-opacity"
+                  onClick={handleForgotPassword}
+                  className="text-[11px] font-bold uppercase tracking-wider text-primary hover:opacity-70 transition-opacity cursor-pointer"
                 >
                   Forgot?
                 </button>

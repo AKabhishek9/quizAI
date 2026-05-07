@@ -29,9 +29,9 @@ export function QuizTimer({
           className={cn(
             "h-3.5 w-3.5 transition-colors",
             isDanger
-              ? "text-red-500"
+              ? "text-destructive"
               : isWarning
-              ? "text-yellow-500"
+              ? "text-warning"
               : "text-muted-foreground"
           )}
         />
@@ -39,9 +39,9 @@ export function QuizTimer({
           className={cn(
             "text-xs font-mono font-semibold tabular-nums transition-colors",
             isDanger
-              ? "text-red-500"
+              ? "text-destructive"
               : isWarning
-              ? "text-yellow-500"
+              ? "text-warning"
               : "text-foreground"
           )}
         >
@@ -54,9 +54,9 @@ export function QuizTimer({
           className={cn(
             "h-full rounded-full transition-colors",
             isDanger
-              ? "bg-red-500"
+              ? "bg-destructive"
               : isWarning
-              ? "bg-yellow-500"
+              ? "bg-warning"
               : "bg-primary"
           )}
           initial={{ width: "100%" }}
@@ -66,7 +66,7 @@ export function QuizTimer({
       </div>
 
       {isDanger && (
-        <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
+        <span className="h-2 w-2 rounded-full bg-destructive animate-pulse" />
       )}
     </div>
   );

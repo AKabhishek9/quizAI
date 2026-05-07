@@ -92,10 +92,12 @@ export default function ProfilePage() {
             <div className="flex flex-wrap items-center gap-3 justify-center md:justify-start">
               <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
                 <DialogTrigger render={
-                  <button
+                  <Button
                     type="button"
+                    variant="outline"
+                    size="sm"
                     onClick={() => setEditName(profile?.name || "")}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border text-xs font-medium text-foreground hover:bg-muted transition-colors cursor-pointer"
+                    className="h-7 gap-1.5 text-xs cursor-pointer"
                   />
                 }>
                   <Pencil className="h-3 w-3" />
@@ -184,7 +186,7 @@ export default function ProfilePage() {
               title="Current Streak"
               value={`${stats.currentStreak}d`}
               icon={Flame}
-              className={cn(stats.currentStreak > 0 && "border-orange-500/30")}
+              className={cn(stats.currentStreak > 0 && "border-warning/30")}
             />
             <StatsCard title="Best Streak" value={`${stats.bestStreak}d`} icon={Trophy} />
             <StatsCard title="Global Rank" value={`#${stats.rank}`} icon={Trophy} />
@@ -303,8 +305,11 @@ export default function ProfilePage() {
               { id: "level_10", name: "Mastery", icon: "👑", desc: "Reach Level 10" },
             ].map((ach) => (
               <div key={ach.id} className="rounded-lg border border-border bg-card p-5 flex flex-col items-center justify-center text-center gap-3 opacity-60 hover:opacity-100 transition-opacity">
-                <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center text-2xl grayscale">
-                  {ach.icon}
+                <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center">
+                  {ach.id === "first_quiz" && <Target className="h-5 w-5 text-muted-foreground" />}
+                  {ach.id === "streak_7" && <Flame className="h-5 w-5 text-muted-foreground" />}
+                  {ach.id === "perfect_score" && <Trophy className="h-5 w-5 text-muted-foreground" />}
+                  {ach.id === "level_10" && <BookOpen className="h-5 w-5 text-muted-foreground" />}
                 </div>
                 <div>
                   <h4 className="text-sm font-semibold text-foreground">{ach.name}</h4>

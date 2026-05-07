@@ -60,7 +60,7 @@ export function DailyQuizWidget() {
       <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
         <div className="flex items-center gap-2">
           <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse inline-block" />
-          <h2 className="text-sm font-medium text-foreground">Daily Quests</h2>
+          <h2 className="text-sm font-medium text-foreground font-heading">Daily Quests</h2>
         </div>
         {timeLeft && (
           <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground bg-muted/30 px-2 py-0.5 rounded-md">
@@ -77,8 +77,9 @@ export function DailyQuizWidget() {
           ))}
         </div>
       ) : quizzes.length === 0 ? (
-        <div className="flex-1 flex items-center justify-center">
-          <p className="text-xs text-muted-foreground text-center">Daily quests are being generated. Check back soon.</p>
+        <div className="flex-1 flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border bg-muted/20 p-6 text-center">
+          <Clock className="h-5 w-5 text-muted-foreground" />
+          <p className="text-xs text-muted-foreground">Daily quests are being generated. Check back soon.</p>
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-3 flex-1">
@@ -92,8 +93,8 @@ export function DailyQuizWidget() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
               >
-                <Link href={`/quiz/daily/${quiz.id}`}>
-                  <div className="group flex flex-col gap-2 p-3 rounded-lg bg-muted/30 hover:bg-muted/60 transition-colors duration-150 cursor-pointer">
+                <Link href={`/quiz/daily/${quiz.type}`}>
+                  <div className="group flex flex-col gap-2 p-3 rounded-lg border border-transparent bg-muted/30 hover:border-primary/30 hover:bg-muted/60 hover:-translate-y-0.5 transition-all duration-150 cursor-pointer">
                     <div className="flex items-center justify-between">
                       <Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
                       <ArrowRight className="h-3 w-3 text-muted-foreground/40 group-hover:text-primary transition-colors" />

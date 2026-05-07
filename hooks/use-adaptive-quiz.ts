@@ -5,6 +5,7 @@ import { generateQuiz, submitQuizAnswers } from "@/lib/api-client";
 import type { ApiSubmitResponse, ApiQuestion } from "@/lib/api-client";
 import { toPlayableQuestion, optionIdToIndex } from "@/lib/transforms";
 import type { Question } from "@/lib/types";
+import { toast } from "sonner";
 
 export type DifficultyLabel = "easy" | "medium" | "hard";
 
@@ -176,6 +177,7 @@ export function useAdaptiveQuiz(): UseAdaptiveQuizReturn {
       );
 
       const response = await submitQuizAnswers({ answers: submissionAnswers });
+      toast.success(`Quiz complete! +${response.xpAwarded} XP earned`);
       setResult(response);
       setState("completed");
     } catch (err) {

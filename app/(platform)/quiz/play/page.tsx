@@ -6,11 +6,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ArrowLeft, AlertCircle, Loader2, TrendingUp, TrendingDown, Minus, Cpu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { QuizOption } from "@/components/quiz/quiz-option";
+import { QuizTimer } from "@/components/quiz/quiz-timer";
 import { ProgressBar } from "@/components/dashboard/progress-bar";
 import { ErrorBoundary } from "@/components/shared/error-boundary";
 import { useAdaptiveQuiz } from "@/hooks/use-adaptive-quiz";
+import { useTimer } from "@/hooks/use-timer";
 import type { DifficultyLabel } from "@/hooks/use-adaptive-quiz";
 import { cn } from "@/lib/utils";
+
+const ADAPTIVE_TIMER_SECONDS = 90;
 
 function PlayQuizEngine() {
   const router = useRouter();
@@ -37,6 +41,12 @@ function PlayQuizEngine() {
   } = useAdaptiveQuiz();
 
   const startedRef = useRef(false);
+  const {
+    timeRemaining,
+    reset: resetQuestionTimer,
+    start: startQuestionTimer,
+    pause: pauseQuestionTimer,
+  } = useTimer(ADAPTIVE_TIMER_SECONDS);
 
   // Auto-start the generation if we have topics
   useEffect(() => {
@@ -63,6 +73,16 @@ function PlayQuizEngine() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
+
+  useEffect(() => {
+    if (state !== "playing") {
+      pauseQuestionTimer();
+      return;
+    }
+
+    resetQuestionTimer(ADAPTIVE_TIMER_SECONDS);
+    startQuestionTimer();
+  }, [currentQuestionIndex, state, pauseQuestionTimer, resetQuestionTimer, startQuestionTimer]);
 
   const currentQuestion = questions[currentQuestionIndex] ?? null;
   const isLastQuestion = currentQuestionIndex === totalQuestions - 1;
@@ -124,7 +144,7 @@ function PlayQuizEngine() {
           </p>
           {isGenerating && (
             <p className="text-xs font-mono text-primary/70 mt-3 tabular-nums">
-              {elapsed}s elapsed…
+              {elapsed}s elapsed...
             </p>
           )}
         </div>
@@ -162,7 +182,7 @@ function PlayQuizEngine() {
                 startQuiz(streamParam, topicsArray, difficultyParam);
               }}
               size="sm"
-              className="cursor-pointer bg-foreground text-background hover:bg-foreground/90 h-8 text-xs"
+              className="cursor-pointer h-8 text-xs"
             >
               Retry Generation
             </Button>
@@ -178,7 +198,7 @@ function PlayQuizEngine() {
       <motion.div
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="max-w-xl mx-auto py-10 space-y-6"
+        className="max-w-3xl mx-auto py-10 space-y-6"
       >
         <div className="text-center">
           <h1 className="text-2xl font-semibold tracking-tight font-heading">Assessment Overview</h1>
@@ -295,35 +315,47 @@ function PlayQuizEngine() {
             {currentQuestionIndex + 1}{" "}
             <span className="text-muted-foreground">/ {totalQuestions}</span>
           </span>
-          {currentQuestion && (
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] uppercase tracking-wider text-muted-foreground bg-secondary px-2 py-0.5 rounded-sm">
-                {currentQuestion.topic}
-              </span>
-              <span
-                className={cn(
-                  "text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-sm font-medium",
-                  currentQuestion.difficulty === 1
-                    ? "bg-success/10 text-success"
-                    : currentQuestion.difficulty === 2
-                    ? "bg-success/20 text-success"
-                    : currentQuestion.difficulty === 3
-                    ? "bg-warning/10 text-warning"
-                    : currentQuestion.difficulty === 4
-                    ? "bg-destructive/10 text-destructive"
-                    : "bg-destructive/20 text-destructive"
-                )}
-              >
-                Lvl {currentQuestion.difficulty}
-              </span>
-            </div>
-          )}
+          <div className="flex items-center gap-3">
+            {currentQuestion && (
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] uppercase tracking-wider text-muted-foreground bg-secondary px-2 py-0.5 rounded-sm">
+                  {currentQuestion.topic}
+                </span>
+                <span
+                  className={cn(
+                    "text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-sm font-medium",
+                    currentQuestion.difficulty === 1
+                      ? "bg-success/10 text-success"
+                      : currentQuestion.difficulty === 2
+                      ? "bg-success/20 text-success"
+                      : currentQuestion.difficulty === 3
+                      ? "bg-warning/10 text-warning"
+                      : currentQuestion.difficulty === 4
+                      ? "bg-destructive/10 text-destructive"
+                      : "bg-destructive/20 text-destructive"
+                  )}
+                >
+                  Lvl {currentQuestion.difficulty}
+                </span>
+              </div>
+            )}
+            <QuizTimer
+              timeRemaining={timeRemaining}
+              totalTime={ADAPTIVE_TIMER_SECONDS}
+              className="w-28 sm:w-32"
+            />
+          </div>
         </div>
         <ProgressBar
           value={(currentQuestionIndex / totalQuestions) * 100}
           showPercentage={false}
           size="sm"
         />
+      </div>
+
+      {/* Grading Notice */}
+      <div className="bg-muted/30 border border-border/50 rounded-lg p-3 text-center text-xs text-muted-foreground shadow-sm">
+        This quiz is graded at the end. Select your best answer and continue.
       </div>
 
       {/* Question */}
@@ -363,36 +395,31 @@ function PlayQuizEngine() {
           size="sm"
           onClick={prevQuestion}
           disabled={isFirstQuestion}
-          className="cursor-pointer h-8 text-xs disabled:opacity-30"
+          className="cursor-pointer h-8 text-xs disabled:opacity-30 gap-1.5"
           aria-label="Previous question"
         >
-          <ArrowLeft className="mr-1 h-3 w-3" />
+          <ArrowLeft className="h-3 w-3" />
           Previous
+          <kbd className="hidden sm:inline-flex ml-1 items-center justify-center rounded border border-border bg-muted/50 px-1 font-sans text-[10px] font-medium text-muted-foreground shadow-sm">Left</kbd>
         </Button>
 
         {/* Right side: hint + next/submit */}
         <div className="flex items-center gap-3">
-          <p className="text-[11px] text-muted-foreground hidden sm:flex items-center">
-            <AlertCircle className="h-3 w-3 mr-1" />
-            Graded at end
-          </p>
           <Button
             onClick={nextQuestion}
             disabled={!selectedAnswer}
             size="sm"
-            className="cursor-pointer h-8 text-xs disabled:opacity-40"
+            className="cursor-pointer h-8 text-xs disabled:opacity-40 gap-1.5"
             aria-label={isLastQuestion ? "Submit assessment" : "Next question"}
           >
             {isLastQuestion ? "Submit Assessment" : "Next Question"}
-            <ArrowRight className="ml-1 h-3 w-3" />
+            <ArrowRight className="h-3 w-3" />
+            {!isLastQuestion && (
+              <kbd className="hidden sm:inline-flex ml-1 items-center justify-center rounded border border-primary-foreground/20 bg-primary-foreground/10 px-1 font-sans text-[10px] font-medium text-primary-foreground/80 shadow-sm">Right</kbd>
+            )}
           </Button>
         </div>
       </div>
-
-      {/* Keyboard hint */}
-      <p className="text-center text-[10px] text-muted-foreground/50 select-none">
-        ← → to navigate · answers saved automatically
-      </p>
     </div>
   );
 }
@@ -424,7 +451,7 @@ function QuizErrorState({ onRetry }: { onRetry: () => void }) {
           <Button
             onClick={onRetry}
             size="sm"
-            className="cursor-pointer bg-foreground text-background hover:bg-foreground/90 h-8 text-xs"
+            className="cursor-pointer h-8 text-xs"
           >
             Retry
           </Button>

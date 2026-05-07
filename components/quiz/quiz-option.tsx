@@ -26,6 +26,13 @@ export function QuizOption({
 }: QuizOptionProps) {
   const isThisCorrectAnswer = isRevealed && option.id === correctOptionId;
   const isThisWrongSelected = isRevealed && isSelected && !isCorrect;
+  const labelState = isThisCorrectAnswer
+    ? "correct"
+    : isThisWrongSelected
+    ? "wrong"
+    : isSelected
+    ? "selected"
+    : "default";
 
   return (
     <motion.button
@@ -41,9 +48,9 @@ export function QuizOption({
         // Selected
         isSelected && !isRevealed && "border-primary bg-primary/10",
         // Correct
-        isThisCorrectAnswer && "border-green-500/50 bg-green-50 dark:bg-green-900/20",
+        isThisCorrectAnswer && "border-success/50 bg-success/10",
         // Wrong
-        isThisWrongSelected && "border-red-500/50 bg-red-50 dark:bg-red-900/20",
+        isThisWrongSelected && "border-destructive/50 bg-destructive/10",
         disabled && "cursor-not-allowed"
       )}
       role="radio"
@@ -51,13 +58,17 @@ export function QuizOption({
       aria-label={`Option ${option.label}: ${option.text}`}
     >
       {/* Label */}
-      <span
+      <motion.span
+        key={labelState}
+        initial={{ scale: 0.9 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 0.12 }}
         className={cn(
           "flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-xs font-semibold transition-colors duration-150",
           !isSelected && !isRevealed && "bg-muted text-muted-foreground",
           isSelected && !isRevealed && "bg-primary text-primary-foreground",
-          isThisCorrectAnswer && "bg-green-500 text-white",
-          isThisWrongSelected && "bg-red-500 text-white"
+          isThisCorrectAnswer && "bg-success text-success-foreground",
+          isThisWrongSelected && "bg-destructive text-destructive-foreground"
         )}
       >
         {isThisCorrectAnswer ? (
@@ -67,14 +78,15 @@ export function QuizOption({
         ) : (
           option.label
         )}
-      </span>
+      </motion.span>
 
       <span className={cn(
         "text-sm font-medium flex-1",
         !isSelected && !isRevealed ? "text-foreground" : 
         isSelected && !isRevealed ? "text-primary" :
-        isThisCorrectAnswer ? "text-green-900 dark:text-green-100" :
-        "text-red-900 dark:text-red-100"
+        isThisCorrectAnswer ? "text-success" :
+        isThisWrongSelected ? "text-destructive" :
+        "text-muted-foreground"
       )}>{option.text}</span>
     </motion.button>
   );

@@ -39,11 +39,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# antigravity
-antigravity/
-
-# graphify
-graphify-out/
 
 
 # Python

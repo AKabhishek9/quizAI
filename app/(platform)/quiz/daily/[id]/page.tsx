@@ -28,6 +28,8 @@ export default function DailyQuizPlayPage({
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [streakUpdated, setStreakUpdated] = useState(false);
+  const [retryNonce, setRetryNonce] = useState(0);
+  const [refreshCountdown, setRefreshCountdown] = useState("");
 
   const {
     state,
@@ -55,7 +57,25 @@ export default function DailyQuizPlayPage({
   const [streakInfo, setStreakInfo] = useState<{ currentStreak: number; bestStreak: number } | null>(null);
 
   useEffect(() => {
+    const updateCountdown = () => {
+      const now = new Date();
+      const midnight = new Date(now);
+      midnight.setHours(24, 0, 0, 0);
+      const distance = midnight.getTime() - now.getTime();
+      const hours = Math.floor(distance / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      setRefreshCountdown(`${hours}h ${minutes}m`);
+    };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
     async function load() {
+      setLoading(true);
+      setQuiz(null);
       try {
         const data = await getDailyQuizById(id);
         
@@ -90,7 +110,7 @@ export default function DailyQuizPlayPage({
       }
     }
     load();
-  }, [id]);
+  }, [id, retryNonce]);
 
   useEffect(() => {
     if (state === "playing" && !showFeedback) {
@@ -128,9 +148,14 @@ export default function DailyQuizPlayPage({
             });
             setShowLevelUp(true);
           } else {
-            toast.success("Daily Quest Complete!", {
-              icon: <Flame className="h-4 w-4 text-orange-500" />
-            });
+            toast.success(
+              response.streak
+                ? `Daily quest complete! Day ${response.streak.currentStreak} streak, +${response.streak.xpGained} XP`
+                : "Daily quest complete!",
+              {
+                icon: <Flame className="h-4 w-4 text-warning" />,
+              }
+            );
           }
         } catch (error) {
           console.error("Streak update failed:", error);
@@ -157,22 +182,37 @@ export default function DailyQuizPlayPage({
         <p className="text-xs text-muted-foreground mt-1">
           This daily quest has expired or doesn&apos;t exist.
         </p>
+        {refreshCountdown && (
+          <p className="text-xs text-muted-foreground mt-2">
+            Next daily refresh in {refreshCountdown}.
+          </p>
+        )}
+        <div className="mt-4 flex flex-col sm:flex-row justify-center gap-2">
+          <Button
+            onClick={() => setRetryNonce((value) => value + 1)}
+            size="sm"
+            className="cursor-pointer"
+          >
+            Retry
+          </Button>
         <Button
           onClick={() => router.push("/quiz")}
           size="sm"
-          className="mt-4 cursor-pointer"
+          variant="outline"
+          className="cursor-pointer"
         >
           Back to library
         </Button>
+        </div>
       </div>
     );
   }
 
   const themeColors = {
-    emerald: "from-emerald-500/10 to-emerald-500/5 text-emerald-500 border-emerald-500/20",
-    indigo: "from-indigo-500/10 to-indigo-500/5 text-indigo-500 border-indigo-500/20",
-    amber: "from-amber-500/10 to-amber-500/5 text-amber-500 border-amber-500/20",
-    rose: "from-rose-500/10 to-rose-500/5 text-rose-500 border-rose-500/20",
+    emerald: "from-success/10 to-success/5 text-success border-success/20",
+    indigo: "from-primary/10 to-primary/5 text-primary border-primary/20",
+    amber: "from-warning/10 to-warning/5 text-warning border-warning/20",
+    rose: "from-destructive/10 to-destructive/5 text-destructive border-destructive/20",
   };
 
   const currentTheme = themeColors[quiz.theme as keyof typeof themeColors] || themeColors.indigo;
