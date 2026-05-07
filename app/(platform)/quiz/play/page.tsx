@@ -142,7 +142,7 @@ function PlayQuizEngine() {
       >
         <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-8 text-center">
           <AlertCircle className="h-8 w-8 text-destructive mx-auto mb-3" />
-          <h2 className="text-base font-semibold text-foreground mb-1">Failed to load quiz</h2>
+          <h2 className="text-base font-semibold text-foreground mb-1 font-heading">Failed to load quiz</h2>
           <p className="text-sm text-muted-foreground mb-5">
             {error || "An unexpected error occurred. The AI generation might have timed out."}
           </p>
@@ -181,7 +181,7 @@ function PlayQuizEngine() {
         className="max-w-xl mx-auto py-10 space-y-6"
       >
         <div className="text-center">
-          <h1 className="text-2xl font-semibold tracking-tight">Assessment Overview</h1>
+          <h1 className="text-2xl font-semibold tracking-tight font-heading">Assessment Overview</h1>
           <p className="text-sm text-muted-foreground mt-1">
             We have analyzed your performance across {topicsArray.length} topics.
           </p>
@@ -336,7 +336,7 @@ function PlayQuizEngine() {
           transition={{ duration: 0.2 }}
           className="rounded-xl border border-border bg-card p-5 elevated"
         >
-          <h2 className="text-[15px] font-medium leading-relaxed mb-5">{currentQuestion?.text}</h2>
+          <h2 className="text-[15px] font-medium leading-relaxed mb-5 font-heading">{currentQuestion?.text}</h2>
 
           <div className="space-y-2" role="radiogroup" aria-label="Answer options">
             {currentQuestion?.options.map((option) => (
@@ -408,7 +408,7 @@ function QuizErrorState({ onRetry }: { onRetry: () => void }) {
     >
       <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-8 text-center">
         <AlertCircle className="h-8 w-8 text-destructive mx-auto mb-3" />
-        <h2 className="text-base font-semibold text-foreground mb-1">Quiz player crashed</h2>
+        <h2 className="text-base font-semibold text-foreground mb-1 font-heading">Quiz player crashed</h2>
         <p className="text-sm text-muted-foreground mb-5">
           Something unexpected happened while rendering this assessment.
         </p>

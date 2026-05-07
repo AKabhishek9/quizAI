@@ -43,7 +43,7 @@ export default function DashboardPage() {
       <div className="flex flex-col items-center justify-center min-h-[40vh]">
         <div className="border border-border rounded-lg p-8 text-center max-w-sm bg-card">
           <AlertCircle className="h-8 w-8 text-destructive mx-auto mb-3" />
-          <h2 className="text-sm font-semibold text-foreground mb-1">Failed to load dashboard</h2>
+          <h2 className="text-sm font-semibold text-foreground mb-1 font-heading">Failed to load dashboard</h2>
           <p className="text-xs text-muted-foreground mb-4">
             {error instanceof Error ? error.message : "Something went wrong."}
           </p>
@@ -82,7 +82,7 @@ export default function DashboardPage() {
           {/* Performance Trend */}
           <div className="border border-border rounded-lg bg-card p-4 flex flex-col gap-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-medium text-foreground">Performance Trend</h2>
+              <h2 className="text-sm font-medium text-foreground font-heading">Performance Trend</h2>
               <span className="text-[10px] font-medium text-muted-foreground border border-border rounded-md px-2 py-0.5">
                 Database data
               </span>

@@ -52,7 +52,7 @@ export default function LeaderboardPage() {
     <div className="max-w-5xl mx-auto space-y-6 pb-12">
       {/* Header */}
       <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">Leaderboard</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-foreground font-heading">Leaderboard</h1>
         <p className="text-sm text-muted-foreground">Top performers this week.</p>
       </div>
 

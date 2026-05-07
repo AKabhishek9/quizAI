@@ -58,7 +58,7 @@ export function QuizIdleState({
             Daily Quest
           </div>
           
-          <h1 className="text-lg font-semibold tracking-tight mb-1.5">
+          <h1 className="text-lg font-semibold tracking-tight mb-1.5 font-heading">
             {title}
           </h1>
           <p className="text-sm text-muted-foreground mb-5 max-w-xs mx-auto">
@@ -101,7 +101,7 @@ export function QuizIdleState({
     >
       <div className="rounded-lg border border-border bg-card p-4">
         <DifficultyBadge difficulty={difficulty || "medium"} className="mb-3" />
-        <h1 className="text-lg font-semibold tracking-tight mb-1">
+        <h1 className="text-lg font-semibold tracking-tight mb-1 font-heading">
           {title}
         </h1>
         <p className="text-sm text-muted-foreground mt-2 mb-5">

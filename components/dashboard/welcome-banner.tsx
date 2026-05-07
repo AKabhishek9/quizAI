@@ -18,7 +18,7 @@ export function WelcomeBanner({ profile }: WelcomeBannerProps) {
 
   return (
     <div className="flex flex-col gap-3">
-      <h1 className="text-3xl font-bold text-foreground tracking-tight">
+      <h1 className="text-3xl font-bold text-foreground tracking-tight font-heading">
         {greeting}, {firstName} 👋
       </h1>
       <div>

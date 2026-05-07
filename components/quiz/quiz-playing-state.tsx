@@ -111,7 +111,7 @@ export function QuizPlayingState({
         >
 
           <h2 className={cn(
-            "font-semibold leading-relaxed mb-4 text-foreground",
+            "font-semibold leading-relaxed mb-4 text-foreground font-heading",
             isDaily ? "text-lg mb-6 relative z-10" : "text-lg"
           )}>
             {currentQuestion?.text}

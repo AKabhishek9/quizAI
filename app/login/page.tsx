@@ -102,7 +102,7 @@ export default function LoginPage() {
       >
         {/* Heading */}
         <div className="text-center mb-7">
-          <h1 className="text-3xl font-black tracking-tight text-foreground leading-tight mb-2">
+          <h1 className="text-3xl font-black tracking-tight text-foreground leading-tight mb-2 font-heading">
             {isLogin ? "Welcome to QuizAI" : "Create your QuizAI account"}
           </h1>
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">

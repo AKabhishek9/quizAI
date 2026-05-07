@@ -38,7 +38,7 @@ export default function ProfilePage() {
     return (
       <div className="flex flex-col items-center justify-center h-[50vh] space-y-4">
         <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-8 text-center max-w-md">
-          <h2 className="text-base font-semibold mb-2">Could not load profile</h2>
+          <h2 className="text-base font-semibold mb-2 font-heading">Could not load profile</h2>
           <p className="text-sm text-muted-foreground mb-4">{error.message}</p>
           <p className="text-xs text-muted-foreground">Make sure the backend server is running on port 5000.</p>
         </div>
@@ -74,7 +74,7 @@ export default function ProfilePage() {
 
           {/* Name + Edit + Joined */}
           <div className="flex-1 text-center md:text-left">
-            <h1 className="text-2xl font-bold tracking-tight text-foreground mb-2">
+            <h1 className="text-2xl font-bold tracking-tight text-foreground mb-2 font-heading">
               {profile?.name}
             </h1>
             <div className="flex flex-wrap items-center gap-3 justify-center md:justify-start">
@@ -119,7 +119,7 @@ export default function ProfilePage() {
       {/* ── Detailed Stats Grid ── */}
       {stats && (
         <div className="space-y-3">
-          <h2 className="text-base font-bold text-foreground">Detailed Stats Grid</h2>
+          <h2 className="text-base font-bold text-foreground font-heading">Detailed Stats Grid</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             <StatsCard title="Quizzes" value={stats.totalQuizzes} icon={BookOpen} />
             <StatsCard title="Avg. Score" value={`${stats.averageScore}%`} icon={Target} />

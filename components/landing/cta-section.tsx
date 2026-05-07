@@ -16,7 +16,7 @@ export function CtaSection() {
         className="max-w-4xl mx-auto bg-card rounded-2xl p-10 md:p-16 text-center border border-border"
       >
         <div className="max-w-2xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground mb-6">
+          <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground mb-6 font-heading">
             Ready to master your next challenge?
           </h2>
           <p className="text-muted-foreground text-base mb-10 leading-relaxed">

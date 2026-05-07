@@ -62,7 +62,7 @@ export function QuizCompletedState({
             <Trophy className="h-5 w-5" />
           </div>
 
-          <h2 className="text-base font-semibold mb-1">Quest Complete!</h2>
+          <h2 className="text-base font-semibold mb-1 font-heading">Quest Complete!</h2>
           <div
             className={cn(
               "text-4xl font-bold tracking-tight mb-1.5",

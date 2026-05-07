@@ -11,7 +11,7 @@ export default function QuizPlayPage() {
     <div className="max-w-md mx-auto text-center py-20 px-4">
       <div className="rounded-xl border border-border bg-card p-8">
         <AlertCircle className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
-        <h2 className="text-base font-semibold text-foreground mb-1">
+        <h2 className="text-base font-semibold text-foreground mb-1 font-heading">
           Quiz not available
         </h2>
         <p className="text-sm text-muted-foreground mb-6">

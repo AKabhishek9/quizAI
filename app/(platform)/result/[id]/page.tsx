@@ -51,7 +51,7 @@ export default function ResultPage({
   if (!attempt) {
     return (
       <div className="text-center py-20">
-        <h2 className="text-lg font-semibold">No results yet</h2>
+        <h2 className="text-lg font-semibold font-heading">No results yet</h2>
         <p className="text-xs text-muted-foreground mt-1">
           Complete a quiz to see results.
         </p>

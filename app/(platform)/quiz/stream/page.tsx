@@ -58,7 +58,7 @@ export default function StreamSelectionPage() {
         <motion.h1 
            initial={{ opacity: 0, y: -10 }}
            animate={{ opacity: 1, y: 0 }}
-           className="text-3xl font-semibold tracking-tight"
+           className="text-3xl font-semibold tracking-tight font-heading"
         >
           Select Your Domain
         </motion.h1>

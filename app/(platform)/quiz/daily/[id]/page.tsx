@@ -153,7 +153,7 @@ export default function DailyQuizPlayPage({
   if (!quiz) {
     return (
       <div className="text-center py-20">
-        <h2 className="text-lg font-semibold">Quest not found</h2>
+        <h2 className="text-lg font-semibold font-heading">Quest not found</h2>
         <p className="text-xs text-muted-foreground mt-1">
           This daily quest has expired or doesn&apos;t exist.
         </p>

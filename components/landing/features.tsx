@@ -55,7 +55,7 @@ export function Features() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground"
+            className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground font-heading"
           >
             Engineered for growth.
           </motion.h2>
@@ -74,7 +74,7 @@ export function Features() {
               <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-6 transition-all duration-200">
                 <feature.icon className="h-6 w-6 text-primary" />
               </div>
-              <h3 className="text-lg font-semibold tracking-tight text-foreground mb-3">{feature.title}</h3>
+              <h3 className="text-lg font-semibold tracking-tight text-foreground mb-3 font-heading">{feature.title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 {feature.description}
               </p>

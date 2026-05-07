@@ -28,7 +28,7 @@ export default function QuizCatalogPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">Daily Quests</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground font-heading">Daily Quests</h1>
           <p className="text-sm text-muted-foreground mt-1">Fresh challenges — refreshed every day at midnight</p>
         </div>
         <button
@@ -50,7 +50,7 @@ export default function QuizCatalogPage() {
       ) : quizzes.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <Clock className="h-10 w-10 text-muted-foreground mb-4" />
-          <h2 className="text-lg font-semibold text-foreground">Daily quests are being prepared</h2>
+          <h2 className="text-lg font-semibold text-foreground font-heading">Daily quests are being prepared</h2>
           <p className="text-sm text-muted-foreground mt-2 max-w-xs">
             New quizzes are generated every day at midnight. Check back soon!
           </p>

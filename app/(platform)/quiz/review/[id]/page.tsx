@@ -100,7 +100,7 @@ export default function ReviewPage({ params }: ReviewPageProps) {
       <div className="max-w-md mx-auto text-center py-20">
         <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-8">
           <AlertCircle className="h-8 w-8 text-destructive mx-auto mb-3" />
-          <h2 className="text-base font-semibold mb-1">Failed to load review</h2>
+          <h2 className="text-base font-semibold mb-1 font-heading">Failed to load review</h2>
           <p className="text-sm text-muted-foreground mb-6">{error || "Review record not found"}</p>
           <Button onClick={() => router.push("/dashboard")} size="sm">
             Back to Dashboard
