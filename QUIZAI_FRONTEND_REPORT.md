@@ -123,7 +123,7 @@ import { Toaster } from "sonner";
 
 ## 2. Landing Page Improvements
 
-### LAND-01 · Hero section is too minimal — no product preview
+### LAND-01 · [COMPLETED] Hero section is too minimal — no product preview
 **Severity:** High  
 
 The hero has a headline, subtitle, and two buttons — but no visual representation of the actual product. Every SaaS landing page at this level (Linear, Vercel, Notion, Raycast) shows a screenshot, mockup, or animated preview of the product UI below the fold. Without it, users have no idea what they're signing up for.
