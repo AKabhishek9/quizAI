@@ -5,6 +5,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { HeroProductPreview } from "@/components/landing/hero-product-preview";
 
 const ease = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
 
@@ -16,7 +17,8 @@ export function Hero() {
         <div className="absolute -top-[10%] -left-[10%] w-[60%] h-[60%] rounded-full bg-primary/5 blur-[120px] opacity-30" />
       </div>
 
-      <div className="max-w-2xl mx-auto text-center px-4 relative z-10">
+      <div className="max-w-5xl mx-auto px-4 relative z-10">
+        <div className="max-w-2xl mx-auto text-center">
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -63,6 +65,10 @@ export function Hero() {
             </Button>
           </Link>
         </motion.div>
+        </div>
+
+        {/* Product Preview */}
+        <HeroProductPreview />
 
         {/* Social Proof */}
         <motion.div 
