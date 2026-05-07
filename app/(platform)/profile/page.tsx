@@ -194,24 +194,18 @@ export default function ProfilePage() {
         </div>
       )}
 
-      {/* ── Tabs — using variant="line" for underline style ── */}
-      <Tabs defaultValue="history" className="space-y-6 min-w-0">
-        <div className="w-full overflow-x-auto pb-px scrollbar-hide">
-          <TabsList variant="line" className="border-b border-border w-full justify-start h-12 p-0 flex flex-row flex-nowrap min-w-max">
-            <TabsTrigger value="history" className="cursor-pointer px-4 py-2.5 text-sm whitespace-nowrap">
-              Quiz History
-            </TabsTrigger>
-            <TabsTrigger value="analytics" className="cursor-pointer px-4 py-2.5 text-sm whitespace-nowrap">
-              Detailed Analytics
-            </TabsTrigger>
-            <TabsTrigger value="achievements" className="cursor-pointer px-4 py-2.5 text-sm whitespace-nowrap">
-              Achievements
-            </TabsTrigger>
+      {/* ── Tabs ── */}
+      <Tabs defaultValue="history" className="w-full min-w-0">
+        <div className="overflow-x-auto">
+          <TabsList variant="line">
+            <TabsTrigger value="history">Quiz History</TabsTrigger>
+            <TabsTrigger value="analytics">Detailed Analytics</TabsTrigger>
+            <TabsTrigger value="achievements">Achievements</TabsTrigger>
           </TabsList>
         </div>
 
         {/* Quiz History Table */}
-        <TabsContent value="history" className="mt-2 outline-none">
+        <TabsContent value="history">
           <div className="rounded-2xl border border-border bg-card overflow-x-auto shadow-sm">
             {/* Table */}
             <table className="w-full text-left">
@@ -264,7 +258,7 @@ export default function ProfilePage() {
         </TabsContent>
 
         {/* Detailed Analytics */}
-        <TabsContent value="analytics" className="space-y-6 mt-6 outline-none">
+        <TabsContent value="analytics">
           {stats ? (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 min-w-0">
               <div className="rounded-2xl border border-border bg-card p-6 shadow-sm flex flex-col min-w-0 lg:col-span-2">
@@ -313,7 +307,7 @@ export default function ProfilePage() {
         </TabsContent>
 
         {/* Achievements */}
-        <TabsContent value="achievements" className="mt-6 outline-none">
+        <TabsContent value="achievements">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               { id: "first_quiz", name: "First Steps", icon: "🎯", desc: "Complete your first quiz" },
