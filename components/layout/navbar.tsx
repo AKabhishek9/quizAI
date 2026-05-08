@@ -21,6 +21,7 @@ import { useAuth } from "@/components/providers/auth-provider";
 const marketingLinks = [
   { href: "/", label: "Home" },
   { href: "/#features", label: "Features" },
+  { href: "/pricing", label: "Pricing" },
 ];
 
 export function Navbar() {
@@ -53,19 +54,16 @@ export function Navbar() {
     >
       <div className="flex justify-between items-center h-16 px-6 md:px-10 max-w-7xl mx-auto">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 bg-primary/10 rounded-[14px] flex items-center justify-center border border-primary/20 transition-all group-hover:scale-105 group-hover:bg-primary/20">
-            <Zap className="h-5 w-5 text-primary fill-current transition-colors" />
+        <Link href="/" className="flex items-center gap-2.5 group">
+          <div className="w-9 h-9 bg-primary/10 rounded-[12px] flex items-center justify-center border border-primary/20 transition-all group-hover:scale-105 group-hover:bg-primary/20">
+            <Zap className="h-4 w-4 text-primary fill-current transition-colors" />
           </div>
-          <div className="flex flex-col">
-            <span className="text-[20px] font-black tracking-tighter text-foreground leading-none font-heading">QuizAI</span>
-            <span className="text-[8px] font-black tracking-[0.2em] text-primary uppercase opacity-60">Technical Atelier</span>
-          </div>
+          <span className="text-xl font-bold tracking-tight text-foreground">QuizAI</span>
         </Link>
 
         {/* Desktop Nav - Only show marketing links or nothing if on platform (sidebar handles it) */}
         {!isPlatform && (
-          <div className="hidden md:flex items-center gap-10">
+          <div className="hidden md:flex items-center gap-8">
             {links.map((link) => {
               const isActive = pathname === link.href;
               return (
@@ -73,8 +71,8 @@ export function Navbar() {
                   key={link.href}
                   href={link.href}
                   className={cn(
-                    "text-[13px] font-black uppercase tracking-widest transition-all duration-300 hover:text-primary",
-                    isActive ? "text-primary" : "text-muted-foreground/60"
+                    "text-sm font-medium transition-colors hover:text-foreground",
+                    isActive ? "text-foreground" : "text-muted-foreground"
                   )}
                 >
                   {link.label}
@@ -90,7 +88,7 @@ export function Navbar() {
           
           <Link href="/login" className="hidden sm:block">
             <Button className="h-9 px-4 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-all border-0 text-sm font-medium tracking-normal cursor-pointer active:scale-95">
-              Initiate
+              Get Started
             </Button>
           </Link>
 

@@ -60,6 +60,14 @@ export default function LeaderboardPage() {
 
       {loading ? (
         <LeaderboardSkeleton />
+      ) : users.length === 0 ? (
+        <Card className="border-dashed border-2 border-border bg-card/50">
+          <CardContent className="flex flex-col items-center justify-center py-20 text-center">
+            <Trophy className="h-12 w-12 text-muted-foreground/50 mb-4" />
+            <h3 className="text-xl font-bold tracking-tight text-foreground mb-1">No leaders yet</h3>
+            <p className="text-sm text-muted-foreground">Be the first to complete a quiz and claim the top spot!</p>
+          </CardContent>
+        </Card>
       ) : (
         <>
           {/* Podium (Top 3) */}

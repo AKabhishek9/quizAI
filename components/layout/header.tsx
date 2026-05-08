@@ -40,7 +40,7 @@ export function Header() {
                   key={tab.href}
                   href={tab.href}
                   className={cn(
-                    "px-4 py-1.5 text-[13px] font-black tracking-tighter rounded-full transition-all duration-300 uppercase italic",
+                    "px-4 py-1.5 text-sm font-medium transition-colors rounded-full",
                     isActive 
                       ? "bg-primary/10 text-primary" 
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
@@ -57,8 +57,8 @@ export function Header() {
         <div className="flex items-center gap-4">
           <div className="hidden md:flex items-center gap-3 px-4 py-2 bg-muted/40 border border-border/40 rounded-full text-muted-foreground transition-all hover:border-border/80 cursor-pointer group hover:bg-muted/60">
             <Search className="h-3.5 w-3.5 opacity-50 group-hover:opacity-100 transition-opacity" />
-            <span className="text-[11px] font-black tracking-widest uppercase opacity-60 group-hover:opacity-100">Synchronize Search</span>
-            <kbd className="text-[9px] font-black px-2 py-0.5 rounded-md bg-background border border-border/60 text-muted-foreground/30">⌘K</kbd>
+            <span className="text-[13px] font-medium opacity-60 group-hover:opacity-100">Search...</span>
+            <kbd className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-background border border-border/60 text-muted-foreground/50">⌘K</kbd>
           </div>
 
           <div className="flex items-center gap-2">
@@ -75,11 +75,11 @@ export function Header() {
           <DropdownMenu>
             <DropdownMenuTrigger className="flex items-center gap-3 pl-1 group outline-none">
               <div className="flex flex-col items-end hidden sm:flex">
-                <span className="text-[12px] font-black tracking-tighter text-foreground leading-none group-hover:text-primary transition-colors">
-                  {user?.displayName || user?.email?.split("@")[0] || "Scholar"}
+                <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
+                  {user?.displayName || user?.email?.split("@")[0] || "User"}
                 </span>
-                <span className="text-[9px] font-black tracking-[0.2em] text-primary uppercase mt-1 opacity-60">
-                  Elite Scholar
+                <span className="text-[11px] text-muted-foreground mt-0.5">
+                  Pro Member
                 </span>
               </div>
               <div className="relative">
@@ -100,26 +100,26 @@ export function Header() {
             <DropdownMenuContent align="end" className="w-64 p-2 rounded-[24px] bg-card/95 border border-border/40 backdrop-blur-xl whisper-shadow" sideOffset={12}>
               <DropdownMenuLabel className="px-3 py-4">
                 <div className="flex flex-col gap-1">
-                  <p className="text-[13px] font-black tracking-tighter text-foreground leading-none">{user?.displayName || "Scholar Identity"}</p>
-                  <p className="text-[11px] font-bold text-muted-foreground/60 truncate">{user?.email}</p>
+                  <p className="text-sm font-semibold text-foreground leading-none">{user?.displayName || "User Account"}</p>
+                  <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-border/10" />
-              <DropdownMenuItem className="flex items-center gap-3 px-3 py-3 rounded-xl cursor-pointer hover:bg-muted/60 transition-colors focus:bg-primary/5 focus:text-primary group">
+              <DropdownMenuItem className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer hover:bg-muted/60 transition-colors focus:bg-primary/5 focus:text-primary group">
                 <UserIcon className="h-4 w-4 text-muted-foreground group-focus:text-primary transition-colors" />
-                <span className="text-[12px] font-black tracking-tight uppercase italic group-focus:not-italic">Scholarly Profile</span>
+                <span className="text-sm font-medium">Profile</span>
               </DropdownMenuItem>
-              <DropdownMenuItem className="flex items-center gap-3 px-3 py-3 rounded-xl cursor-pointer hover:bg-muted/60 transition-colors focus:bg-primary/5 focus:text-primary group">
+              <DropdownMenuItem className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer hover:bg-muted/60 transition-colors focus:bg-primary/5 focus:text-primary group">
                 <Settings className="h-4 w-4 text-muted-foreground group-focus:text-primary transition-colors" />
-                <span className="text-[12px] font-black tracking-tight uppercase italic group-focus:not-italic">System Parameters</span>
+                <span className="text-sm font-medium">Settings</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator className="bg-border/10" />
               <DropdownMenuItem 
                 onClick={() => logout()}
-                className="flex items-center gap-3 px-3 py-3 rounded-xl cursor-pointer hover:bg-destructive/10 text-destructive focus:bg-destructive/10 focus:text-destructive group mt-1"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer hover:bg-destructive/10 text-destructive focus:bg-destructive/10 focus:text-destructive group mt-1"
               >
                 <LogOut className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
-                <span className="text-[12px] font-black tracking-tight uppercase italic group-focus:not-italic">De-calculate Session</span>
+                <span className="text-sm font-medium">Log Out</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
