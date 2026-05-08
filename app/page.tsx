@@ -10,6 +10,7 @@ import { CtaSection } from "@/components/landing/cta-section";
 export default function LandingPage() {
   return (
     <>
+      <Navbar />
       <main className="flex-1">
         <Hero />
         <Features />

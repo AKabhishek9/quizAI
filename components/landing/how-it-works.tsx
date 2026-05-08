@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Container } from "@/components/layout/container";
 
 const steps = [
   {
@@ -22,8 +23,8 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section className="py-20 bg-background border-b border-border">
-      <div className="max-w-2xl lg:max-w-7xl mx-auto px-4">
+    <section id="how-it-works" className="space-section bg-background border-b border-border">
+      <Container>
         <div className="mb-16">
           <motion.span 
             initial={{ opacity: 0 }}
@@ -38,7 +39,7 @@ export function HowItWorks() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground font-heading"
+            className="text-section text-foreground"
           >
             Three steps to mastery.
           </motion.h2>
@@ -62,7 +63,7 @@ export function HowItWorks() {
             </motion.div>
           ))}
         </div>
-      </div>
+      </Container>
     </section>
   );
 }

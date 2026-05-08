@@ -28,7 +28,7 @@ const tabsListVariants = cva(
   {
     variants: {
       variant: {
-        default: "h-9 rounded-lg bg-muted p-1 w-fit",
+        default: "h-10 rounded-xl bg-muted/50 p-1 w-fit",
         line: "h-10 gap-0 bg-transparent rounded-none border-b border-border w-full",
       },
     },

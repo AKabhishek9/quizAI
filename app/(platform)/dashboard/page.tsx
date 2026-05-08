@@ -11,8 +11,8 @@ import { WelcomeBanner } from "@/components/dashboard/welcome-banner";
 import { DashboardStats } from "@/components/dashboard/dashboard-stats";
 import { LevelProgressBanner } from "@/components/dashboard/level-progress-banner";
 import { SkillEquilibrium } from "@/components/dashboard/skill-equilibrium";
+import StatsSkeleton from "@/components/dashboard/stats-skeleton";
 import {
-  SkeletonStatsGrid,
   SkeletonChart,
   SkeletonCard,
 } from "@/components/shared/skeleton-loader";
@@ -73,9 +73,15 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {isLoading ? <SkeletonStatsGrid /> : stats ? (
+          {isLoading ? (
+            <StatsSkeleton />
+          ) : stats ? (
             <DashboardStats stats={stats} weeklyEvolution={weeklyEvolution} />
-          ) : null}
+          ) : (
+            <div className="rounded-xl border border-dashed border-border bg-card/60 p-6 text-sm text-muted-foreground">
+              No performance stats yet. Complete your first quiz to unlock progress insights.
+            </div>
+          )}
 
           {profile && <LevelProgressBanner profile={profile} stats={stats} />}
         </div>
@@ -97,7 +103,11 @@ export default function DashboardPage() {
             <SkeletonCard />
           ) : history ? (
             <RecentActivity attempts={history} />
-          ) : null}
+          ) : (
+            <div className="rounded-xl border border-dashed border-border bg-card/60 p-6 text-sm text-muted-foreground">
+              Activity will appear here after your first attempts.
+            </div>
+          )}
         </div>
       </div>
 

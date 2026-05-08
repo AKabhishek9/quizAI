@@ -11,6 +11,7 @@ import { PageTransition } from "@/components/shared/page-transition";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/components/providers/auth-provider";
 import { cn } from "@/lib/utils";
+import { Container } from "@/components/layout/container";
 
 export default function PlatformLayout({
   children,
@@ -76,9 +77,9 @@ export default function PlatformLayout({
           )}
         >
           <main id="platform-main" className="flex-1 overflow-y-auto pt-14 lg:pt-0">
-            <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 py-6">
+            <Container className="py-6">
               <PageTransition>{children}</PageTransition>
-            </div>
+            </Container>
           </main>
         </div>
       </div>

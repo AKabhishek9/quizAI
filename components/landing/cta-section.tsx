@@ -4,16 +4,18 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Container } from "@/components/layout/container";
 
 export function CtaSection() {
   return (
-    <section className="py-20 px-4 bg-muted/30">
+    <section className="space-section bg-muted/30">
+      <Container>
       <motion.div 
         initial={{ opacity: 0, scale: 0.98 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className="max-w-4xl mx-auto bg-card rounded-2xl p-10 md:p-16 text-center border border-border"
+        className="mx-auto max-w-4xl rounded-2xl border border-border bg-card p-10 text-center md:p-16"
       >
         <div className="max-w-2xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground mb-6 font-heading">
@@ -25,7 +27,7 @@ export function CtaSection() {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/login" className="w-full sm:w-auto">
-              <Button size="lg" className="w-full sm:w-auto flex items-center justify-center gap-2">
+              <Button size="lg" className="w-full sm:w-auto flex items-center justify-center gap-2 transition-transform duration-200 hover:-translate-y-0.5">
                 Get started for free
                 <ArrowRight className="h-4 w-4" />
               </Button>
@@ -33,6 +35,7 @@ export function CtaSection() {
           </div>
         </div>
       </motion.div>
+      </Container>
     </section>
   );
 }

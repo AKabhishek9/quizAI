@@ -4,25 +4,25 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Zap, Moon, Sun, Monitor, Terminal, ArrowRight, LogOut } from "lucide-react";
+import { ArrowRight, LogOut, Menu, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
-  SheetTrigger,
-  SheetTitle,
   SheetDescription,
+  SheetTitle,
+  SheetTrigger,
 } from "@/components/ui/sheet";
 import { ThemeToggle } from "./theme-toggle";
 import { cn } from "@/lib/utils";
 import { sidebarLinks } from "./sidebar";
 import { useAuth } from "@/components/providers/auth-provider";
+import { Container } from "./container";
 
 const marketingLinks = [
   { href: "/", label: "Home" },
   { href: "/#features", label: "Features" },
-  { href: "/pricing", label: "Pricing" },
+  { href: "/#how-it-works", label: "How It Works" },
 ];
 
 export function Navbar() {
@@ -30,11 +30,11 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { logout, user } = useAuth();
-  
-  const isPlatform = pathname.startsWith("/dashboard") || 
-                     pathname.startsWith("/quiz") || 
-                     pathname.startsWith("/leaderboard") || 
-                     pathname.startsWith("/profile");
+  const isPlatform =
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/quiz") ||
+    pathname.startsWith("/leaderboard") ||
+    pathname.startsWith("/profile");
 
   const links = isPlatform ? sidebarLinks : marketingLinks;
 
@@ -45,26 +45,34 @@ export function Navbar() {
   }, []);
 
   return (
-    <nav 
+    <nav
       className={cn(
-        "fixed top-0 w-full z-50 transition-all duration-500",
-        scrolled 
-          ? "bg-background/40 backdrop-blur-2xl border-b border-border/40 py-3 shadow-soft" 
-          : "bg-transparent py-6"
+        "sticky top-0 z-50 w-full transition-all duration-300",
+        scrolled
+          ? "glass-surface border-b border-border/50"
+          : "bg-background/80 backdrop-blur border-b border-transparent"
       )}
     >
-      <div className="flex justify-between items-center h-16 px-6 md:px-10 max-w-7xl mx-auto">
+      <Container as="div" className="flex h-16 items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="w-10 h-10 rounded-[12px] flex items-center justify-center overflow-hidden transition-all group-hover:scale-105">
-            <Image src="/logo.png" alt="QuizAI Logo" width={40} height={40} className="object-contain" />
+        <Link href="/" className="group flex items-center gap-2.5">
+          <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl transition-transform duration-300 group-hover:scale-105">
+            <Image
+              src="/logo.png"
+              alt="QuizAI logo"
+              width={40}
+              height={40}
+              className="object-contain"
+            />
           </div>
-          <span className="text-xl font-bold tracking-tight text-foreground">QuizAI</span>
+          <span className="font-heading text-xl font-semibold tracking-tight text-foreground">
+            QuizAI
+          </span>
         </Link>
 
-        {/* Desktop Nav - Only show marketing links or nothing if on platform (sidebar handles it) */}
+        {/* Desktop Nav */}
         {!isPlatform && (
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden items-center gap-6 md:flex">
             {links.map((link) => {
               const isActive = pathname === link.href;
               return (
@@ -72,8 +80,8 @@ export function Navbar() {
                   key={link.href}
                   href={link.href}
                   className={cn(
-                    "text-sm font-medium transition-colors hover:text-foreground",
-                    isActive ? "text-foreground" : "text-muted-foreground"
+                    "text-sm font-medium text-muted-foreground transition-colors hover:text-foreground",
+                    isActive && "text-foreground"
                   )}
                 >
                   {link.label}
@@ -85,38 +93,47 @@ export function Navbar() {
 
         {/* Actions */}
         <div className="flex items-center gap-3">
-          <ThemeToggle className="w-9 h-9" />
-          
-          <Link href="/login" className="hidden sm:block">
-            <Button className="h-9 px-4 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-all border-0 text-sm font-medium tracking-normal cursor-pointer active:scale-95">
-              Get Started
-            </Button>
-          </Link>
+          <ThemeToggle className="h-9 w-9" />
+
+          {!user && (
+            <Link href="/login" className="hidden sm:block">
+              <Button className="h-9 rounded-xl px-4 text-sm font-medium">
+                Get Started
+              </Button>
+            </Link>
+          )}
 
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger render={
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-11 w-11 rounded-2xl lg:hidden hover:bg-muted/50 border border-border/10 transition-colors"
-                aria-label="Toggle Menu"
+                className="h-10 w-10 rounded-xl border border-border/40 transition-colors hover:bg-muted/40 lg:hidden"
+                aria-label="Toggle menu"
               >
                 <Menu className="h-5 w-5 text-muted-foreground" />
               </Button>
             } />
-            <SheetContent side="right" className="w-full sm:w-[400px] border-l border-border/40 bg-card/95 backdrop-blur-2xl p-0 overflow-hidden">
+            <SheetContent
+              side="right"
+              className="glass-surface w-full overflow-hidden border-l border-border/40 p-0 sm:w-[400px]"
+            >
               <div className="flex flex-col h-full">
                 <div className="p-8 border-b border-border/40">
-                  <SheetTitle className="text-4xl font-black tracking-tighter text-foreground font-heading italic uppercase">Navigation</SheetTitle>
-                  <SheetDescription className="text-[12px] text-muted-foreground font-bold tracking-tight opacity-40 mt-1 uppercase tracking-[0.1em]">
-                    Access portal terminal
+                  <SheetTitle className="font-heading text-3xl font-semibold tracking-tight text-foreground">
+                    Navigation
+                  </SheetTitle>
+                  <SheetDescription className="mt-1 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
+                    Move through QuizAI
                   </SheetDescription>
                 </div>
 
                 <div className="flex-1 p-6 space-y-2 overflow-y-auto">
                   {isPlatform && (
                     <div className="px-6 mb-4">
-                      <span className="text-[10px] font-black tracking-[0.2em] text-primary uppercase opacity-60">Overview</span>
+                      <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary/80">
+                        Overview
+                      </span>
                     </div>
                   )}
                   {links.map((link) => {
@@ -127,26 +144,28 @@ export function Navbar() {
                         href={link.href}
                         onClick={() => setMobileOpen(false)}
                         className={cn(
-                          "group flex items-center justify-between p-4 rounded-xl transition-all duration-300",
-                          isActive 
-                            ? "bg-primary/10 text-primary" 
-                            : "hover:bg-muted/50 text-muted-foreground"
+                          "group flex items-center justify-between rounded-xl p-4 transition-colors duration-200",
+                          isActive
+                            ? "bg-primary/10 text-primary"
+                            : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                         )}
                       >
                         <div className="flex items-center gap-5">
                           {('icon' in link) && (
                             <div className={cn(
-                              "w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500",
+                              "flex h-11 w-11 items-center justify-center rounded-xl transition-colors duration-200",
                               isActive ? "bg-primary/10" : "bg-primary/5 group-hover:bg-primary/10"
                             )}>
                               {/* @ts-expect-error - Runtime check with 'icon' in link ensures it's safe */}
                               <link.icon className="h-6 w-6" />
                             </div>
                           )}
-                          <span className="text-2xl font-black tracking-tighter font-heading uppercase italic">{link.label}</span>
+                          <span className="font-heading text-2xl font-semibold tracking-tight">
+                            {link.label}
+                          </span>
                         </div>
                         <ArrowRight className={cn(
-                          "h-5 w-5 transition-transform duration-500",
+                          "h-5 w-5 transition-transform duration-200",
                           isActive ? "translate-x-0" : "-translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100"
                         )} />
                       </Link>
@@ -154,16 +173,16 @@ export function Navbar() {
                   })}
                 </div>
 
-                <div className="p-8 border-t border-border/40 bg-muted/30 space-y-3">
+                <div className="space-y-3 border-t border-border/40 bg-muted/20 p-8">
                   {!user ? (
                     <Link href="/login" onClick={() => setMobileOpen(false)}>
-                      <Button className="w-full h-12 text-base font-medium rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 border-0 group">
+                      <Button className="group h-12 w-full rounded-xl text-base font-medium">
                         Get Started
                         <Zap className="ml-2 h-4 w-4 fill-current transition-transform group-hover:scale-110" />
                       </Button>
                     </Link>
                   ) : (
-                    <Button 
+                    <Button
                       onClick={() => {
                         logout();
                         setMobileOpen(false);
@@ -180,7 +199,7 @@ export function Navbar() {
             </SheetContent>
           </Sheet>
         </div>
-      </div>
+      </Container>
     </nav>
   );
 }

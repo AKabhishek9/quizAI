@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Brain, BarChart3, Target, Timer, Layers, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Container } from "@/components/layout/container";
 
 const features = [
   {
@@ -39,8 +40,8 @@ const features = [
 
 export function Features() {
   return (
-    <section className="py-20 relative bg-muted/30 border-y border-border" id="features">
-      <div className="max-w-2xl lg:max-w-7xl mx-auto px-4 relative z-10">
+    <section className="space-section relative bg-muted/30 border-y border-border" id="features">
+      <Container className="relative z-10">
         <div className="mb-16">
           <motion.div 
             initial={{ opacity: 0, x: -10 }}
@@ -56,7 +57,7 @@ export function Features() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground font-heading"
+            className="text-section text-foreground"
           >
             Engineered for growth.
           </motion.h2>
@@ -102,7 +103,7 @@ export function Features() {
             );
           })}
         </div>
-      </div>
+      </Container>
     </section>
   );
 }

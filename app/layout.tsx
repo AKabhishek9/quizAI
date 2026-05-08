@@ -65,7 +65,7 @@ export default function RootLayout({
             </TooltipProvider>
           </ThemeProvider>
         </QueryProvider>
-        <Toaster richColors position="bottom-right" />
+        <Toaster richColors position="top-right" />
       </body>
     </html>
   );

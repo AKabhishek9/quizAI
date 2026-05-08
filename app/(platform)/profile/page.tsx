@@ -179,7 +179,7 @@ export default function ProfilePage() {
       {stats && (
         <div className="space-y-4 min-w-0">
           <h2 className="text-lg font-bold text-foreground font-heading">Your Performance</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-4">
             <StatsCard title="Quizzes" value={stats.totalQuizzes} icon={BookOpen} />
             <StatsCard title="Avg. Score" value={`${stats.averageScore}%`} icon={Target} />
             <StatsCard
@@ -196,8 +196,8 @@ export default function ProfilePage() {
 
       {/* ── Tabs ── */}
       <Tabs defaultValue="history" className="w-full min-w-0">
-        <div className="overflow-x-auto">
-          <TabsList variant="line">
+        <div>
+          <TabsList className="flex flex-row flex-wrap gap-2 bg-muted/20 p-1 rounded-xl h-auto w-full justify-start">
             <TabsTrigger value="history">Quiz History</TabsTrigger>
             <TabsTrigger value="analytics">Detailed Analytics</TabsTrigger>
             <TabsTrigger value="achievements">Achievements</TabsTrigger>
@@ -208,7 +208,7 @@ export default function ProfilePage() {
         <TabsContent value="history">
           <div className="rounded-2xl border border-border bg-card overflow-x-auto shadow-sm">
             {/* Table */}
-            <table className="w-full text-left">
+            <table className="w-full min-w-[720px] text-left">
               <thead>
                 <tr className="border-b border-border bg-muted/30">
                   <th className="px-6 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Quiz</th>
@@ -263,7 +263,7 @@ export default function ProfilePage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 min-w-0">
               <div className="rounded-2xl border border-border bg-card p-6 shadow-sm flex flex-col min-w-0 lg:col-span-2">
                 <h3 className="text-base font-semibold mb-6 text-foreground font-heading">Performance Trend</h3>
-                <div className="h-[250px] w-full relative">
+                <div className="min-h-[300px] w-full relative">
                   {stats.weeklyScores && stats.weeklyScores.length > 0 ? (
                     <PerformanceChart data={stats.weeklyScores} />
                   ) : (
@@ -275,7 +275,7 @@ export default function ProfilePage() {
               </div>
               <div className="rounded-2xl border border-border bg-card p-6 shadow-sm flex flex-col min-w-0 lg:col-span-1">
                 <h3 className="text-base font-semibold mb-6 text-foreground font-heading">Category Performance</h3>
-                <div className="space-y-5 h-[250px] overflow-y-auto pr-2">
+                <div className="space-y-5 min-h-[300px] max-h-[300px] overflow-y-auto pr-2">
                   {stats.categoryPerformance && stats.categoryPerformance.length > 0 ? (
                     stats.categoryPerformance.map((cat) => (
                       <ProgressBar
@@ -308,23 +308,26 @@ export default function ProfilePage() {
 
         {/* Achievements */}
         <TabsContent value="achievements">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="flex flex-wrap gap-3">
             {[
               { id: "first_quiz", name: "First Steps", icon: "🎯", desc: "Complete your first quiz" },
               { id: "streak_7", name: "Week Warrior", icon: "🔥", desc: "7-day streak" },
               { id: "perfect_score", name: "Flawless", icon: "✨", desc: "Get a 100% score" },
               { id: "level_10", name: "Mastery", icon: "👑", desc: "Reach Level 10" },
             ].map((ach) => (
-              <div key={ach.id} className="rounded-2xl border border-border bg-card p-6 flex flex-col items-center justify-center text-center gap-4 opacity-70 hover:opacity-100 transition-all shadow-sm overflow-hidden min-w-0">
-                <div className="h-12 w-12 shrink-0 rounded-full bg-muted flex items-center justify-center">
+              <div
+                key={ach.id}
+                className="min-w-[220px] flex-1 rounded-2xl border border-border bg-card p-5 flex flex-col items-center justify-center text-center gap-3 opacity-80 hover:opacity-100 transition-all shadow-sm overflow-hidden"
+              >
+                <div className="h-11 w-11 shrink-0 rounded-full bg-muted flex items-center justify-center">
                   {ach.id === "first_quiz" && <Target className="h-5 w-5 text-muted-foreground" />}
                   {ach.id === "streak_7" && <Flame className="h-5 w-5 text-muted-foreground" />}
                   {ach.id === "perfect_score" && <Trophy className="h-5 w-5 text-muted-foreground" />}
                   {ach.id === "level_10" && <BookOpen className="h-5 w-5 text-muted-foreground" />}
                 </div>
                 <div className="min-w-0 w-full">
-                  <h4 className="text-sm font-semibold text-foreground truncate">{ach.name}</h4>
-                  <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{ach.desc}</p>
+                  <h4 className="text-sm font-semibold text-foreground">{ach.name}</h4>
+                  <p className="text-xs text-muted-foreground mt-1">{ach.desc}</p>
                 </div>
               </div>
             ))}

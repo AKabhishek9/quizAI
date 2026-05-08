@@ -95,21 +95,29 @@ export default function LeaderboardPage() {
 
           {/* Search — full width */}
           <div className="relative">
+            <label htmlFor="leaderboard-search" className="sr-only">
+              Search leaderboard users
+            </label>
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <input
+              id="leaderboard-search"
               type="text"
               placeholder="Search users..."
               className="w-full pl-11 pr-4 py-2.5 bg-card border border-border rounded-xl text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              aria-describedby="leaderboard-search-help"
             />
+            <p id="leaderboard-search-help" className="sr-only">
+              Filters leaderboard rows by player name.
+            </p>
           </div>
 
           {/* Table */}
           <Card className="border-border shadow-sm overflow-hidden bg-card">
             <CardContent className="p-0">
               <div className="overflow-x-auto">
-                <table className="w-full min-w-[560px]">
+                <table className="w-full min-w-[600px]" aria-label="Leaderboard standings">
                   <thead>
                     <tr className="border-b border-border text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
                       <th className="px-6 py-4 text-left w-16">Rank</th>
