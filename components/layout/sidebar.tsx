@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/components/providers/auth-provider";
@@ -45,8 +46,8 @@ export function Sidebar({
         "flex h-14 items-center border-b border-border shrink-0",
         collapsed ? "justify-center px-0" : "gap-2.5 px-4"
       )}>
-        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary">
-          <Sparkles className="h-4 w-4 text-primary-foreground fill-current" />
+        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md overflow-hidden">
+          <Image src="/logo.png" alt="QuizAI Logo" width={28} height={28} className="object-contain" />
         </div>
         {!collapsed && (
           <span className="text-sm font-semibold text-sidebar-foreground tracking-tight">

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -55,8 +56,8 @@ export function Navbar() {
       <div className="flex justify-between items-center h-16 px-6 md:px-10 max-w-7xl mx-auto">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="w-9 h-9 bg-primary/10 rounded-[12px] flex items-center justify-center border border-primary/20 transition-all group-hover:scale-105 group-hover:bg-primary/20">
-            <Zap className="h-4 w-4 text-primary fill-current transition-colors" />
+          <div className="w-10 h-10 rounded-[12px] flex items-center justify-center overflow-hidden transition-all group-hover:scale-105">
+            <Image src="/logo.png" alt="QuizAI Logo" width={40} height={40} className="object-contain" />
           </div>
           <span className="text-xl font-bold tracking-tight text-foreground">QuizAI</span>
         </Link>

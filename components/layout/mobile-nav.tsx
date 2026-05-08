@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, Sparkles, LogOut } from "lucide-react";
+import Image from "next/image";
+import { Menu, LogOut } from "lucide-react";
 import { 
   Sheet, 
   SheetContent, 
@@ -40,8 +41,8 @@ export function MobileNav() {
         <SheetHeader className="px-4 h-14 border-b border-border flex flex-row items-center space-y-0">
           <SheetTitle>
             <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-md bg-primary flex items-center justify-center">
-                <Sparkles className="h-3.5 w-3.5 text-primary-foreground fill-current" />
+              <div className="w-6 h-6 rounded-md overflow-hidden flex items-center justify-center">
+                <Image src="/logo.png" alt="QuizAI Logo" width={24} height={24} className="object-contain" />
               </div>
               <span className="text-sm font-semibold text-sidebar-foreground">QuizAI</span>
             </div>

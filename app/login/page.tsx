@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/components/providers/auth-provider";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import Image from "next/image";
 
 export default function LoginPage() {
   const { user } = useAuth();
@@ -112,8 +113,8 @@ export default function LoginPage() {
         transition={{ duration: 0.4 }}
         className="flex items-center gap-2 mb-8"
       >
-        <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary">
-          <Sparkles className="h-4 w-4 text-primary-foreground fill-current" />
+        <div className="flex h-10 w-10 items-center justify-center rounded-[12px] overflow-hidden">
+          <Image src="/logo.png" alt="QuizAI Logo" width={40} height={40} className="object-contain" />
         </div>
         <span className="text-xl font-bold text-foreground tracking-tight">QuizAI</span>
       </motion.div>

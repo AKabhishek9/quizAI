@@ -27,6 +27,11 @@ export const metadata: Metadata = {
   description:
     "Master any topic with AI-powered quizzes. Track your progress, identify weak areas, and level up your knowledge.",
   keywords: ["quiz", "learning", "AI", "education", "practice"],
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
   openGraph: {
     title: "QuizAI | Intelligent Quiz Platform",
     description:

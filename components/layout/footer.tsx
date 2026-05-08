@@ -1,13 +1,13 @@
 import Link from "next/link";
-import { Zap } from "lucide-react";
+import Image from "next/image";
 
 export function Footer() {
   return (
     <footer className="py-12 border-t border-border bg-background">
       <div className="max-w-7xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-8">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center border border-primary/20">
-            <Zap className="h-4 w-4 text-primary fill-current" />
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden">
+            <Image src="/logo.png" alt="QuizAI Logo" width={32} height={32} className="object-contain" />
           </div>
           <span className="text-xl font-bold tracking-tight text-foreground">QuizAI</span>
         </div>
