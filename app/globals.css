@@ -244,4 +244,27 @@
   .scrollbar-none::-webkit-scrollbar {
     display: none;
   }
+
+  /* ─── Landing Page — always dark premium aesthetic ─── */
+  .landing-page {
+    --foreground: oklch(0.94 0.005 260);
+    --background: oklch(0.09 0.012 264);
+    --card: oklch(0.13 0.014 264);
+    --card-foreground: oklch(0.94 0.005 260);
+    --popover: oklch(0.13 0.014 264);
+    --popover-foreground: oklch(0.94 0.005 260);
+    --primary: oklch(0.68 0.16 168);
+    --primary-foreground: oklch(0.10 0.01 168);
+    --secondary: oklch(0.16 0.014 264);
+    --secondary-foreground: oklch(0.88 0.008 260);
+    --muted: oklch(0.15 0.012 264);
+    --muted-foreground: oklch(0.55 0.012 260);
+    --accent: oklch(0.16 0.014 264);
+    --accent-foreground: oklch(0.88 0.008 260);
+    --border: oklch(0.20 0.014 264);
+    --input: oklch(0.20 0.014 264);
+    --ring: color-mix(in oklch, var(--primary), transparent 50%);
+    background-color: var(--background);
+    color: var(--foreground);
+  }
 }
