@@ -11,6 +11,8 @@ interface UseTimerReturn {
   pause: () => void;
   resume: () => void;
   reset: (newDuration?: number) => void;
+  /** Reset the timer and immediately start it — avoids React batching issues with separate reset() + start() calls */
+  resetAndStart: (newDuration?: number) => void;
 }
 
 export function useTimer(
@@ -19,11 +21,12 @@ export function useTimer(
 ): UseTimerReturn {
   const [timeRemaining, setTimeRemaining] = useState(durationSeconds);
   const [isRunning, setIsRunning] = useState(false);
+  // Generation counter: bumped on every reset so the interval effect always re-fires
+  const [generation, setGeneration] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const onExpireRef = useRef(onExpire);
 
   // Keep callback ref fresh
-  // Update the ref inside an effect to avoid ref mutations during render
   useEffect(() => {
     onExpireRef.current = onExpire;
   }, [onExpire]);
@@ -53,6 +56,17 @@ export function useTimer(
       clearTimer();
       setTimeRemaining(newDuration ?? durationSeconds);
       setIsRunning(false);
+      setGeneration((g) => g + 1);
+    },
+    [durationSeconds, clearTimer]
+  );
+
+  const resetAndStart = useCallback(
+    (newDuration?: number) => {
+      clearTimer();
+      setTimeRemaining(newDuration ?? durationSeconds);
+      setIsRunning(true);
+      setGeneration((g) => g + 1);
     },
     [durationSeconds, clearTimer]
   );
@@ -73,7 +87,8 @@ export function useTimer(
     }, 1000);
 
     return clearTimer;
-  }, [isRunning, clearTimer]);
+    // `generation` ensures interval is recreated after resetAndStart
+  }, [isRunning, clearTimer, generation]);
 
   // Cleanup on unmount
   useEffect(() => clearTimer, [clearTimer]);
@@ -87,5 +102,6 @@ export function useTimer(
     pause,
     resume,
     reset,
+    resetAndStart,
   };
 }

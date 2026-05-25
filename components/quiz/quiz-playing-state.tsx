@@ -28,6 +28,7 @@ interface QuizPlayingStateProps {
   selectAnswer: (id: string) => void;
   nextQuestion: () => void;
   isSubmitting?: boolean;
+  isTimerExpired?: boolean;
 }
 
 export function QuizPlayingState({
@@ -48,6 +49,7 @@ export function QuizPlayingState({
   selectAnswer,
   nextQuestion,
   isSubmitting,
+  isTimerExpired = false,
 }: QuizPlayingStateProps) {
   return (
     <div className={cn("max-w-2xl mx-auto space-y-4 flex flex-col items-center w-full", isDaily && "py-4")}>
@@ -131,7 +133,7 @@ export function QuizPlayingState({
                 isRevealed={showFeedback}
                 correctOptionId={currentQuestion.correctOptionId}
                 onSelect={selectAnswer}
-                disabled={showFeedback}
+                disabled={showFeedback || isTimerExpired}
               />
             ))}
           </div>
@@ -179,10 +181,10 @@ export function QuizPlayingState({
         {!showFeedback ? (
           <Button
             onClick={submitAnswer}
-            disabled={!selectedAnswer}
+            disabled={!selectedAnswer || isTimerExpired}
             className="cursor-pointer disabled:opacity-40 h-9 px-4 py-2 text-sm font-medium rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 border-0 w-full sm:w-auto"
           >
-            Submit
+            {isTimerExpired ? "Time's up!" : "Submit"}
           </Button>
         ) : (
           <Button

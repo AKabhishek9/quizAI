@@ -43,8 +43,8 @@ function PlayQuizEngine() {
   const startedRef = useRef(false);
   const {
     timeRemaining,
-    reset: resetQuestionTimer,
-    start: startQuestionTimer,
+    isExpired: isTimerExpired,
+    resetAndStart: resetAndStartTimer,
     pause: pauseQuestionTimer,
   } = useTimer(ADAPTIVE_TIMER_SECONDS);
 
@@ -80,9 +80,8 @@ function PlayQuizEngine() {
       return;
     }
 
-    resetQuestionTimer(ADAPTIVE_TIMER_SECONDS);
-    startQuestionTimer();
-  }, [currentQuestionIndex, state, pauseQuestionTimer, resetQuestionTimer, startQuestionTimer]);
+    resetAndStartTimer(ADAPTIVE_TIMER_SECONDS);
+  }, [currentQuestionIndex, state, pauseQuestionTimer, resetAndStartTimer]);
 
   const currentQuestion = questions[currentQuestionIndex] ?? null;
   const isLastQuestion = currentQuestionIndex === totalQuestions - 1;
@@ -380,7 +379,7 @@ function PlayQuizEngine() {
                 isRevealed={false}
                 correctOptionId={""}
                 onSelect={selectAnswer}
-                disabled={false}
+                disabled={isTimerExpired}
               />
             ))}
           </div>
@@ -407,14 +406,18 @@ function PlayQuizEngine() {
         <div className="flex items-center gap-3">
           <Button
             onClick={nextQuestion}
-            disabled={!selectedAnswer}
+            disabled={!selectedAnswer || isTimerExpired}
             size="sm"
             className="cursor-pointer h-8 text-xs disabled:opacity-40 gap-1.5"
             aria-label={isLastQuestion ? "Submit assessment" : "Next question"}
           >
-            {isLastQuestion ? "Submit Assessment" : "Next Question"}
+            {isTimerExpired
+              ? "Time's up!"
+              : isLastQuestion
+              ? "Submit Assessment"
+              : "Next Question"}
             <ArrowRight className="h-3 w-3" />
-            {!isLastQuestion && (
+            {!isLastQuestion && !isTimerExpired && (
               <kbd className="hidden sm:inline-flex ml-1 items-center justify-center rounded border border-primary-foreground/20 bg-primary-foreground/10 px-1 font-sans text-[10px] font-medium text-primary-foreground/80 shadow-sm">Right</kbd>
             )}
           </Button>

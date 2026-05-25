@@ -48,7 +48,12 @@ export default function DailyQuizPlayPage({
   const currentQuestion = quiz?.questions[currentQuestionIndex] ?? null;
   const totalTime = quiz?.timePerQuestion ?? 30;
 
-  const timer = useTimer(totalTime, () => {
+  const {
+    timeRemaining,
+    isExpired: isTimerExpired,
+    resetAndStart: resetAndStartTimer,
+    pause: pauseTimer,
+  } = useTimer(totalTime, () => {
     if (state === "playing" && !showFeedback) {
       submitAnswer();
     }
@@ -114,14 +119,13 @@ export default function DailyQuizPlayPage({
 
   useEffect(() => {
     if (state === "playing" && !showFeedback) {
-      timer.reset(totalTime);
-      timer.start();
+      resetAndStartTimer(totalTime);
     }
-  }, [currentQuestionIndex, state, totalTime, timer, showFeedback]);
+  }, [currentQuestionIndex, state, totalTime, resetAndStartTimer, showFeedback]);
 
   useEffect(() => {
-    if (showFeedback) timer.pause();
-  }, [showFeedback, timer]);
+    if (showFeedback) pauseTimer();
+  }, [showFeedback, pauseTimer]);
 
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [levelInfo, setLevelInfo] = useState({ newLevel: 1, xpGained: 0 });
@@ -264,7 +268,7 @@ export default function DailyQuizPlayPage({
       themeName={quiz.theme}
       currentQuestionIndex={currentQuestionIndex}
       questionCount={quiz.questions.length}
-      timeRemaining={timer.timeRemaining}
+      timeRemaining={timeRemaining}
       totalTime={totalTime}
       currentQuestion={currentQuestion}
       selectedAnswer={selectedAnswer}
@@ -274,6 +278,7 @@ export default function DailyQuizPlayPage({
       selectAnswer={selectAnswer}
       nextQuestion={nextQuestion}
       isSubmitting={isSubmitting}
+      isTimerExpired={isTimerExpired}
     />
   );
 }
