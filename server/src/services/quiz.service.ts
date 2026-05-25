@@ -90,6 +90,7 @@ export async function getDynamicQuiz({
     logger.info(`Quiz short by ${deficit} questions. Triggering synchronous AI generation to reach target of ${QUIZ_SIZE}.`);
     try {
       const { generateQuestions } = await import("./ai.service.js");
+      const excludeIdsStrings = excludeIds.map(id => String(id));
       
       // Timeout guard: 15 seconds
       const generationPromise = generateQuestions({
@@ -97,6 +98,7 @@ export async function getDynamicQuiz({
         topics: sanitizedTopics,
         difficulty: targetedLevel,
         count: QUIZ_SIZE, // Request a full batch to ensure quality/diversity
+        excludeIds: excludeIdsStrings,
       });
 
       const timeoutPromise = new Promise<null>((_, reject) => 
@@ -117,11 +119,13 @@ export async function getDynamicQuiz({
       if (err.message === "TIMEOUT") {
         logger.warn("[ai] Synchronous generation timed out. Queueing job for client polling.");
         const { addJob } = await import("./aiQueue.js");
+        const excludeIdsStrings = excludeIds.map(id => String(id));
         const jobId = await addJob({
           stream,
           topics: sanitizedTopics,
           difficulty: targetedLevel,
           count: QUIZ_SIZE,
+          excludeIds: excludeIdsStrings,
         });
         return { status: "generating", jobId } as any;
       }

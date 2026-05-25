@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
   Area,
   AreaChart,
@@ -16,9 +17,19 @@ interface PerformanceChartProps {
 }
 
 export function PerformanceChart({ data }: PerformanceChartProps) {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const gridColor = "var(--border)";
   const textColor = "var(--muted-foreground)";
   const primaryColor = "var(--primary)";
+
+  if (!isMounted) {
+    return <div className="h-64 w-full bg-card/50 rounded-xl animate-pulse" />;
+  }
 
   return (
     <div className="h-64 w-full">
@@ -29,8 +40,8 @@ export function PerformanceChart({ data }: PerformanceChartProps) {
         >
           <defs>
             <linearGradient id="scoreGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.2} />
-              <stop offset="95%" stopColor="var(--primary)" stopOpacity={0} />
+              <stop offset="5%" style={{ stopColor: "var(--primary)" }} stopOpacity={0.25} />
+              <stop offset="95%" style={{ stopColor: "var(--primary)" }} stopOpacity={0} />
             </linearGradient>
           </defs>
           <CartesianGrid
@@ -40,7 +51,7 @@ export function PerformanceChart({ data }: PerformanceChartProps) {
             opacity={0.15}
           />
           <XAxis
-            dataKey="week"
+            dataKey="day"
             tick={{ fill: textColor, fontSize: 10, fontWeight: 600 }}
             axisLine={false}
             tickLine={false}
@@ -50,7 +61,7 @@ export function PerformanceChart({ data }: PerformanceChartProps) {
             tick={{ fill: textColor, fontSize: 10, fontWeight: 600 }}
             axisLine={false}
             tickLine={false}
-            domain={[0, "auto"]}
+            domain={[0, 100]}
             dx={-5}
           />
           <Tooltip
@@ -70,14 +81,14 @@ export function PerformanceChart({ data }: PerformanceChartProps) {
             type="monotone"
             dataKey="score"
             stroke={primaryColor}
-            strokeWidth={2}
+            strokeWidth={2.5}
             fillOpacity={1}
             fill="url(#scoreGradient)"
             activeDot={{
               r: 5,
               fill: "var(--background)",
               stroke: "var(--primary)",
-              strokeWidth: 2,
+              strokeWidth: 2.5,
             }}
           />
         </AreaChart>

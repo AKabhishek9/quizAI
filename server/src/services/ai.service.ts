@@ -27,6 +27,7 @@ export interface GenerateParams {
   isDaily?: boolean;
   expiresAt?: Date;
   skipInsert?: boolean;
+  excludeIds?: string[];
 }
 
 export interface GeneratedQuestionDoc {
@@ -137,7 +138,7 @@ export async function generateQuestions(params: GenerateParams): Promise<Generat
 
   // Step 1: ALWAYS try DB first, specifically for the selected topics
   try {
-    const dbFallback = await fetchFallbackFromDB(params, totalCount, []);
+    const dbFallback = await fetchFallbackFromDB(params, totalCount, params.excludeIds || []);
     finalPool.push(...dbFallback);
     logger.info(`[ai] DB provided ${finalPool.length}/${totalCount} questions matching topics: ${params.topics.join(", ")}`);
   } catch (err) {
