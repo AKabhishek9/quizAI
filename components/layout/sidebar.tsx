@@ -37,7 +37,7 @@ export function Sidebar({
   return (
     <aside
       className={cn(
-        "hidden lg:flex flex-col h-screen fixed left-0 top-0 border-r border-border bg-sidebar transition-all duration-300 z-50 overflow-hidden",
+        "hidden lg:flex flex-col h-screen fixed left-0 top-0 transition-all duration-300 z-50 overflow-hidden glass-sidebar",
         collapsed ? "w-[56px]" : "w-[220px]"
       )}
     >

@@ -19,7 +19,7 @@ export function LevelProgressBanner({ profile, stats }: LevelProgressBannerProps
   const xpLeft = profile.xpToNextLevel - profile.xp;
 
   return (
-    <div className="border border-border rounded-lg p-4 bg-card flex flex-col sm:flex-row sm:items-center gap-4">
+    <div className="p-4 flex flex-col sm:flex-row sm:items-center gap-4 glass-card">
       {/* Level badge */}
       <div className="flex items-center gap-3 shrink-0">
         <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10 text-primary text-xs font-semibold">

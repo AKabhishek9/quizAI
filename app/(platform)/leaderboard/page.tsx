@@ -51,9 +51,15 @@ export default function LeaderboardPage() {
   const topThree = users.slice(0, 3);
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 pb-12">
+    <div className="max-w-5xl mx-auto space-y-6 pb-12 relative">
+      {/* Ambient background glows */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden select-none -z-10">
+        <div className="absolute top-[-5%] left-[-5%] w-[350px] h-[350px] rounded-full bg-gradient-to-tr from-warning/10 to-transparent blur-[110px] dark:from-warning/5" />
+        <div className="absolute bottom-[20%] right-[-10%] w-[300px] h-[300px] rounded-full bg-gradient-to-br from-primary/10 to-transparent blur-[110px] dark:from-primary/5" />
+      </div>
+
       {/* Header */}
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1 relative z-10">
         <h1 className="text-2xl font-bold tracking-tight text-foreground font-heading">Leaderboard</h1>
         <p className="text-sm text-muted-foreground">Top performers this week.</p>
       </div>
@@ -103,7 +109,7 @@ export default function LeaderboardPage() {
               id="leaderboard-search"
               type="text"
               placeholder="Search users..."
-              className="w-full pl-11 pr-4 py-2.5 bg-card border border-border rounded-xl text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+              className="w-full pl-11 pr-4 py-2.5 rounded-xl text-sm outline-none transition-all glass-card border-border/20 bg-card/25 focus:ring-2 focus:ring-primary/20"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               aria-describedby="leaderboard-search-help"
@@ -114,7 +120,7 @@ export default function LeaderboardPage() {
           </div>
 
           {/* Table */}
-          <Card className="border-border shadow-sm overflow-hidden bg-card">
+          <div className="overflow-hidden glass-card shadow-md">
             <CardContent className="p-0">
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[600px]" aria-label="Leaderboard standings">
@@ -205,7 +211,7 @@ export default function LeaderboardPage() {
                 </table>
               </div>
             </CardContent>
-          </Card>
+          </div>
         </>
       )}
     </div>
@@ -242,13 +248,12 @@ function PodiumItem({ user, position }: { user?: LeaderboardUser; position: numb
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className={cn("flex flex-col items-center", isFirst && "md:scale-105 md:z-10")}
+      className={cn("flex flex-col items-center w-full", isFirst && "md:scale-105 md:z-10")}
     >
       <div
         className={cn(
-          "w-full flex flex-col items-center gap-3 rounded-xl border p-5 transition-all",
-          config.cardColor,
-          isFirst && "shadow-lg shadow-warning/10"
+          "w-full flex flex-col items-center gap-3 p-5 rounded-xl transition-all glass-card glass-card-hover",
+          isFirst ? "border-warning/45 bg-warning/10 shadow-lg shadow-warning/5" : "border-border/20 bg-card/20"
         )}
       >
         {/* Trophy icon */}

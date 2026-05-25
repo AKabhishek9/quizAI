@@ -11,10 +11,10 @@ export function Hero() {
   return (
     <header className="relative overflow-hidden py-28 md:py-36">
       {/* Ambient glow orbs */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[-15%] left-[-8%] w-[45%] h-[45%] rounded-full bg-primary/8 blur-[100px]" />
-        <div className="absolute top-[10%] right-[-12%] w-[40%] h-[40%] rounded-full bg-success/6 blur-[120px]" />
-        <div className="absolute bottom-[-10%] left-[30%] w-[35%] h-[35%] rounded-full bg-primary/5 blur-[100px]" />
+      <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-gradient-to-tr from-primary/20 to-violet-500/20 blur-[130px] dark:from-primary/10 dark:to-violet-500/10" />
+        <div className="absolute top-[20%] right-[-15%] w-[45%] h-[45%] rounded-full bg-gradient-to-br from-indigo-500/20 to-success/20 blur-[140px] dark:from-indigo-500/10 dark:to-success/10" />
+        <div className="absolute bottom-[-10%] left-[20%] w-[40%] h-[40%] rounded-full bg-gradient-to-tr from-primary/15 to-pink-500/15 blur-[120px] dark:from-primary/5 dark:to-pink-500/5" />
       </div>
 
       <Container className="relative z-10">
@@ -58,7 +58,7 @@ export function Hero() {
               <Button
                 size="lg"
                 variant="outline"
-                className="w-full sm:w-auto border-border/60 bg-card/30 backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-card/50"
+                className="w-full sm:w-auto transition-all duration-200 hover:-translate-y-0.5 border-border/40 bg-card/30 glass-card backdrop-blur-sm"
               >
                 See How It Works
               </Button>

@@ -10,8 +10,8 @@ export function CtaSection() {
   return (
     <section className="space-section relative">
       {/* Ambient glow */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[20%] left-[25%] w-[50%] h-[50%] rounded-full bg-primary/4 blur-[120px]" />
+      <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
+        <div className="absolute top-[10%] left-[20%] w-[60%] h-[60%] rounded-full bg-gradient-to-tr from-primary/15 to-violet-500/15 blur-[130px] dark:from-primary/5 dark:to-violet-500/5" />
       </div>
 
       <Container className="relative z-10">
@@ -20,7 +20,7 @@ export function CtaSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="mx-auto max-w-3xl rounded-2xl border border-border/50 bg-card/60 backdrop-blur-sm p-10 text-center md:p-14"
+          className="mx-auto max-w-3xl rounded-2xl p-10 text-center md:p-14 glass-card shadow-xl"
         >
           <span className="text-[11px] font-semibold tracking-widest text-primary uppercase mb-4 block">
             CTA

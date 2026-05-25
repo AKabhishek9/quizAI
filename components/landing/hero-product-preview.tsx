@@ -63,19 +63,19 @@ export function HeroProductPreview() {
       className="relative mt-20 w-full max-w-5xl mx-auto px-4"
     >
       {/* Glow behind the card */}
-      <div className="absolute -inset-6 rounded-3xl bg-primary/[0.03] blur-3xl pointer-events-none" />
+      <div className="absolute -inset-6 rounded-3xl bg-gradient-to-r from-primary/10 via-violet-500/10 to-success/10 blur-3xl pointer-events-none opacity-80 dark:from-primary/5 dark:via-violet-500/5 dark:to-success/5 animate-pulse" style={{ animationDuration: "8s" }} />
 
       {/* Browser frame — glassmorphic */}
-      <div className="relative rounded-2xl border border-border/50 bg-card/70 backdrop-blur-md shadow-2xl shadow-black/10 overflow-hidden">
+      <div className="relative rounded-2xl overflow-hidden glass-card shadow-2xl shadow-black/[0.03] dark:shadow-black/30">
         {/* Title bar */}
-        <div className="flex items-center gap-2 px-4 py-2.5 border-b border-border/40 bg-card/50">
+        <div className="flex items-center gap-2 px-4 py-2.5 border-b border-border/20 bg-card/25 backdrop-blur-sm">
           <div className="flex gap-1.5">
             <span className="h-2.5 w-2.5 rounded-full bg-destructive/50" />
             <span className="h-2.5 w-2.5 rounded-full bg-warning/50" />
             <span className="h-2.5 w-2.5 rounded-full bg-success/50" />
           </div>
           <div className="flex-1 flex justify-center">
-            <div className="h-5 w-48 rounded-md bg-muted/40 flex items-center justify-center">
+            <div className="h-5 w-48 rounded-md bg-muted/40 flex items-center justify-center border border-border/10">
               <span className="text-[9px] text-muted-foreground tracking-wide select-none">
                 quizai.app/dashboard
               </span>
@@ -85,7 +85,7 @@ export function HeroProductPreview() {
         </div>
 
         {/* Dashboard content */}
-        <div className="p-4 md:p-6 space-y-4 bg-background/40">
+        <div className="p-4 md:p-6 space-y-4 bg-background/30">
           {/* ── Row 1: Welcome + stats ── */}
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
             <div>
@@ -104,9 +104,9 @@ export function HeroProductPreview() {
               ].map((s) => (
                 <div
                   key={s.label}
-                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-card/50 border border-border/40"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg glass-card border-border/20 bg-card/20 shadow-sm"
                 >
-                  <s.icon className="h-3 w-3 text-primary" />
+                  <s.icon className="h-3 w-3 text-primary animate-bounce" style={{ animationDuration: "3s" }} />
                   <span className="text-[10px] font-semibold text-foreground tabular-nums">
                     {s.value}
                   </span>
@@ -118,10 +118,10 @@ export function HeroProductPreview() {
           {/* ── Row 2: Main grid ── */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Daily Quests panel */}
-            <div className="border border-border/40 rounded-xl bg-card/50 p-3.5 flex flex-col gap-2.5">
+            <div className="rounded-xl p-3.5 flex flex-col gap-2.5 glass-card border-border/20 bg-card/20 shadow-sm">
               <div className="flex items-center gap-2 mb-0.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                <span className="text-xs font-medium text-foreground">
+                <span className="text-xs font-semibold text-foreground">
                   Daily Quests
                 </span>
                 <span className="ml-auto text-[9px] text-muted-foreground flex items-center gap-1">
@@ -132,7 +132,7 @@ export function HeroProductPreview() {
                 {QUESTS.map((q) => (
                   <div
                     key={q.label}
-                    className="flex flex-col gap-1 p-2 rounded-lg bg-muted/20 border border-border/20 hover:bg-muted/30 transition-colors"
+                    className="flex flex-col gap-1 p-2 rounded-lg bg-muted/20 border border-border/10 hover:bg-muted/30 hover:border-primary/20 transition-all duration-200"
                   >
                     <q.icon className="h-3 w-3 text-muted-foreground" />
                     <span className="text-[11px] font-medium text-foreground leading-tight">
@@ -147,8 +147,8 @@ export function HeroProductPreview() {
             </div>
 
             {/* Category Breakdown panel */}
-            <div className="border border-border/40 rounded-xl bg-card/50 p-3.5 flex flex-col gap-2.5">
-              <span className="text-xs font-medium text-foreground">
+            <div className="rounded-xl p-3.5 flex flex-col gap-2.5 glass-card border-border/20 bg-card/20 shadow-sm">
+              <span className="text-xs font-semibold text-foreground">
                 Category Breakdown
               </span>
               <div className="space-y-2.5">
@@ -181,14 +181,14 @@ export function HeroProductPreview() {
             </div>
 
             {/* Recent Activity panel */}
-            <div className="border border-border/40 rounded-xl bg-card/50 p-3.5 flex flex-col gap-2">
-              <span className="text-xs font-medium text-foreground">
+            <div className="rounded-xl p-3.5 flex flex-col gap-2 glass-card border-border/20 bg-card/20 shadow-sm">
+              <span className="text-xs font-semibold text-foreground">
                 Recent Activity
               </span>
               {ACTIVITIES.map((a, i) => (
                 <div
                   key={i}
-                  className="flex items-center gap-2.5 py-1.5 border-b border-border/30 last:border-0"
+                  className="flex items-center gap-2.5 py-1.5 border-b border-border/10 last:border-0"
                 >
                   <div
                     className={`h-6 w-6 rounded-md shrink-0 flex items-center justify-center text-[8px] font-bold ${a.dot}`}
@@ -209,16 +209,16 @@ export function HeroProductPreview() {
           </div>
 
           {/* ── Row 3: Mini quiz player teaser ── */}
-          <div className="border border-border/40 rounded-xl bg-card/50 p-3.5">
+          <div className="rounded-xl p-3.5 glass-card border-border/20 bg-card/20 shadow-sm">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <div className="h-5 w-5 rounded-md bg-primary/10 flex items-center justify-center">
-                  <Brain className="h-3 w-3 text-primary" />
+                  <Brain className="h-3 w-3 text-primary animate-pulse" />
                 </div>
-                <span className="text-xs font-medium text-foreground">
+                <span className="text-xs font-semibold text-foreground">
                   React Fundamentals
                 </span>
-                <span className="text-[9px] px-1.5 py-0.5 rounded bg-muted/40 text-muted-foreground font-medium">
+                <span className="text-[9px] px-1.5 py-0.5 rounded bg-muted/40 text-muted-foreground font-medium border border-border/10">
                   Q3 / 10
                 </span>
               </div>
@@ -239,9 +239,8 @@ export function HeroProductPreview() {
             </div>
 
             {/* Question */}
-            <p className="text-[11px] font-medium text-foreground mb-2.5 leading-relaxed">
-              Which hook is used to perform side effects in a functional React
-              component?
+            <p className="text-[11px] font-semibold text-foreground mb-2.5 leading-relaxed font-heading">
+              Which hook is used to perform side effects in a functional React component?
             </p>
 
             {/* Answer options */}
@@ -256,8 +255,8 @@ export function HeroProductPreview() {
                   key={opt.label}
                   className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[10px] border transition-colors ${
                     opt.selected
-                      ? "border-primary/40 bg-primary/5 text-foreground"
-                      : "border-border/30 bg-muted/10 text-muted-foreground"
+                      ? "border-primary/45 bg-primary/10 text-foreground font-semibold"
+                      : "border-border/10 bg-muted/10 text-muted-foreground"
                   }`}
                 >
                   {opt.selected ? (
@@ -265,7 +264,7 @@ export function HeroProductPreview() {
                   ) : (
                     <Circle className="h-3 w-3 text-muted-foreground/30 shrink-0" />
                   )}
-                  <span className="font-medium">{opt.label}.</span>
+                  <span className="font-semibold">{opt.label}.</span>
                   <span>{opt.text}</span>
                 </div>
               ))}

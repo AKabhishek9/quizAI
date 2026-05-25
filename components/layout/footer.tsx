@@ -13,7 +13,7 @@ export function Footer() {
   return (
     <footer className="relative pb-8 pt-4">
       <Container>
-        <div className="rounded-2xl border border-border/50 bg-card/60 backdrop-blur-sm px-8 py-8">
+        <div className="rounded-2xl px-8 py-8 glass-card">
           <div className="flex flex-col items-center gap-6">
             {/* Logo */}
             <div className="flex items-center gap-2">

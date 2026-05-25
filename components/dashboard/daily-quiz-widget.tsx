@@ -56,14 +56,14 @@ export function DailyQuizWidget() {
   }, [quizzes]);
 
   return (
-    <section className="border border-border rounded-lg bg-card p-4 h-full flex flex-col">
+    <section className="p-4 h-full flex flex-col glass-card">
       <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
         <div className="flex items-center gap-2">
           <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse inline-block" />
           <h2 className="text-sm font-medium text-foreground font-heading">Daily Quests</h2>
         </div>
         {timeLeft && (
-          <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground bg-muted/30 px-2 py-0.5 rounded-md">
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground bg-muted/30 px-2 py-0.5 rounded-md border border-border/10">
             <Clock className="w-3.5 h-3.5" />
             <span>{timeLeft}</span>
           </div>
@@ -77,7 +77,7 @@ export function DailyQuizWidget() {
           ))}
         </div>
       ) : quizzes.length === 0 ? (
-        <div className="flex-1 flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border bg-muted/20 p-6 text-center">
+        <div className="flex-1 flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border/20 bg-muted/20 p-6 text-center">
           <Clock className="h-5 w-5 text-muted-foreground" />
           <p className="text-xs text-muted-foreground">Daily quests are being generated. Check back soon.</p>
         </div>
@@ -94,13 +94,13 @@ export function DailyQuizWidget() {
                 transition={{ delay: index * 0.05 }}
               >
                 <Link href={`/quiz/daily/${quiz.type}`}>
-                  <div className="group flex flex-col gap-2 p-3 rounded-lg border border-transparent bg-muted/30 hover:border-primary/30 hover:bg-muted/60 hover:-translate-y-0.5 transition-all duration-150 cursor-pointer">
+                  <div className="group flex flex-col gap-2 p-3 rounded-lg transition-all duration-200 cursor-pointer glass-card glass-card-hover border-border/10 bg-card/20 shadow-sm">
                     <div className="flex items-center justify-between">
                       <Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                      <ArrowRight className="h-3 w-3 text-muted-foreground/40 group-hover:text-primary transition-colors" />
+                      <ArrowRight className="h-3 w-3 text-muted-foreground/40 group-hover:text-primary transition-colors group-hover:translate-x-0.5 transition-transform" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-foreground">{config.label}</p>
+                      <p className="text-sm font-semibold text-foreground tracking-tight">{config.label}</p>
                       <p className="text-xs text-muted-foreground mt-0.5">
                         {quiz.questions?.length || 10} questions
                       </p>

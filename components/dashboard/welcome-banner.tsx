@@ -21,7 +21,7 @@ export function WelcomeBanner({ profile, stats }: WelcomeBannerProps) {
     hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card border border-border p-6 rounded-xl">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-xl glass-card">
       <div>
         <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight font-heading">
           {greeting}, {firstName}

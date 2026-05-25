@@ -56,13 +56,19 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,55fr)_minmax(0,45fr)] gap-4">
+    <div className="space-y-4 relative">
+      {/* Decorative dashboard flows */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden select-none -z-10">
+        <div className="absolute top-[-5%] left-[-5%] w-[350px] h-[350px] rounded-full bg-gradient-to-tr from-primary/10 to-transparent blur-[110px] dark:from-primary/5" />
+        <div className="absolute bottom-[20%] right-[-10%] w-[300px] h-[300px] rounded-full bg-gradient-to-br from-violet-500/10 to-transparent blur-[110px] dark:from-violet-500/5" />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,55fr)_minmax(0,45fr)] gap-4 relative z-10">
         <div className="flex flex-col gap-4">
           <WelcomeBanner profile={profile} stats={stats} />
 
           {stats && stats.totalQuizzes === 0 && (
-            <div className="rounded-xl border border-primary/20 bg-primary/5 p-6 shadow-sm">
+            <div className="p-6 shadow-md glass-card border-primary/20 bg-primary/5 rounded-xl">
               <h3 className="text-lg font-semibold text-foreground mb-2 font-heading">Welcome to QuizAI!</h3>
               <p className="text-sm text-muted-foreground mb-4">
                 Your dashboard is currently empty. Take your first quiz to see your personalized stats, level progress, and performance trends come alive.
@@ -78,7 +84,7 @@ export default function DashboardPage() {
           ) : stats ? (
             <DashboardStats stats={stats} weeklyEvolution={weeklyEvolution} />
           ) : (
-            <div className="rounded-xl border border-dashed border-border bg-card/60 p-6 text-sm text-muted-foreground">
+            <div className="p-6 text-sm text-muted-foreground glass-card rounded-xl border-dashed border-border/30">
               No performance stats yet. Complete your first quiz to unlock progress insights.
             </div>
           )}
@@ -87,10 +93,10 @@ export default function DashboardPage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] gap-4">
-          <div className="border border-border rounded-lg bg-card p-4 flex flex-col gap-3">
+          <div className="p-4 flex flex-col gap-3 glass-card">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-medium text-foreground font-heading">Performance Trend</h2>
-              <span className="text-[10px] font-medium text-muted-foreground border border-border rounded-md px-2 py-0.5">
+              <span className="text-[10px] font-semibold text-muted-foreground border border-border/20 bg-muted/20 rounded-md px-2 py-0.5">
                 Last 10 sessions
               </span>
             </div>
@@ -104,7 +110,7 @@ export default function DashboardPage() {
           ) : history ? (
             <RecentActivity attempts={history} />
           ) : (
-            <div className="rounded-xl border border-dashed border-border bg-card/60 p-6 text-sm text-muted-foreground">
+            <div className="p-6 text-sm text-muted-foreground glass-card rounded-xl border-dashed border-border/30">
               Activity will appear here after your first attempts.
             </div>
           )}

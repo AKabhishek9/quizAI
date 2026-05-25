@@ -48,8 +48,9 @@ export function Features() {
   return (
     <section className="space-section relative" id="features">
       {/* Subtle ambient glow */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[20%] right-[-5%] w-[30%] h-[30%] rounded-full bg-primary/4 blur-[100px]" />
+      <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
+        <div className="absolute top-[20%] right-[-10%] w-[40%] h-[40%] rounded-full bg-gradient-to-tr from-primary/15 to-violet-500/15 blur-[120px] dark:from-primary/5 dark:to-violet-500/5" />
+        <div className="absolute bottom-[10%] left-[-10%] w-[35%] h-[35%] rounded-full bg-gradient-to-br from-success/10 to-indigo-500/10 blur-[110px] dark:from-success/3 dark:to-indigo-500/3" />
       </div>
 
       <Container className="relative z-10">
@@ -81,7 +82,7 @@ export function Features() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.07, duration: 0.5 }}
-              className="group relative rounded-2xl border border-border/50 bg-card/60 backdrop-blur-sm p-6 transition-all duration-300 hover:border-primary/30 hover:bg-card/80"
+              className="group relative rounded-2xl p-6 glass-card glass-card-hover"
             >
               {/* Icon */}
               <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/10 flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-105">

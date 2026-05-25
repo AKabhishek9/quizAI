@@ -31,7 +31,7 @@ function statusLabel(score: number) {
 
 export function RecentActivity({ attempts }: RecentActivityProps) {
   return (
-    <section className="border border-border rounded-lg bg-card p-4 flex flex-col gap-1">
+    <section className="p-4 flex flex-col gap-1 glass-card">
       <h2 className="text-sm font-medium text-foreground mb-2 font-heading">Recent Activity</h2>
 
       {attempts.length === 0 && (

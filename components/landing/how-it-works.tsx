@@ -28,8 +28,8 @@ export function HowItWorks() {
   return (
     <section id="how-it-works" className="space-section relative">
       {/* Subtle ambient glow */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute bottom-[-10%] left-[-5%] w-[35%] h-[35%] rounded-full bg-success/4 blur-[100px]" />
+      <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
+        <div className="absolute bottom-[-10%] left-[-5%] w-[45%] h-[45%] rounded-full bg-gradient-to-tr from-success/15 to-primary/10 blur-[130px] dark:from-success/5 dark:to-primary/5" />
       </div>
 
       <Container className="relative z-10">
@@ -61,7 +61,7 @@ export function HowItWorks() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 + 0.15, duration: 0.5 }}
-              className="relative rounded-2xl border border-border/50 bg-card/60 backdrop-blur-sm p-6 transition-all duration-300 hover:border-primary/30 hover:bg-card/80"
+              className="relative rounded-2xl p-6 glass-card glass-card-hover"
             >
               {/* Step label */}
               <span className="text-[10px] font-bold tracking-widest text-primary uppercase mb-4 block">

@@ -105,13 +105,19 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-background">
+    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-background relative overflow-hidden select-none">
+      {/* Dynamic ambient backgrounds */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden select-none -z-10">
+        <div className="absolute top-[-15%] left-[-15%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-primary/15 to-violet-500/10 blur-[130px] dark:from-primary/10 dark:to-violet-500/5 animate-pulse" style={{ animationDuration: "12s" }} />
+        <div className="absolute bottom-[-15%] right-[-15%] w-[55%] h-[55%] rounded-full bg-gradient-to-tl from-success/15 to-indigo-500/10 blur-[130px] dark:from-success/10 dark:to-indigo-500/5 animate-pulse" style={{ animationDuration: "16s" }} />
+      </div>
+
       {/* Logo */}
       <motion.div
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="flex items-center gap-2 mb-8"
+        className="flex items-center gap-2 mb-8 relative z-10"
       >
         <div className="flex h-10 w-10 items-center justify-center rounded-[12px] overflow-hidden">
           <Image src="/logo.png" alt="QuizAI Logo" width={40} height={40} className="object-contain" />
@@ -124,7 +130,7 @@ export default function LoginPage() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.05 }}
-        className="w-full max-w-sm bg-card border border-border rounded-2xl p-8 shadow-sm"
+        className="w-full max-w-sm p-8 shadow-2xl shadow-black/[0.03] dark:shadow-black/20 glass-card relative z-10"
       >
         {/* Heading */}
         <div className="text-center mb-7">
@@ -251,10 +257,10 @@ export default function LoginPage() {
         {/* Divider */}
         <div className="relative my-5">
           <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-border" />
+            <span className="w-full border-t border-border/20" />
           </div>
           <div className="relative flex justify-center">
-            <span className="bg-card px-3 text-xs text-muted-foreground">or</span>
+            <span className="bg-background/80 backdrop-blur-sm px-3.5 py-0.5 rounded-full border border-border/20 text-xs text-muted-foreground select-none">or</span>
           </div>
         </div>
 
