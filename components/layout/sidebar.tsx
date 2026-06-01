@@ -7,14 +7,16 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/components/providers/auth-provider";
 import { ThemeToggle } from "./theme-toggle";
 import { Button } from "@/components/ui/button";
-import { 
-  LayoutDashboard, 
-  BookOpen, 
-  Trophy, 
-  User, 
-  LogOut, 
+import { StreakBadge } from "@/components/shared/streak-badge";
+import { XpMiniBar } from "@/components/shared/xp-mini-bar";
+import {
+  LayoutDashboard,
+  BookOpen,
+  Trophy,
+  User,
+  Settings,
+  LogOut,
   ChevronLeft,
-  Sparkles
 } from "lucide-react";
 
 export const sidebarLinks = [
@@ -22,6 +24,7 @@ export const sidebarLinks = [
   { href: "/quiz", label: "Quizzes", icon: BookOpen },
   { href: "/leaderboard", label: "Leaderboard", icon: Trophy },
   { href: "/profile", label: "Profile", icon: User },
+  { href: "/settings", label: "Settings", icon: Settings },
 ];
 
 export function Sidebar({ 
@@ -67,12 +70,14 @@ export function Sidebar({
               key={link.href}
               href={link.href}
               title={collapsed ? link.label : undefined}
+              aria-current={isActive ? "page" : undefined}
               className={cn(
                 "group flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm transition-colors duration-150",
                 collapsed && "justify-center",
-                isActive && !collapsed && "border-l-2 border-primary pl-2",
-                isActive 
-                  ? "bg-primary/10 text-primary font-medium" 
+                isActive && "border-l-2 border-primary",
+                isActive && !collapsed && "pl-2",
+                isActive
+                  ? "bg-primary/10 text-primary font-medium"
                   : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent"
               )}
             >
@@ -87,6 +92,12 @@ export function Sidebar({
           );
         })}
       </nav>
+
+      {/* Gamification — always visible */}
+      <div className={cn("border-t border-border py-2.5", collapsed ? "px-2 flex justify-center" : "px-3 space-y-2")}>
+        <StreakBadge collapsed={collapsed} />
+        {!collapsed && <XpMiniBar />}
+      </div>
 
       {/* Bottom Actions */}
       <div className={cn(

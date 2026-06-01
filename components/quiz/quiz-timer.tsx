@@ -23,9 +23,14 @@ export function QuizTimer({
   const isDanger = percentage <= 15;
 
   return (
-    <div className={cn("flex items-center gap-2.5", className)}>
+    <div
+      className={cn("flex items-center gap-2.5", className)}
+      role="timer"
+      aria-label={`Time remaining: ${minutes} minutes ${seconds} seconds`}
+    >
       <div className="flex items-center gap-1.5">
         <Clock
+          aria-hidden="true"
           className={cn(
             "h-3.5 w-3.5 transition-colors",
             isDanger
@@ -66,7 +71,7 @@ export function QuizTimer({
       </div>
 
       {isDanger && (
-        <span className="h-2 w-2 rounded-full bg-destructive animate-pulse" />
+        <span aria-hidden="true" className="h-2 w-2 rounded-full bg-destructive animate-pulse" />
       )}
     </div>
   );

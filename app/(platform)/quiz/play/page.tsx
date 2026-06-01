@@ -7,6 +7,8 @@ import { ArrowRight, ArrowLeft, AlertCircle, Loader2, TrendingUp, TrendingDown, 
 import { Button } from "@/components/ui/button";
 import { QuizOption } from "@/components/quiz/quiz-option";
 import { QuizTimer } from "@/components/quiz/quiz-timer";
+import { AdaptiveContextLabel } from "@/components/quiz/adaptive-context-label";
+import { QuizCelebration } from "@/components/quiz/quiz-celebration";
 import { ProgressBar } from "@/components/dashboard/progress-bar";
 import { ErrorBoundary } from "@/components/shared/error-boundary";
 import { useAdaptiveQuiz } from "@/hooks/use-adaptive-quiz";
@@ -15,6 +17,37 @@ import type { DifficultyLabel } from "@/hooks/use-adaptive-quiz";
 import { cn } from "@/lib/utils";
 
 const ADAPTIVE_TIMER_SECONDS = 90;
+
+/** Animated count-up for a final number (e.g. accuracy). Respects reduced motion. */
+function CountUp({ value, suffix = "", durationMs = 600 }: { value: number; suffix?: string; durationMs?: number }) {
+  const [display, setDisplay] = useState(0);
+  useEffect(() => {
+    const prefersReduced =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReduced) {
+      setDisplay(value);
+      return;
+    }
+    let raf = 0;
+    let start = 0;
+    const tick = (t: number) => {
+      if (!start) start = t;
+      const progress = Math.min(1, (t - start) / durationMs);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplay(Math.round(eased * value));
+      if (progress < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [value, durationMs]);
+  return (
+    <span className="tabular-nums">
+      {display}
+      {suffix}
+    </span>
+  );
+}
 
 function PlayQuizEngine() {
   const router = useRouter();
@@ -116,6 +149,11 @@ function PlayQuizEngine() {
   /* ── Loading / Generating / Submitting ── */
   if (state === "loading" || state === "submitting") {
     const isGenerating = state === "loading";
+    const steps = [
+      "Analyzing your performance",
+      "Selecting weak concepts",
+      "Building your questions",
+    ];
     return (
       <motion.div
         initial={{ opacity: 0 }}
@@ -133,20 +171,35 @@ function PlayQuizEngine() {
           </div>
         </div>
         <div>
-          <h3 className="text-lg font-medium tracking-tight mb-1">
-            {isGenerating ? "Synthesizing Protocol" : "Analyzing Results"}
+          <h3 className="text-lg font-medium tracking-tight mb-1 font-heading">
+            {isGenerating ? "Generating your quiz" : "Analyzing your results"}
           </h3>
           <p className="text-xs text-muted-foreground leading-relaxed">
             {isGenerating
-              ? "Our AI engine is generating your custom assessment. This may take up to 30 seconds."
-              : "Calculating your adaptive metrics..."}
+              ? "Tailoring questions to your level. This can take up to 30 seconds."
+              : "Calculating your adaptive metrics…"}
           </p>
-          {isGenerating && (
-            <p className="text-xs font-mono text-primary/70 mt-3 tabular-nums">
-              {elapsed}s elapsed...
-            </p>
-          )}
         </div>
+
+        {isGenerating && (
+          <div className="w-full max-w-[16rem] space-y-2 text-left">
+            {steps.map((step, i) => (
+              <motion.div
+                key={step}
+                initial={{ opacity: 0, x: -8 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3 + i * 0.2, duration: 0.4 }}
+                className="flex items-center gap-2.5"
+              >
+                <span className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
+                <span className="text-xs text-muted-foreground">{step}</span>
+              </motion.div>
+            ))}
+            <p className="pt-1 text-[11px] font-mono text-primary/70 tabular-nums">
+              {elapsed}s elapsed…
+            </p>
+          </div>
+        )}
       </motion.div>
     );
   }
@@ -197,8 +250,10 @@ function PlayQuizEngine() {
       <motion.div
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="max-w-3xl mx-auto py-10 space-y-6"
+        className="relative max-w-3xl mx-auto py-10 space-y-6"
       >
+        <QuizCelebration show={result.accuracy >= 80} />
+
         <div className="text-center">
           <h1 className="text-2xl font-semibold tracking-tight font-heading">Assessment Overview</h1>
           <p className="text-sm text-muted-foreground mt-1">
@@ -206,7 +261,7 @@ function PlayQuizEngine() {
           </p>
         </div>
 
-        <div className="rounded-xl border border-border bg-card p-6 elevated grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div className="rounded-xl border border-border bg-card p-6 grid grid-cols-1 sm:grid-cols-3 gap-6">
           <div className="text-center sm:text-left sm:border-r border-border sm:pr-6">
             <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">
               Accuracy
@@ -221,7 +276,7 @@ function PlayQuizEngine() {
                   : "text-destructive"
               )}
             >
-              {result.accuracy}%
+              <CountUp value={result.accuracy} suffix="%" />
             </div>
             <p className="text-xs text-muted-foreground mt-1">
               {result.score} of {result.total} correct
@@ -309,42 +364,40 @@ function PlayQuizEngine() {
     <div className="max-w-xl mx-auto space-y-5">
       {/* Top bar */}
       <div className="space-y-2.5">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-medium tabular-nums">
-            {currentQuestionIndex + 1}{" "}
+        <div className="flex items-center justify-between gap-3">
+          <span className="text-xs font-medium tabular-nums shrink-0">
+            Question {currentQuestionIndex + 1}{" "}
             <span className="text-muted-foreground">/ {totalQuestions}</span>
           </span>
-          <div className="flex items-center gap-3">
-            {currentQuestion && (
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] uppercase tracking-wider text-muted-foreground bg-secondary px-2 py-0.5 rounded-sm">
-                  {currentQuestion.topic}
-                </span>
-                <span
-                  className={cn(
-                    "text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-sm font-medium",
-                    currentQuestion.difficulty === 1
-                      ? "bg-success/10 text-success"
-                      : currentQuestion.difficulty === 2
-                      ? "bg-success/20 text-success"
-                      : currentQuestion.difficulty === 3
-                      ? "bg-warning/10 text-warning"
-                      : currentQuestion.difficulty === 4
-                      ? "bg-destructive/10 text-destructive"
-                      : "bg-destructive/20 text-destructive"
-                  )}
-                >
-                  Lvl {currentQuestion.difficulty}
-                </span>
-              </div>
-            )}
-            <QuizTimer
-              timeRemaining={timeRemaining}
-              totalTime={ADAPTIVE_TIMER_SECONDS}
-              className="w-28 sm:w-32"
-            />
-          </div>
+          <QuizTimer
+            timeRemaining={timeRemaining}
+            totalTime={ADAPTIVE_TIMER_SECONDS}
+            className="w-24 sm:w-32 shrink-0"
+          />
         </div>
+        {currentQuestion && (
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground bg-secondary px-2 py-0.5 rounded-sm max-w-full truncate">
+              {currentQuestion.topic}
+            </span>
+            <span
+              className={cn(
+                "text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-sm font-medium shrink-0",
+                currentQuestion.difficulty === 1
+                  ? "bg-success/10 text-success"
+                  : currentQuestion.difficulty === 2
+                  ? "bg-success/20 text-success"
+                  : currentQuestion.difficulty === 3
+                  ? "bg-warning/10 text-warning"
+                  : currentQuestion.difficulty === 4
+                  ? "bg-destructive/10 text-destructive"
+                  : "bg-destructive/20 text-destructive"
+              )}
+            >
+              Lvl {currentQuestion.difficulty}
+            </span>
+          </div>
+        )}
         <ProgressBar
           value={(currentQuestionIndex / totalQuestions) * 100}
           showPercentage={false}
@@ -365,8 +418,13 @@ function PlayQuizEngine() {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -12 }}
           transition={{ duration: 0.2 }}
-          className="rounded-xl border border-border bg-card p-5 elevated"
+          className="rounded-xl border border-border bg-card p-5"
         >
+          {currentQuestion?.topic && (
+            <div className="mb-4">
+              <AdaptiveContextLabel topic={currentQuestion.topic} />
+            </div>
+          )}
           <h2 className="text-[15px] font-medium leading-relaxed mb-5 font-heading">{currentQuestion?.text}</h2>
 
           <div className="space-y-2" role="radiogroup" aria-label="Answer options">

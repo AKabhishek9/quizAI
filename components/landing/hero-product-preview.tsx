@@ -63,13 +63,13 @@ export function HeroProductPreview() {
       className="relative mt-20 w-full max-w-5xl mx-auto px-4"
     >
       {/* Glow behind the card */}
-      <div className="absolute -inset-6 rounded-3xl bg-gradient-to-r from-primary/10 via-violet-500/10 to-success/10 blur-3xl pointer-events-none opacity-80 dark:from-primary/5 dark:via-violet-500/5 dark:to-success/5 animate-pulse" style={{ animationDuration: "8s" }} />
+      <div className="absolute -inset-6 rounded-3xl bg-gradient-to-r from-primary/10 via-violet-500/10 to-success/10 blur-3xl pointer-events-none opacity-70 dark:from-primary/5 dark:via-violet-500/5 dark:to-success/5" aria-hidden="true" />
 
       {/* Browser frame — glassmorphic */}
       <div className="relative rounded-2xl overflow-hidden glass-card shadow-2xl shadow-black/[0.03] dark:shadow-black/30">
         {/* Title bar */}
-        <div className="flex items-center gap-2 px-4 py-2.5 border-b border-border/20 bg-card/25 backdrop-blur-sm">
-          <div className="flex gap-1.5">
+        <div className="flex items-center gap-2 px-4 py-2.5 border-b border-border/40 bg-muted/40">
+          <div className="flex gap-1.5" aria-hidden="true">
             <span className="h-2.5 w-2.5 rounded-full bg-destructive/50" />
             <span className="h-2.5 w-2.5 rounded-full bg-warning/50" />
             <span className="h-2.5 w-2.5 rounded-full bg-success/50" />
@@ -85,7 +85,7 @@ export function HeroProductPreview() {
         </div>
 
         {/* Dashboard content */}
-        <div className="p-4 md:p-6 space-y-4 bg-background/30">
+        <div className="p-4 md:p-6 space-y-4 bg-card/60">
           {/* ── Row 1: Welcome + stats ── */}
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
             <div>
@@ -104,9 +104,9 @@ export function HeroProductPreview() {
               ].map((s) => (
                 <div
                   key={s.label}
-                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg glass-card border-border/20 bg-card/20 shadow-sm"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-card border border-border/40 shadow-sm"
                 >
-                  <s.icon className="h-3 w-3 text-primary animate-bounce" style={{ animationDuration: "3s" }} />
+                  <s.icon className="h-3 w-3 text-primary" />
                   <span className="text-[10px] font-semibold text-foreground tabular-nums">
                     {s.value}
                   </span>
@@ -118,7 +118,7 @@ export function HeroProductPreview() {
           {/* ── Row 2: Main grid ── */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Daily Quests panel */}
-            <div className="rounded-xl p-3.5 flex flex-col gap-2.5 glass-card border-border/20 bg-card/20 shadow-sm">
+            <div className="rounded-xl p-3.5 flex flex-col gap-2.5 bg-card border border-border/40 shadow-sm">
               <div className="flex items-center gap-2 mb-0.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
                 <span className="text-xs font-semibold text-foreground">
@@ -147,7 +147,7 @@ export function HeroProductPreview() {
             </div>
 
             {/* Category Breakdown panel */}
-            <div className="rounded-xl p-3.5 flex flex-col gap-2.5 glass-card border-border/20 bg-card/20 shadow-sm">
+            <div className="rounded-xl p-3.5 flex flex-col gap-2.5 bg-card border border-border/40 shadow-sm">
               <span className="text-xs font-semibold text-foreground">
                 Category Breakdown
               </span>
@@ -181,7 +181,7 @@ export function HeroProductPreview() {
             </div>
 
             {/* Recent Activity panel */}
-            <div className="rounded-xl p-3.5 flex flex-col gap-2 glass-card border-border/20 bg-card/20 shadow-sm">
+            <div className="rounded-xl p-3.5 flex flex-col gap-2 bg-card border border-border/40 shadow-sm">
               <span className="text-xs font-semibold text-foreground">
                 Recent Activity
               </span>
@@ -209,7 +209,7 @@ export function HeroProductPreview() {
           </div>
 
           {/* ── Row 3: Mini quiz player teaser ── */}
-          <div className="rounded-xl p-3.5 glass-card border-border/20 bg-card/20 shadow-sm">
+          <div className="rounded-xl p-3.5 bg-card border border-border/40 shadow-sm">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <div className="h-5 w-5 rounded-md bg-primary/10 flex items-center justify-center">

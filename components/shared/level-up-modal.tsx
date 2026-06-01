@@ -33,8 +33,8 @@ export function LevelUpModal({ isOpen, onClose, newLevel, xpGained = 50 }: Level
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-md bg-card border-border p-0 overflow-hidden rounded-[40px] whisper-shadow">
-        <div className="relative p-10 flex flex-col items-center text-center">
+      <DialogContent className="sm:max-w-md bg-card border-border p-0 overflow-hidden rounded-3xl whisper-shadow">
+        <div className="relative p-6 sm:p-10 flex flex-col items-center text-center">
           {/* Animated Background Elements */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <motion.div 
@@ -84,34 +84,34 @@ export function LevelUpModal({ isOpen, onClose, newLevel, xpGained = 50 }: Level
                 >
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/5 border border-primary/20 mb-4">
                     <Sparkles className="h-3 w-3 text-primary" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-primary">New Mastery Reached</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-primary">New level reached</span>
                   </div>
-                  
+
                   <h2 className="text-4xl font-black tracking-tighter text-foreground font-heading mb-2">
                     Level Up!
                   </h2>
-                  <p className="text-muted-foreground font-bold text-sm mb-8 px-8">
-                    You{"'"}ve successfully calibrated your core concepts. You are now a <span className="text-foreground">Level {newLevel} Scholar</span>.
+                  <p className="text-muted-foreground font-bold text-sm mb-8 px-4 sm:px-8">
+                    Great work — you&apos;ve reached <span className="text-foreground">Level {newLevel}</span>. Keep practicing to climb even higher.
                   </p>
 
                   {/* XP Summary Card */}
                   <div className="bg-muted/30 border border-border/50 rounded-2xl p-4 mb-8 flex items-center justify-between w-full max-w-xs mx-auto">
                     <div className="text-left">
-                      <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground/50 leading-none mb-1">XP CALIBRATED</p>
+                      <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground/50 leading-none mb-1">XP earned</p>
                       <p className="text-xl font-black tabular-nums">+{xpGained}</p>
                     </div>
                     <div className="h-10 w-px bg-border/40" />
                     <div className="text-right">
-                      <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground/50 leading-none mb-1">NEXT GOAL</p>
+                      <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground/50 leading-none mb-1">Next level</p>
                       <p className="text-xl font-black tabular-nums">Lvl {newLevel + 1}</p>
                     </div>
                   </div>
 
-                  <Button 
+                  <Button
                     onClick={onClose}
                     className="w-full h-14 rounded-full font-black tracking-tighter group transition-all active:scale-[0.98] shadow-glow-primary"
                   >
-                    Continue Journey
+                    Continue
                     <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </motion.div>

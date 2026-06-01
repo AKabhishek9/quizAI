@@ -28,13 +28,13 @@ const features = [
     icon: Timer,
     title: "Timed Challenges",
     description:
-      "Simulate real interview pressure with timed mock exams and technical screens.",
+      "Simulate real exam pressure with timed mock tests and focused practice rounds.",
   },
   {
     icon: Layers,
     title: "Difficulty Levels",
     description:
-      "From Junior to Staff Engineer. Choose your path and master the stack.",
+      "From beginner to advanced. Choose your level and master each subject step by step.",
   },
   {
     icon: Zap,
@@ -47,12 +47,6 @@ const features = [
 export function Features() {
   return (
     <section className="space-section relative" id="features">
-      {/* Subtle ambient glow */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
-        <div className="absolute top-[20%] right-[-10%] w-[40%] h-[40%] rounded-full bg-gradient-to-tr from-primary/15 to-violet-500/15 blur-[120px] dark:from-primary/5 dark:to-violet-500/5" />
-        <div className="absolute bottom-[10%] left-[-10%] w-[35%] h-[35%] rounded-full bg-gradient-to-br from-success/10 to-indigo-500/10 blur-[110px] dark:from-success/3 dark:to-indigo-500/3" />
-      </div>
-
       <Container className="relative z-10">
         <div className="text-center mb-14">
           <motion.span
@@ -70,7 +64,7 @@ export function Features() {
             transition={{ delay: 0.1 }}
             className="text-section text-foreground"
           >
-            Engineered for growth.
+            Built for real learning.
           </motion.h2>
         </div>
 
@@ -82,7 +76,7 @@ export function Features() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.07, duration: 0.5 }}
-              className="group relative rounded-2xl p-6 glass-card glass-card-hover"
+              className="group relative rounded-2xl p-6 card-interactive"
             >
               {/* Icon */}
               <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/10 flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-105">

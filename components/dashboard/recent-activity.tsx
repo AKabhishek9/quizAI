@@ -31,7 +31,7 @@ function statusLabel(score: number) {
 
 export function RecentActivity({ attempts }: RecentActivityProps) {
   return (
-    <section className="p-4 flex flex-col gap-1 glass-card">
+    <section className="p-4 flex flex-col gap-1 card-base">
       <h2 className="text-sm font-medium text-foreground mb-2 font-heading">Recent Activity</h2>
 
       {attempts.length === 0 && (
@@ -42,37 +42,40 @@ export function RecentActivity({ attempts }: RecentActivityProps) {
         </div>
       )}
 
-      {attempts.slice(0, 5).map((attempt, index) => {
-        const colour = dotColour(attempt.quizTitle);
-        const status = statusLabel(attempt.score);
-        return (
-          <motion.div
-            key={attempt.id}
-            initial={{ opacity: 0, x: 6 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.05 }}
-            className="flex items-center gap-3 py-2 border-b border-border last:border-0"
-          >
-            {/* Coloured icon square */}
-            <div
-              className={cn(
-                "h-8 w-8 rounded-md shrink-0 flex items-center justify-center text-[10px] font-bold",
-                colour
-              )}
+      <ul className="flex flex-col">
+        {attempts.slice(0, 5).map((attempt, index) => {
+          const colour = dotColour(attempt.quizTitle);
+          const status = statusLabel(attempt.score);
+          return (
+            <motion.li
+              key={attempt.id}
+              initial={{ opacity: 0, x: 6 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.05 }}
+              className="flex items-center gap-3 py-2 border-b border-border last:border-0"
             >
-              {attempt.quizTitle.slice(0, 1).toUpperCase()}
-            </div>
+              {/* Coloured icon square — decorative; title is shown as text */}
+              <div
+                aria-hidden="true"
+                className={cn(
+                  "h-8 w-8 rounded-md shrink-0 flex items-center justify-center text-[10px] font-bold",
+                  colour
+                )}
+              >
+                {attempt.quizTitle.slice(0, 1).toUpperCase()}
+              </div>
 
-            {/* Title + status */}
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-foreground truncate leading-tight">
-                {attempt.quizTitle}
-              </p>
-              <p className="text-[11px] text-muted-foreground mt-0.5">{status}</p>
-            </div>
-          </motion.div>
-        );
-      })}
+              {/* Title + status */}
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-foreground truncate leading-tight" title={attempt.quizTitle}>
+                  {attempt.quizTitle}
+                </p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">{status}</p>
+              </div>
+            </motion.li>
+          );
+        })}
+      </ul>
     </section>
   );
 }

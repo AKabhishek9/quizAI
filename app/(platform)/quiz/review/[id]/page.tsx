@@ -275,9 +275,13 @@ export default function ReviewPage({ params }: ReviewPageProps) {
             </div>
 
             {answer.question?.explanation && (
-              <div className="mt-3 p-3 rounded-lg bg-primary/5 border border-primary/10">
-                <p className="text-xs font-semibold text-primary mb-1">Explanation</p>
-                <p className="text-sm text-muted-foreground">{answer.question.explanation}</p>
+              <div className="mt-4 rounded-lg bg-muted/40 border border-border/40 p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-primary mb-1.5">
+                  Explanation
+                </p>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {answer.question.explanation}
+                </p>
               </div>
             )}
           </motion.div>

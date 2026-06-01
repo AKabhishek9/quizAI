@@ -49,10 +49,14 @@ export default function ProfilePage() {
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center h-[50vh] space-y-4">
-        <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-8 text-center max-w-md">
+        <div role="alert" className="rounded-xl border border-destructive/20 bg-destructive/5 p-8 text-center max-w-md">
           <h2 className="text-base font-semibold mb-2 font-heading">Could not load profile</h2>
-          <p className="text-sm text-muted-foreground mb-4">{error.message}</p>
-          <p className="text-xs text-muted-foreground">Make sure the backend server is running on port 5000.</p>
+          <p className="text-sm text-muted-foreground mb-4">
+            We couldn&apos;t load your profile right now. Please check your connection and try again.
+          </p>
+          <Button size="sm" onClick={() => window.location.reload()} className="cursor-pointer">
+            Retry
+          </Button>
         </div>
       </div>
     );
@@ -179,7 +183,7 @@ export default function ProfilePage() {
       {stats && (
         <div className="space-y-4 min-w-0">
           <h2 className="text-lg font-bold text-foreground font-heading">Your Performance</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-4">
             <StatsCard title="Quizzes" value={stats.totalQuizzes} icon={BookOpen} />
             <StatsCard title="Avg. Score" value={`${stats.averageScore}%`} icon={Target} />
             <StatsCard
@@ -263,7 +267,7 @@ export default function ProfilePage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 min-w-0">
               <div className="rounded-2xl border border-border bg-card p-6 shadow-sm flex flex-col min-w-0 lg:col-span-2">
                 <h3 className="text-base font-semibold mb-6 text-foreground font-heading">Performance Trend</h3>
-                <div className="min-h-[300px] w-full relative">
+                <div className="relative w-full" style={{ height: 300 }}>
                   {stats.weeklyScores && stats.weeklyScores.length > 0 ? (
                     <PerformanceChart data={stats.weeklyScores} />
                   ) : (
@@ -308,29 +312,58 @@ export default function ProfilePage() {
 
         {/* Achievements */}
         <TabsContent value="achievements">
-          <div className="flex flex-wrap gap-3">
-            {[
-              { id: "first_quiz", name: "First Steps", icon: "🎯", desc: "Complete your first quiz" },
-              { id: "streak_7", name: "Week Warrior", icon: "🔥", desc: "7-day streak" },
-              { id: "perfect_score", name: "Flawless", icon: "✨", desc: "Get a 100% score" },
-              { id: "level_10", name: "Mastery", icon: "👑", desc: "Reach Level 10" },
-            ].map((ach) => (
-              <div
-                key={ach.id}
-                className="min-w-[220px] flex-1 rounded-2xl border border-border bg-card p-5 flex flex-col items-center justify-center text-center gap-3 opacity-80 hover:opacity-100 transition-all shadow-sm overflow-hidden"
-              >
-                <div className="h-11 w-11 shrink-0 rounded-full bg-muted flex items-center justify-center">
-                  {ach.id === "first_quiz" && <Target className="h-5 w-5 text-muted-foreground" />}
-                  {ach.id === "streak_7" && <Flame className="h-5 w-5 text-muted-foreground" />}
-                  {ach.id === "perfect_score" && <Trophy className="h-5 w-5 text-muted-foreground" />}
-                  {ach.id === "level_10" && <BookOpen className="h-5 w-5 text-muted-foreground" />}
-                </div>
-                <div className="min-w-0 w-full">
-                  <h4 className="text-sm font-semibold text-foreground">{ach.name}</h4>
-                  <p className="text-xs text-muted-foreground mt-1">{ach.desc}</p>
-                </div>
-              </div>
-            ))}
+          <div className="w-full overflow-hidden">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {(() => {
+                const totalQuizzes = stats?.totalQuizzes ?? 0;
+                const bestStreak = Math.max(stats?.bestStreak ?? 0, stats?.currentStreak ?? 0);
+                const hasPerfect = (history ?? []).some((h) => h.score >= 100);
+                const level = profile?.level ?? 1;
+                const achievements = [
+                  { id: "first_quiz", name: "First Steps", desc: "Complete your first quiz", current: Math.min(totalQuizzes, 1), goal: 1, Icon: Target },
+                  { id: "streak_7", name: "Week Warrior", desc: "Reach a 7-day streak", current: Math.min(bestStreak, 7), goal: 7, Icon: Flame },
+                  { id: "perfect_score", name: "Flawless", desc: "Score 100% on a quiz", current: hasPerfect ? 1 : 0, goal: 1, Icon: Trophy },
+                  { id: "level_10", name: "Mastery", desc: "Reach Level 10", current: Math.min(level, 10), goal: 10, Icon: BookOpen },
+                ];
+                return achievements.map((ach) => {
+                  const pct = Math.min(100, Math.round((ach.current / ach.goal) * 100));
+                  const unlocked = ach.current >= ach.goal;
+                  return (
+                    <div
+                      key={ach.id}
+                      className={cn(
+                        "rounded-2xl border bg-card p-5 flex flex-col items-center text-center gap-3 transition-colors shadow-sm min-w-0",
+                        unlocked ? "border-success/40 bg-success/5" : "border-border"
+                      )}
+                    >
+                      <div
+                        className={cn(
+                          "h-11 w-11 shrink-0 rounded-full flex items-center justify-center",
+                          unlocked ? "bg-success/15" : "bg-muted"
+                        )}
+                      >
+                        <ach.Icon className={cn("h-5 w-5", unlocked ? "text-success" : "text-muted-foreground")} />
+                      </div>
+                      <div className="min-w-0 w-full">
+                        <h4 className="text-sm font-semibold text-foreground truncate">{ach.name}</h4>
+                        <p className="text-xs text-muted-foreground mt-1">{ach.desc}</p>
+                      </div>
+                      <div className="w-full mt-1">
+                        <ProgressBar
+                          value={pct}
+                          color={unlocked ? "success" : "primary"}
+                          size="sm"
+                          showPercentage={false}
+                        />
+                        <p className="text-[10px] text-muted-foreground mt-1.5 tabular-nums">
+                          {unlocked ? "Unlocked" : `${ach.current}/${ach.goal}`}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                });
+              })()}
+            </div>
           </div>
         </TabsContent>
       </Tabs>

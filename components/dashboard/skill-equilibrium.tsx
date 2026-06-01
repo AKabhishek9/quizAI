@@ -19,7 +19,7 @@ export function SkillEquilibrium({ stats }: SkillEquilibriumProps) {
   const hasData = cats.some((cat) => cat.category !== "No Data" && cat.percentage > 0);
 
   return (
-    <section className="p-4 flex flex-col gap-3 glass-card">
+    <section className="p-4 flex flex-col gap-3 card-base">
       <h2 className="text-sm font-medium text-foreground font-heading">Category Breakdown</h2>
 
       {!hasData ? (

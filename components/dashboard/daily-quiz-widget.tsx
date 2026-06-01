@@ -56,7 +56,7 @@ export function DailyQuizWidget() {
   }, [quizzes]);
 
   return (
-    <section className="p-4 h-full flex flex-col glass-card">
+    <section className="p-4 h-full flex flex-col card-base">
       <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
         <div className="flex items-center gap-2">
           <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse inline-block" />
@@ -94,10 +94,10 @@ export function DailyQuizWidget() {
                 transition={{ delay: index * 0.05 }}
               >
                 <Link href={`/quiz/daily/${quiz.type}`}>
-                  <div className="group flex flex-col gap-2 p-3 rounded-lg transition-all duration-200 cursor-pointer glass-card glass-card-hover border-border/10 bg-card/20 shadow-sm">
+                  <div className="group flex flex-col gap-2 p-3 rounded-lg cursor-pointer card-interactive bg-muted/20">
                     <div className="flex items-center justify-between">
                       <Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                      <ArrowRight className="h-3 w-3 text-muted-foreground/40 group-hover:text-primary transition-colors group-hover:translate-x-0.5 transition-transform" />
+                      <ArrowRight className="h-3 w-3 text-muted-foreground/40 transition-transform group-hover:text-primary group-hover:translate-x-0.5" />
                     </div>
                     <div>
                       <p className="text-sm font-semibold text-foreground tracking-tight">{config.label}</p>

@@ -6,15 +6,15 @@ import { Container } from "@/components/layout/container";
 const steps = [
   {
     number: "01",
-    title: "Choose your stack",
+    title: "Choose your subject",
     description:
-      "Select from over 50+ languages and frameworks, from Rust and Go to React and GraphQL.",
+      "Pick from a range of topics — from general knowledge and aptitude to tech and maths.",
   },
   {
     number: "02",
     title: "Identify the gaps",
     description:
-      "Take an initial diagnostic quiz. Our AI maps your knowledge base in minutes.",
+      "Take an initial diagnostic quiz. Our AI maps what you know in minutes.",
   },
   {
     number: "03",
@@ -27,11 +27,6 @@ const steps = [
 export function HowItWorks() {
   return (
     <section id="how-it-works" className="space-section relative">
-      {/* Subtle ambient glow */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
-        <div className="absolute bottom-[-10%] left-[-5%] w-[45%] h-[45%] rounded-full bg-gradient-to-tr from-success/15 to-primary/10 blur-[130px] dark:from-success/5 dark:to-primary/5" />
-      </div>
-
       <Container className="relative z-10">
         <div className="text-center mb-14">
           <motion.span
@@ -53,7 +48,7 @@ export function HowItWorks() {
           </motion.h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {steps.map((step, idx) => (
             <motion.div
               key={step.number}
@@ -61,7 +56,7 @@ export function HowItWorks() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 + 0.15, duration: 0.5 }}
-              className="relative rounded-2xl p-6 glass-card glass-card-hover"
+              className="relative rounded-2xl p-6 card-interactive"
             >
               {/* Step label */}
               <span className="text-[10px] font-bold tracking-widest text-primary uppercase mb-4 block">

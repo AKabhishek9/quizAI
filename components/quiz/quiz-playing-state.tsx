@@ -78,7 +78,7 @@ export function QuizPlayingState({
 
           {isDaily ? (
             <div className="flex items-center gap-3">
-              <QuizTimer timeRemaining={timeRemaining} totalTime={totalTime} className="scale-90" />
+              <QuizTimer timeRemaining={timeRemaining} totalTime={totalTime} className="w-24 sm:w-28" />
             </div>
           ) : (
             <>

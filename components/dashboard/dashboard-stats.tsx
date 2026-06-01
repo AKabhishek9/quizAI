@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpen, Target, Trophy, type LucideIcon } from "lucide-react";
+import { BookOpen, Target, Trophy, Flame, type LucideIcon } from "lucide-react";
 import { motion } from "framer-motion";
 import { StatsCard } from "@/components/dashboard/stats-card";
 
@@ -8,6 +8,7 @@ interface DashboardStatsProps {
   stats: {
     totalQuizzes: number;
     averageScore: number;
+    currentStreak: number;
     rank: number;
   };
   weeklyEvolution: number;
@@ -38,17 +39,27 @@ export function DashboardStats({ stats, weeklyEvolution }: DashboardStatsProps) 
       className: scoreClass,
     },
     {
+      // Current streak — the dominant, always-actionable metric (Duolingo lesson)
+      title: "Current Streak",
+      value: `${stats.currentStreak}d`,
+      icon: Flame as unknown as LucideIcon,
+      description: stats.currentStreak > 0 ? "Keep it going!" : "Start today",
+      className:
+        stats.currentStreak > 0
+          ? "border-warning/40 bg-warning/5"
+          : "border-border",
+    },
+    {
       title: "Ranking",
       value: `#${stats.rank}`,
-      total: "2.4k",
       icon: Trophy as unknown as LucideIcon,
       description: "Current position",
-      className: "border-warning/25 bg-warning/5",
+      className: "border-border",
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
       {cards.map((card, index) => (
         <motion.div
           key={card.title}

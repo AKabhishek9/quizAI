@@ -79,7 +79,7 @@ export default function ResultPage({
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-xl border border-border bg-card p-7 text-center"
+        className="rounded-xl border border-border bg-card p-5 sm:p-7 text-center"
       >
         <DifficultyBadge difficulty={attempt.difficulty} className="mb-3" />
         <p className="text-sm font-medium mb-4 text-muted-foreground">
@@ -91,6 +91,7 @@ export default function ResultPage({
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.15, duration: 0.4 }}
           className={cn("text-5xl font-semibold tracking-tight mb-1", scoreColor)}
+          aria-label={`Final score ${attempt.score} percent`}
         >
           {attempt.score}%
         </motion.div>

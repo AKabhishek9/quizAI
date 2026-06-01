@@ -9,29 +9,24 @@ import { Container } from "@/components/layout/container";
 export function CtaSection() {
   return (
     <section className="space-section relative">
-      {/* Ambient glow */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
-        <div className="absolute top-[10%] left-[20%] w-[60%] h-[60%] rounded-full bg-gradient-to-tr from-primary/15 to-violet-500/15 blur-[130px] dark:from-primary/5 dark:to-violet-500/5" />
-      </div>
-
       <Container className="relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="mx-auto max-w-3xl rounded-2xl p-10 text-center md:p-14 glass-card shadow-xl"
+          className="mx-auto max-w-3xl rounded-2xl p-10 text-center md:p-14 card-base"
         >
           <span className="text-[11px] font-semibold tracking-widest text-primary uppercase mb-4 block">
-            CTA
+            Start free today
           </span>
           <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground mb-4 font-heading">
-            Ready to master your next challenge?
+            Ready to master your next subject?
           </h2>
           <p className="text-muted-foreground text-sm mb-8 leading-relaxed max-w-lg mx-auto">
-            Join 2,000+ developers sharpening their skills daily.{" "}
+            Practice smarter with quizzes that adapt to your level.{" "}
             <br className="hidden sm:block" />
-            Free to start, no credit card required.
+            No credit card. No time limit. Always free.
           </p>
           <Link href="/login">
             <Button

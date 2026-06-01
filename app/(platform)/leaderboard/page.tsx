@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Trophy, Medal, TrendingUp, Search } from "lucide-react";
+import { Trophy, Medal, TrendingUp, TrendingDown, Minus, Search } from "lucide-react";
 import { getLeaderboard } from "@/lib/api-client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -52,12 +52,6 @@ export default function LeaderboardPage() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6 pb-12 relative">
-      {/* Ambient background glows */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden select-none -z-10">
-        <div className="absolute top-[-5%] left-[-5%] w-[350px] h-[350px] rounded-full bg-gradient-to-tr from-warning/10 to-transparent blur-[110px] dark:from-warning/5" />
-        <div className="absolute bottom-[20%] right-[-10%] w-[300px] h-[300px] rounded-full bg-gradient-to-br from-primary/10 to-transparent blur-[110px] dark:from-primary/5" />
-      </div>
-
       {/* Header */}
       <div className="flex flex-col gap-1 relative z-10">
         <h1 className="text-2xl font-bold tracking-tight text-foreground font-heading">Leaderboard</h1>
@@ -109,7 +103,7 @@ export default function LeaderboardPage() {
               id="leaderboard-search"
               type="text"
               placeholder="Search users..."
-              className="w-full pl-11 pr-4 py-2.5 rounded-xl text-sm outline-none transition-all glass-card border-border/20 bg-card/25 focus:ring-2 focus:ring-primary/20"
+              className="w-full pl-11 pr-4 py-2.5 rounded-xl text-sm outline-none transition-all card-base focus:ring-2 focus:ring-primary/20"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               aria-describedby="leaderboard-search-help"
@@ -120,9 +114,9 @@ export default function LeaderboardPage() {
           </div>
 
           {/* Table */}
-          <div className="overflow-hidden glass-card shadow-md">
+          <div className="overflow-hidden card-base">
             <CardContent className="p-0">
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto scroll-fade-x">
                 <table className="w-full min-w-[600px]" aria-label="Leaderboard standings">
                   <thead>
                     <tr className="border-b border-border text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
@@ -149,8 +143,8 @@ export default function LeaderboardPage() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.04 }}
                             className={cn(
-                              "hover:bg-primary/[0.03] transition-colors",
-                              user.rank === 1 && "bg-warning/[0.03]",
+                              "hover:bg-primary/[0.06] transition-colors",
+                              user.rank === 1 && "bg-warning/[0.04]",
                               user.userId === currentUser?.uid && "bg-primary/5 border-l-2 border-primary"
                             )}
                           >
@@ -194,13 +188,22 @@ export default function LeaderboardPage() {
                               <span className="text-[10px] text-muted-foreground">{user.totalQuizzes} {user.totalQuizzes === 1 ? "Quiz" : "Quizzes"}</span>
                             </div>
                           </td>
-                          {/* Accuracy */}
+                          {/* Accuracy — color + matching icon (non-color cue) */}
                           <td className="px-6 py-4 text-right">
-                            <div className={cn("flex items-center justify-end gap-1.5 font-bold text-sm",
-                              user.avgAccuracy >= 70 ? "text-success" : 
-                              user.avgAccuracy >= 50 ? "text-warning" : "text-destructive"
-                            )}>
-                              <TrendingUp className="h-3.5 w-3.5" />
+                            <div
+                              className={cn("flex items-center justify-end gap-1.5 font-bold text-sm tabular-nums",
+                                user.avgAccuracy >= 70 ? "text-success" :
+                                user.avgAccuracy >= 50 ? "text-warning" : "text-destructive"
+                              )}
+                              aria-label={`Accuracy ${user.avgAccuracy} percent`}
+                            >
+                              {user.avgAccuracy >= 70 ? (
+                                <TrendingUp className="h-3.5 w-3.5" aria-hidden="true" />
+                              ) : user.avgAccuracy >= 50 ? (
+                                <Minus className="h-3.5 w-3.5" aria-hidden="true" />
+                              ) : (
+                                <TrendingDown className="h-3.5 w-3.5" aria-hidden="true" />
+                              )}
                               {user.avgAccuracy}%
                             </div>
                           </td>
@@ -248,12 +251,12 @@ function PodiumItem({ user, position }: { user?: LeaderboardUser; position: numb
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className={cn("flex flex-col items-center w-full", isFirst && "md:scale-105 md:z-10")}
+      className={cn("flex flex-col items-center w-full justify-end", isFirst && "md:z-10")}
     >
       <div
         className={cn(
-          "w-full flex flex-col items-center gap-3 p-5 rounded-xl transition-all glass-card glass-card-hover",
-          isFirst ? "border-warning/45 bg-warning/10 shadow-lg shadow-warning/5" : "border-border/20 bg-card/20"
+          "w-full flex flex-col items-center justify-center gap-3 p-5 rounded-xl transition-colors card-base",
+          isFirst ? "border-warning/45 bg-warning/10 shadow-sm shadow-warning/5 md:min-h-[16rem]" : "md:min-h-[13rem]"
         )}
       >
         {/* Trophy icon */}

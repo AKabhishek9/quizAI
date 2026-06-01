@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { RotateCcw, Trophy, Flame } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LevelUpToast } from "@/components/shared/level-up-toast";
+import { QuizCelebration } from "@/components/quiz/quiz-celebration";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 
@@ -46,7 +47,7 @@ export function QuizCompletedState({
       <motion.div
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="max-w-3xl mx-auto text-center py-12"
+        className="relative max-w-3xl mx-auto text-center py-12"
       >
         <LevelUpToast
           show={showLevelToast}
@@ -54,7 +55,8 @@ export function QuizCompletedState({
           level={newLevel}
           xpGained={xpAwarded}
         />
-        
+        <QuizCelebration show={accuracy >= 80} />
+
         <div className="rounded-lg border border-border bg-card p-4">
           <div className={cn(
             "mb-4 mx-auto inline-flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary",

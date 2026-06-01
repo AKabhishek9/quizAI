@@ -106,10 +106,9 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-background relative overflow-hidden select-none">
-      {/* Dynamic ambient backgrounds */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden select-none -z-10">
-        <div className="absolute top-[-15%] left-[-15%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-primary/15 to-violet-500/10 blur-[130px] dark:from-primary/10 dark:to-violet-500/5 animate-pulse" style={{ animationDuration: "12s" }} />
-        <div className="absolute bottom-[-15%] right-[-15%] w-[55%] h-[55%] rounded-full bg-gradient-to-tl from-success/15 to-indigo-500/10 blur-[130px] dark:from-success/10 dark:to-indigo-500/5 animate-pulse" style={{ animationDuration: "16s" }} />
+      {/* Single subtle ambient background */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden select-none -z-10" aria-hidden="true">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] rounded-full bg-gradient-to-br from-primary/12 to-transparent blur-[130px] dark:from-primary/8" />
       </div>
 
       {/* Logo */}
@@ -151,14 +150,14 @@ export default function LoginPage() {
             <div className="space-y-1.5">
               <label
                 htmlFor="signup-name"
-                className="text-[11px] font-bold uppercase tracking-wider text-foreground"
+                className="text-xs font-bold uppercase tracking-wider text-foreground"
               >
                 Full Name
               </label>
               <input
                 id="signup-name"
                 type="text"
-                placeholder="John Doe"
+                placeholder="Enter your full name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required={!isLogin}
@@ -174,7 +173,7 @@ export default function LoginPage() {
           <div className="space-y-1.5">
             <label
               htmlFor="auth-email"
-              className="text-[11px] font-bold uppercase tracking-wider text-foreground"
+              className="text-xs font-bold uppercase tracking-wider text-foreground"
             >
               Email Address
             </label>
@@ -182,7 +181,7 @@ export default function LoginPage() {
               id="auth-email"
               type="email"
               autoComplete="email"
-              placeholder="name@institution.com"
+              placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -198,9 +197,9 @@ export default function LoginPage() {
             <div className="flex items-center justify-between">
               <label
                 htmlFor="auth-password"
-                className="text-[11px] font-bold uppercase tracking-wider text-foreground"
+                className="text-xs font-bold uppercase tracking-wider text-foreground"
               >
-                Passphrase
+                Password
               </label>
               {isLogin && (
                 <button
@@ -232,9 +231,11 @@ export default function LoginPage() {
             <motion.div
               initial={{ opacity: 0, x: -6 }}
               animate={{ opacity: 1, x: 0 }}
+              role="alert"
+              aria-live="polite"
               className="flex items-start gap-2 bg-destructive/5 border border-destructive/20 text-destructive text-xs px-3 py-2.5 rounded-lg"
             >
-              <AlertCircle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+              <AlertCircle className="h-3.5 w-3.5 mt-0.5 shrink-0" aria-hidden="true" />
               <p>{error}</p>
             </motion.div>
           )}

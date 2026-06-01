@@ -281,4 +281,51 @@
     border-bottom: 1px solid color-mix(in oklch, var(--border) 45%, transparent) !important;
     box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.02);
   }
+
+  /* ─── Content Surfaces (the default for NON-floating content) ─── */
+  /* Use these instead of glass-* on stats cards, panels, tables, feature cards. */
+  .card-base {
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+  }
+
+  .card-interactive {
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+  }
+  .card-interactive:hover {
+    border-color: color-mix(in oklch, var(--primary) 30%, transparent);
+  }
+
+  /* Canonical numeric treatment — scores, XP, ranks, timers */
+  .stat-number {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  /* Right-edge fade affordance for horizontally-scrollable tables.
+     Apply to a `position: relative` wrapper around an overflow-x-auto table. */
+  .scroll-fade-x {
+    position: relative;
+  }
+  .scroll-fade-x::after {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    right: 0;
+    width: 2rem;
+    background: linear-gradient(to left, var(--card), transparent);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card-interactive {
+      transition: none;
+    }
+  }
 }

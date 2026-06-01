@@ -28,7 +28,7 @@ export function StatsCard({
   return (
     <div
       className={cn(
-        "p-5 flex flex-col h-full min-w-0 glass-card glass-card-hover",
+        "p-5 flex flex-col h-full min-w-0 card-interactive",
         className
       )}
     >

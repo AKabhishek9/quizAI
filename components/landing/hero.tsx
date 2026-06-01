@@ -10,11 +10,9 @@ import { Container } from "@/components/layout/container";
 export function Hero() {
   return (
     <header className="relative overflow-hidden py-28 md:py-36">
-      {/* Ambient glow orbs */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-gradient-to-tr from-primary/20 to-violet-500/20 blur-[130px] dark:from-primary/10 dark:to-violet-500/10" />
-        <div className="absolute top-[20%] right-[-15%] w-[45%] h-[45%] rounded-full bg-gradient-to-br from-indigo-500/20 to-success/20 blur-[140px] dark:from-indigo-500/10 dark:to-success/10" />
-        <div className="absolute bottom-[-10%] left-[20%] w-[40%] h-[40%] rounded-full bg-gradient-to-tr from-primary/15 to-pink-500/15 blur-[120px] dark:from-primary/5 dark:to-pink-500/5" />
+      {/* Single subtle ambient glow (one texture for the whole page) */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden select-none" aria-hidden="true">
+        <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[70%] h-[55%] rounded-full bg-gradient-to-b from-primary/12 to-transparent blur-[130px] dark:from-primary/8" />
       </div>
 
       <Container className="relative z-10">
@@ -69,29 +67,26 @@ export function Hero() {
         {/* Product Preview */}
         <HeroProductPreview />
 
-        {/* Social Proof */}
+        {/* Trust bar — truthful, claim-based (no fabricated metrics) */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 0.6 }}
-          className="mt-20 pt-10 border-t border-border/30"
+          className="mt-20 pt-10 border-t border-border/60"
         >
-          <div className="flex flex-wrap items-center justify-center gap-10 md:gap-20">
+          <ul className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm text-muted-foreground">
             {[
-              { value: "2,000+", label: "Active learners" },
-              { value: "50k+", label: "Questions generated" },
-              { value: "4", label: "Daily quiz categories" },
-            ].map((stat) => (
-              <div key={stat.label} className="text-center">
-                <p className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">
-                  {stat.value}
-                </p>
-                <p className="text-xs md:text-sm text-muted-foreground mt-1">
-                  {stat.label}
-                </p>
-              </div>
+              "AI-powered questions",
+              "Adaptive to your level",
+              "New quizzes daily",
+              "Free forever",
+            ].map((claim, i) => (
+              <li key={claim} className="flex items-center gap-3">
+                {i > 0 && <span aria-hidden="true" className="hidden sm:inline text-border">·</span>}
+                <span className="font-medium text-foreground/80">{claim}</span>
+              </li>
             ))}
-          </div>
+          </ul>
         </motion.div>
       </Container>
     </header>

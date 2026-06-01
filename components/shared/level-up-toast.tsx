@@ -32,7 +32,7 @@ export function LevelUpToast({ level, xpGained, onClose, show }: LevelUpToastPro
             animate={{ opacity: 1, scale: 1, y: 0, rotateX: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20, transition: { duration: 0.2 } }}
             transition={{ type: "spring", damping: 15, stiffness: 200 }}
-            className="relative w-full max-w-lg bg-card border border-primary/20 rounded-[40px] shadow-glow-primary p-12 overflow-hidden pointer-events-auto elevated whisper-shadow"
+            className="relative w-full max-w-[min(32rem,100vw-1.5rem)] bg-card border border-primary/20 rounded-3xl shadow-glow-primary p-6 sm:p-12 overflow-hidden pointer-events-auto elevated whisper-shadow"
           >
             {/* Animated Background Particles */}
             <div className="absolute inset-0 overflow-hidden opacity-20">
@@ -64,9 +64,10 @@ export function LevelUpToast({ level, xpGained, onClose, show }: LevelUpToastPro
               variant="ghost"
               size="icon"
               onClick={onClose}
-              className="absolute top-6 right-6 p-2 rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground cursor-pointer"
+              aria-label="Close"
+              className="absolute top-4 right-4 sm:top-6 sm:right-6 p-2 rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground cursor-pointer"
             >
-              <X className="w-5 h-5" />
+              <X className="w-5 h-5" aria-hidden="true" />
             </Button>
 
             <div className="relative z-10 text-center space-y-8">
@@ -79,8 +80,8 @@ export function LevelUpToast({ level, xpGained, onClose, show }: LevelUpToastPro
                   className="relative"
                 >
                   <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full" />
-                  <div className="relative w-32 h-32 rounded-full bg-gradient-to-br from-primary to-primary-foreground flex items-center justify-center border-4 border-background shadow-xl">
-                    <span className="text-4xl font-black text-background">
+                  <div className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-gradient-to-br from-primary to-primary-foreground flex items-center justify-center border-4 border-background shadow-xl">
+                    <span className="text-3xl sm:text-4xl font-black text-background tabular-nums">
                       {level}
                     </span>
                   </div>
@@ -99,11 +100,11 @@ export function LevelUpToast({ level, xpGained, onClose, show }: LevelUpToastPro
                   transition={{ delay: 0.3 }}
                 >
                   <h2 className="text-3xl font-black tracking-tight flex items-center justify-center gap-3 font-heading">
-                    <Trophy className="w-8 h-8 text-warning" />
-                    LEVEL UP!
+                    <Trophy className="w-8 h-8 text-warning" aria-hidden="true" />
+                    Level Up!
                   </h2>
                   <p className="text-muted-foreground text-lg">
-                    Your skills are evolving. Technical mastery attained.
+                    You&apos;ve reached Level {level}. Keep the momentum going!
                   </p>
                 </motion.div>
               </div>
@@ -126,10 +127,10 @@ export function LevelUpToast({ level, xpGained, onClose, show }: LevelUpToastPro
                 </div>
                 <div className="bg-muted/50 rounded-2xl p-4 border border-border/50">
                   <div className="text-xs uppercase tracking-wider text-muted-foreground font-bold mb-1">
-                    Progression
+                    Next level
                   </div>
-                  <div className="text-2xl font-black flex items-center justify-center gap-1">
-                    Next Level
+                  <div className="text-2xl font-black flex items-center justify-center gap-1 tabular-nums">
+                    Lvl {level + 1}
                   </div>
                 </div>
               </motion.div>
@@ -143,7 +144,7 @@ export function LevelUpToast({ level, xpGained, onClose, show }: LevelUpToastPro
                   onClick={onClose}
                   className="w-full h-14 rounded-2xl text-lg font-bold group"
                 >
-                  CONTINUE ASCENT
+                  Continue
                   <ArrowRight className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" />
                 </Button>
               </motion.div>

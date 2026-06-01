@@ -45,12 +45,6 @@ export default function QuizCatalogPage() {
 
   return (
     <div className="space-y-6 relative">
-      {/* Dynamic ambient flows for quiz list */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden select-none -z-10">
-        <div className="absolute top-[-5%] right-[-5%] w-[350px] h-[350px] rounded-full bg-gradient-to-tr from-success/10 to-transparent blur-[110px] dark:from-success/5" />
-        <div className="absolute bottom-[20%] left-[-10%] w-[300px] h-[300px] rounded-full bg-gradient-to-br from-primary/10 to-transparent blur-[110px] dark:from-primary/5" />
-      </div>
-
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 relative z-10">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground font-heading">Daily Quests</h1>
@@ -69,7 +63,7 @@ export default function QuizCatalogPage() {
           ))}
         </div>
       ) : quizzes.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-center rounded-xl border border-dashed border-border bg-card px-4 glass-card">
+        <div className="flex flex-col items-center justify-center py-20 text-center rounded-xl border border-dashed border-border bg-card px-4">
           <Clock className="h-10 w-10 text-muted-foreground mb-4" />
           <h2 className="text-lg font-semibold text-foreground font-heading">Daily quests are being prepared</h2>
           <p className="text-sm text-muted-foreground mt-2 max-w-xs">
@@ -92,7 +86,7 @@ export default function QuizCatalogPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.07 }}
                 onClick={() => router.push(`/quiz/daily/${key}`)}
-                className="w-full text-left p-5 transition-all group cursor-pointer glass-card glass-card-hover"
+                className="w-full text-left p-5 group cursor-pointer card-interactive"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className={`p-2.5 rounded-lg bg-card/45 border border-border/20 ${config.color}`}>
@@ -109,7 +103,7 @@ export default function QuizCatalogPage() {
                     {quiz.questionCount} questions
                   </span>
                   <span className="text-xs font-semibold text-success bg-success/15 px-2.5 py-1 rounded-md border border-success/20">
-                    +{quiz.questionCount * 10} XP
+                    +50–100 XP
                   </span>
                   <span className="text-xs font-semibold text-warning bg-warning/15 px-2.5 py-1 rounded-md border border-warning/20">
                     Mixed
