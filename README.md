@@ -21,7 +21,7 @@ QuizAI is a modern, AI-powered learning platform that generates personalized qui
 
 1. **Clone the repo**:
    ```bash
-   git clone <your-repo-url>
+   git clone <repo-url>
    ```
 
 2. **Frontend Setup**:
