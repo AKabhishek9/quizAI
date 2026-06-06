@@ -38,7 +38,9 @@ export function isNavActive(pathname: string, href: string): boolean {
 export function isImmersiveRoute(pathname: string): boolean {
   return (
     pathname === "/quiz/play" ||
+    pathname === "/quiz/topic" ||
     pathname.startsWith("/quiz/daily/") ||
-    pathname.startsWith("/quiz/review/")
+    pathname.startsWith("/quiz/review/") ||
+    pathname.startsWith("/result/")
   );
 }
