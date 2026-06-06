@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { ThemeToggle } from "./theme-toggle";
 import { UserMenu } from "./user-menu";
 import { platformNavLinks, isNavActive } from "./nav-config";
+import { useNavVisibility } from "@/hooks/use-nav-visibility";
 
 function Brand() {
   return (
@@ -33,9 +34,15 @@ function Brand() {
 
 export function TopNav() {
   const pathname = usePathname();
+  const visible = useNavVisibility();
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50">
+    <header
+      className={cn(
+        "fixed inset-x-0 top-0 z-50 transition-transform duration-300 ease-out will-change-transform motion-reduce:transition-none",
+        visible ? "translate-y-0" : "-translate-y-[130%] pointer-events-none"
+      )}
+    >
       {/* ── Desktop: floating centered pill ── */}
       <div className="relative mx-auto hidden h-20 max-w-[1600px] items-center px-6 lg:flex">
         <Brand />

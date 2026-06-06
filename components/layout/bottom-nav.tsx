@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { platformNavLinks, isNavActive } from "./nav-config";
+import { useNavVisibility } from "@/hooks/use-nav-visibility";
 
 /**
  * BottomNav — mobile floating navigation bar. Thumb-friendly, fixed to the
@@ -11,11 +12,15 @@ import { platformNavLinks, isNavActive } from "./nav-config";
  */
 export function BottomNav() {
   const pathname = usePathname();
+  const visible = useNavVisibility();
 
   return (
     <nav
       aria-label="Primary"
-      className="fixed inset-x-0 bottom-0 z-50 lg:hidden"
+      className={cn(
+        "fixed inset-x-0 bottom-0 z-50 transition-transform duration-300 ease-out will-change-transform motion-reduce:transition-none lg:hidden",
+        visible ? "translate-y-0" : "translate-y-[130%] pointer-events-none"
+      )}
       style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
     >
       <div className="glass-nav mx-3 flex items-center justify-between gap-0.5 rounded-2xl p-1.5">
