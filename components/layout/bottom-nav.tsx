@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { platformNavLinks, isNavActive } from "./nav-config";
+import { platformNavLinks, isNavActive, isImmersiveRoute } from "./nav-config";
 import { useNavVisibility } from "@/hooks/use-nav-visibility";
 
 /**
@@ -13,6 +13,9 @@ import { useNavVisibility } from "@/hooks/use-nav-visibility";
 export function BottomNav() {
   const pathname = usePathname();
   const visible = useNavVisibility();
+
+  // Quiz-taking and review screens are immersive — no nav at all.
+  if (isImmersiveRoute(pathname)) return null;
 
   return (
     <nav

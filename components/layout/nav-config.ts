@@ -29,3 +29,16 @@ export const platformNavLinks: PlatformNavLink[] = [
 export function isNavActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(href + "/");
 }
+
+/**
+ * Immersive routes hide the navigation entirely — while taking a quiz or
+ * reviewing answers the nav is a distraction and a mis-tap hazard, so it's
+ * removed completely (not just auto-hidden).
+ */
+export function isImmersiveRoute(pathname: string): boolean {
+  return (
+    pathname === "/quiz/play" ||
+    pathname.startsWith("/quiz/daily/") ||
+    pathname.startsWith("/quiz/review/")
+  );
+}

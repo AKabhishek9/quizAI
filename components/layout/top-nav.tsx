@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "./theme-toggle";
 import { UserMenu } from "./user-menu";
-import { platformNavLinks, isNavActive } from "./nav-config";
+import { platformNavLinks, isNavActive, isImmersiveRoute } from "./nav-config";
 import { useNavVisibility } from "@/hooks/use-nav-visibility";
 
 function Brand() {
@@ -35,6 +35,9 @@ function Brand() {
 export function TopNav() {
   const pathname = usePathname();
   const visible = useNavVisibility();
+
+  // Quiz-taking and review screens are immersive — no nav at all.
+  if (isImmersiveRoute(pathname)) return null;
 
   return (
     <header

@@ -1,16 +1,22 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { TopNav } from "@/components/layout/top-nav";
 import { BottomNav } from "@/components/layout/bottom-nav";
 import { ProtectedRoute } from "@/components/auth/protected-route";
 import { PageTransition } from "@/components/shared/page-transition";
 import { Container } from "@/components/layout/container";
+import { isImmersiveRoute } from "@/components/layout/nav-config";
+import { cn } from "@/lib/utils";
 
 export default function PlatformLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  const immersive = isImmersiveRoute(pathname);
+
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-background">
@@ -24,7 +30,11 @@ export default function PlatformLayout({
         <TopNav />
 
         <main id="platform-main" className="relative">
-          <Container className="pt-24 pb-28 lg:pt-28 lg:pb-12">
+          <Container
+            className={cn(
+              immersive ? "py-6" : "pt-24 pb-28 lg:pt-28 lg:pb-12"
+            )}
+          >
             <PageTransition>{children}</PageTransition>
           </Container>
         </main>
