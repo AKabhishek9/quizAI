@@ -93,15 +93,15 @@ function TopicSelectionEngine() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto py-12 px-4 space-y-8">
-      <div className="text-center space-y-4">
-        <Badge variant="outline" className="mb-2 bg-secondary text-secondary-foreground uppercase tracking-wider text-[10px]">
+    <div className="max-w-3xl mx-auto py-12 px-4 space-y-6">
+      <div className="text-center space-y-3">
+        <Badge variant="outline" className="bg-secondary text-secondary-foreground uppercase tracking-wider text-[10px]">
           {stream}
         </Badge>
         <motion.h1
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-3xl font-semibold tracking-tight font-heading"
+          className="font-heading text-2xl font-bold tracking-tight"
         >
           Select Your Topics
         </motion.h1>
@@ -119,16 +119,14 @@ function TopicSelectionEngine() {
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.2 }}
-        className="bg-card border border-border rounded-2xl p-4 sm:p-8 elevated space-y-8 relative overflow-hidden"
+        className="card-base p-4 sm:p-6 space-y-6"
       >
-        <div className="absolute inset-0 mesh-gradient opacity-[0.03] pointer-events-none" />
-
-        <div className="relative z-10 space-y-3">
-          <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        <div className="space-y-3">
+          <label className="font-heading text-sm font-medium text-foreground">
             Search or Type Custom Topic
           </label>
           <div className="flex flex-col sm:flex-row gap-2">
-            <div className="relative flex-1">
+            <div className="relative flex-1 min-w-0">
               <Zap className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary" />
               <Input
                 placeholder='e.g., "DynamoDB", "Cold War history", "Thermodynamics"'
@@ -136,33 +134,33 @@ function TopicSelectionEngine() {
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={handleKeyDown}
                 disabled={topics.length >= 5}
-                className="pl-9 h-11 border-border/60 bg-background/50 focus:bg-background"
+                className="pl-9 h-11 bg-muted border-border"
               />
             </div>
             <Button
               onClick={() => addTopic(inputValue)}
               disabled={!inputValue.trim() || topics.length >= 5}
-              className="h-11 px-6 shadow-sm w-full sm:w-auto"
+              className="h-11 px-6 w-full sm:w-auto"
             >
               <Plus className="w-4 h-4 mr-1" />
               Add
             </Button>
           </div>
-          <p className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+          <p className="text-xs text-muted-foreground flex items-center gap-1.5">
             <Lightbulb className="w-3 h-3" />
             Press enter to add multiple topics quickly. Max 5 topics.
           </p>
         </div>
 
-        <div className="relative z-10 bg-background/40 border border-border/40 rounded-xl p-4 sm:p-5 min-h-[120px]">
+        <div className="bg-muted border border-border rounded-xl p-4 sm:p-5 min-h-[120px]">
           {topics.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-center space-y-2 opacity-60 pt-3">
+            <div className="flex flex-col items-center justify-center h-full text-center space-y-2 text-muted-foreground pt-3">
               <p className="text-sm">Your topic list is empty.</p>
-              <p className="text-xs text-muted-foreground">Select from suggestions below or type your own.</p>
+              <p className="text-xs">Select from suggestions below or type your own.</p>
             </div>
           ) : (
-            <div className="flex items-center gap-4 flex-wrap">
-              <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest shrink-0">
+            <div className="flex items-center gap-3 flex-wrap">
+              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider shrink-0">
                 Topics ({topics.length}/5):
               </span>
               <AnimatePresence>
@@ -172,14 +170,14 @@ function TopicSelectionEngine() {
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.8 }}
-                    className="bg-primary text-primary-foreground px-3 py-1.5 rounded-full text-sm font-medium flex items-center gap-2 shadow-sm"
+                    className="border border-primary bg-primary/10 text-primary px-3 py-1.5 rounded-full text-sm font-medium flex items-center gap-2 max-w-full"
                   >
-                    {topic}
+                    <span className="truncate">{topic}</span>
                     <button
                       type="button"
                       onClick={() => removeTopic(topic)}
                       aria-label={`Remove ${topic}`}
-                      className="opacity-70 hover:opacity-100 transition-opacity bg-primary-foreground/10 rounded-full p-0.5"
+                      className="opacity-70 hover:opacity-100 transition-opacity rounded-full p-0.5 shrink-0"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
@@ -190,8 +188,8 @@ function TopicSelectionEngine() {
           )}
         </div>
 
-        <div className="relative z-10 space-y-3">
-          <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        <div className="space-y-3">
+          <label className="font-heading text-sm font-medium text-foreground">
             Difficulty Level
           </label>
           <div className="flex gap-2 flex-wrap">
@@ -208,7 +206,7 @@ function TopicSelectionEngine() {
                       : opt.label === "medium"
                       ? "bg-warning/10 border-warning/40 text-warning"
                       : "bg-destructive/10 border-destructive/40 text-destructive"
-                    : "bg-secondary/50 border-border/50 text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    : "border-border text-muted-foreground hover:border-primary/40 hover:text-foreground"
                 )}
                 aria-pressed={difficulty === opt.label}
               >
@@ -226,8 +224,8 @@ function TopicSelectionEngine() {
           </div>
         </div>
 
-        <div className="relative z-10 space-y-3">
-          <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        <div className="space-y-3">
+          <label className="font-heading text-sm font-medium text-foreground">
             Suggested for {stream}
           </label>
           <div className="flex flex-wrap gap-2">
@@ -237,7 +235,7 @@ function TopicSelectionEngine() {
                 type="button"
                 onClick={() => addTopic(suggestion)}
                 disabled={topics.length >= 5}
-                className="bg-secondary text-secondary-foreground hover:bg-secondary/80 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="border border-border text-muted-foreground hover:border-primary/40 hover:text-foreground px-3 py-1.5 rounded-lg text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 + {suggestion}
               </button>
@@ -245,7 +243,7 @@ function TopicSelectionEngine() {
           </div>
         </div>
 
-        <div className="relative z-10 pt-6 border-t border-border/50 flex flex-col-reverse sm:flex-row gap-3 sm:justify-between sm:items-center">
+        <div className="pt-6 border-t border-border flex flex-col-reverse sm:flex-row gap-3 sm:justify-between sm:items-center">
           <Button
             variant="ghost"
             onClick={() => router.back()}
@@ -256,9 +254,9 @@ function TopicSelectionEngine() {
           <Button
             onClick={generateQuiz}
             disabled={topics.length === 0}
-            className="h-10 px-8 font-medium glow shadow-xl shadow-primary/20"
+            className="h-10 px-8 font-medium"
           >
-            Generate Protocol
+            Generate Quiz
             <ArrowRight className="ml-2 w-4 h-4" />
           </Button>
         </div>

@@ -79,7 +79,7 @@ export default function ResultPage({
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-xl border border-border bg-card p-5 sm:p-7 text-center"
+        className="p-5 text-center card-base sm:p-7"
       >
         <DifficultyBadge difficulty={attempt.difficulty} className="mb-3" />
         <p className="text-sm font-medium mb-4 text-muted-foreground">
@@ -90,7 +90,7 @@ export default function ResultPage({
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.15, duration: 0.4 }}
-          className={cn("text-5xl font-semibold tracking-tight mb-1", scoreColor)}
+          className={cn("text-4xl font-semibold tracking-tight mb-1 stat-number", scoreColor)}
           aria-label={`Final score ${attempt.score} percent`}
         >
           {attempt.score}%
@@ -138,7 +138,7 @@ export default function ResultPage({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="rounded-xl border border-border bg-card p-5"
+          className="p-5 card-base"
         >
           <h3 className="text-sm font-semibold mb-3">Areas to improve</h3>
           <div className="flex flex-wrap gap-1.5">
@@ -159,7 +159,7 @@ export default function ResultPage({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3 }}
-        className="rounded-xl border border-border bg-card p-5"
+        className="p-5 card-base"
       >
         <h3 className="text-sm font-semibold mb-3">Summary</h3>
         <div className="grid grid-cols-2 gap-3">

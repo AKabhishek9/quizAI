@@ -20,7 +20,7 @@ export default function PricingPage() {
 
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Free Plan */}
-            <div className="rounded-2xl border border-border bg-card p-8 shadow-sm flex flex-col">
+            <div className="card-base p-8 flex flex-col">
               <h3 className="text-2xl font-bold mb-2">Basic</h3>
               <p className="text-muted-foreground mb-6 text-sm">Perfect for casual learners.</p>
               <div className="mb-6">
@@ -41,14 +41,14 @@ export default function PricingPage() {
                 ))}
               </ul>
               <Link href="/login" className="mt-auto">
-                <Button variant="outline" className="w-full rounded-xl h-11 border-border">
+                <Button variant="outline" className="w-full rounded-lg h-11 border-border">
                   Get Started Free
                 </Button>
               </Link>
             </div>
 
             {/* Pro Plan */}
-            <div className="rounded-2xl border-2 border-primary bg-card p-8 shadow-md relative flex flex-col">
+            <div className="card-base border-primary bg-primary/5 p-8 relative flex flex-col">
               <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 px-3 py-1 bg-primary text-primary-foreground text-xs font-bold uppercase tracking-wider rounded-full">
                 Most Popular
               </div>
@@ -73,7 +73,7 @@ export default function PricingPage() {
                 ))}
               </ul>
               <Link href="/login" className="mt-auto">
-                <Button className="w-full rounded-xl h-11 bg-primary text-primary-foreground hover:bg-primary/90">
+                <Button className="w-full rounded-lg h-11 bg-primary text-primary-foreground hover:bg-primary-hover">
                   Upgrade to Pro
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>

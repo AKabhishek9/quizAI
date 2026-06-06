@@ -76,11 +76,11 @@ export function Features() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.07, duration: 0.5 }}
-              className="group relative rounded-2xl p-6 card-interactive"
+              className="group relative p-6 card-interactive"
             >
               {/* Icon */}
-              <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/10 flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-105">
-                <feature.icon className="h-5 w-5 text-primary" />
+              <div className="w-10 h-10 rounded-lg bg-muted border border-border flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-105">
+                <feature.icon className="h-5 w-5 text-foreground" />
               </div>
 
               <h3 className="text-[15px] font-semibold tracking-tight text-foreground mb-2 font-heading">

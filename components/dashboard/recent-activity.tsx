@@ -8,25 +8,16 @@ interface RecentActivityProps {
   attempts: QuizAttempt[];
 }
 
-// Deterministic colour from a string — cycles through a set of tailwind colours
-const COLOURS = [
-  "bg-primary text-primary-foreground",
-  "bg-success text-success-foreground",
-  "bg-warning text-warning-foreground",
-  "bg-destructive text-destructive-foreground",
-  "bg-secondary text-secondary-foreground",
-];
-
-function dotColour(title: string) {
-  let h = 0;
-  for (let i = 0; i < title.length; i++) h = (h * 31 + title.charCodeAt(i)) >>> 0;
-  return COLOURS[h % COLOURS.length];
-}
-
 function statusLabel(score: number) {
   if (score >= 80) return "Completed quiz";
   if (score >= 50) return "Mixed";
   return "Incomplete";
+}
+
+function scoreColour(score: number) {
+  if (score >= 80) return "text-success";
+  if (score >= 50) return "text-primary";
+  return "text-muted-foreground";
 }
 
 export function RecentActivity({ attempts }: RecentActivityProps) {
@@ -44,7 +35,6 @@ export function RecentActivity({ attempts }: RecentActivityProps) {
 
       <ul className="flex flex-col">
         {attempts.slice(0, 5).map((attempt, index) => {
-          const colour = dotColour(attempt.quizTitle);
           const status = statusLabel(attempt.score);
           return (
             <motion.li
@@ -52,26 +42,28 @@ export function RecentActivity({ attempts }: RecentActivityProps) {
               initial={{ opacity: 0, x: 6 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.05 }}
-              className="flex items-center gap-3 py-2 border-b border-border last:border-0"
+              className="flex items-center gap-3 border-b border-border py-2 last:border-0"
             >
-              {/* Coloured icon square — decorative; title is shown as text */}
+              {/* Neutral icon square — decorative; title is shown as text */}
               <div
                 aria-hidden="true"
-                className={cn(
-                  "h-8 w-8 rounded-md shrink-0 flex items-center justify-center text-[10px] font-bold",
-                  colour
-                )}
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted text-[11px] font-bold text-foreground"
               >
                 {attempt.quizTitle.slice(0, 1).toUpperCase()}
               </div>
 
               {/* Title + status */}
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-foreground truncate leading-tight" title={attempt.quizTitle}>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium leading-tight text-foreground" title={attempt.quizTitle}>
                   {attempt.quizTitle}
                 </p>
-                <p className="text-[11px] text-muted-foreground mt-0.5">{status}</p>
+                <p className="mt-0.5 text-[11px] text-muted-foreground">{status}</p>
               </div>
+
+              {/* Score */}
+              <span className={cn("shrink-0 text-sm font-semibold tabular-nums", scoreColour(attempt.score))}>
+                {attempt.score}%
+              </span>
             </motion.li>
           );
         })}

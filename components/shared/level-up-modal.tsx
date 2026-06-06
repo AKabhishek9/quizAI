@@ -33,7 +33,7 @@ export function LevelUpModal({ isOpen, onClose, newLevel, xpGained = 50 }: Level
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-md bg-card border-border p-0 overflow-hidden rounded-3xl whisper-shadow">
+      <DialogContent className="sm:max-w-md bg-popover border-border p-0 overflow-hidden rounded-xl whisper-shadow">
         <div className="relative p-6 sm:p-10 flex flex-col items-center text-center">
           {/* Animated Background Elements */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -56,7 +56,7 @@ export function LevelUpModal({ isOpen, onClose, newLevel, xpGained = 50 }: Level
                   animate={{ scale: 1, rotate: 0 }}
                   className="relative mb-8"
                 >
-                  <div className="w-24 h-24 rounded-[32px] bg-primary/10 flex items-center justify-center border-4 border-card shadow-soft relative z-10">
+                  <div className="w-24 h-24 rounded-2xl bg-primary/10 flex items-center justify-center border-4 border-popover shadow-soft relative z-10">
                     <Trophy className="text-primary h-12 w-12" />
                   </div>
                   {/* Floating particles */}
@@ -84,32 +84,32 @@ export function LevelUpModal({ isOpen, onClose, newLevel, xpGained = 50 }: Level
                 >
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/5 border border-primary/20 mb-4">
                     <Sparkles className="h-3 w-3 text-primary" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-primary">New level reached</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-primary">New level reached</span>
                   </div>
 
-                  <h2 className="text-4xl font-black tracking-tighter text-foreground font-heading mb-2">
+                  <h2 className="text-3xl font-bold tracking-tight text-foreground font-heading mb-2">
                     Level Up!
                   </h2>
-                  <p className="text-muted-foreground font-bold text-sm mb-8 px-4 sm:px-8">
+                  <p className="text-muted-foreground text-sm mb-8 px-4 sm:px-8">
                     Great work — you&apos;ve reached <span className="text-foreground">Level {newLevel}</span>. Keep practicing to climb even higher.
                   </p>
 
                   {/* XP Summary Card */}
-                  <div className="bg-muted/30 border border-border/50 rounded-2xl p-4 mb-8 flex items-center justify-between w-full max-w-xs mx-auto">
+                  <div className="bg-muted/40 border border-border rounded-xl p-4 mb-8 flex items-center justify-between w-full max-w-xs mx-auto">
                     <div className="text-left">
-                      <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground/50 leading-none mb-1">XP earned</p>
-                      <p className="text-xl font-black tabular-nums">+{xpGained}</p>
+                      <p className="text-[10px] uppercase font-semibold tracking-widest text-muted-foreground leading-none mb-1">XP earned</p>
+                      <p className="text-xl font-bold tabular-nums text-primary">+{xpGained}</p>
                     </div>
-                    <div className="h-10 w-px bg-border/40" />
+                    <div className="h-10 w-px bg-border" />
                     <div className="text-right">
-                      <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground/50 leading-none mb-1">Next level</p>
-                      <p className="text-xl font-black tabular-nums">Lvl {newLevel + 1}</p>
+                      <p className="text-[10px] uppercase font-semibold tracking-widest text-muted-foreground leading-none mb-1">Next level</p>
+                      <p className="text-xl font-bold tabular-nums text-foreground">Lvl {newLevel + 1}</p>
                     </div>
                   </div>
 
                   <Button
                     onClick={onClose}
-                    className="w-full h-14 rounded-full font-black tracking-tighter group transition-all active:scale-[0.98] shadow-glow-primary"
+                    className="w-full h-12 rounded-lg font-semibold group transition-all active:scale-[0.98] hover:bg-primary-hover shadow-glow-primary"
                   >
                     Continue
                     <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />

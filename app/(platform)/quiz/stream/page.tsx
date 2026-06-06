@@ -16,40 +16,35 @@ const STREAMS = [
     name: "General",
     description: "Aptitude, current affairs, everyday knowledge, and reasoning",
     icon: Globe2,
-    color: "from-primary/10 to-primary/5",
-    iconColor: "text-primary",
+    chip: "bg-primary/15 text-primary",
   },
   {
     id: "tech",
     name: "Tech & Software",
     description: "Computer Science, Programming, AI, and Architecture",
     icon: MonitorSmartphone,
-    color: "from-primary/10 to-primary/5",
-    iconColor: "text-primary",
+    chip: "bg-primary/15 text-primary",
   },
   {
     id: "science",
     name: "Pure Sciences",
     description: "Physics, Chemistry, Biology, and Astronomy",
     icon: FlaskConical,
-    color: "from-success/10 to-success/5",
-    iconColor: "text-success",
+    chip: "bg-success/15 text-success",
   },
   {
     id: "commerce",
     name: "Commerce & Finance",
     description: "Accounts, Economics, Business, and Markets",
     icon: LineChart,
-    color: "from-warning/10 to-warning/5",
-    iconColor: "text-warning",
+    chip: "bg-warning/15 text-warning",
   },
   {
     id: "humanities",
     name: "Humanities & General",
     description: "History, Geography, Politics, and Arts",
     icon: Library,
-    color: "from-destructive/10 to-destructive/5",
-    iconColor: "text-destructive",
+    chip: "bg-destructive/15 text-destructive",
   },
 ];
 
@@ -61,12 +56,12 @@ export default function StreamSelectionPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-12 px-4 space-y-12">
-      <div className="text-center space-y-4">
+    <div className="max-w-4xl mx-auto py-12 px-4 space-y-8">
+      <div className="text-center space-y-2">
         <motion.h1
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-3xl font-semibold tracking-tight font-heading"
+          className="font-heading text-2xl font-bold tracking-tight"
         >
           Select Your Domain
         </motion.h1>
@@ -80,7 +75,7 @@ export default function StreamSelectionPage() {
         </motion.p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {STREAMS.map((stream, idx) => {
           const Icon = stream.icon;
           return (
@@ -91,16 +86,14 @@ export default function StreamSelectionPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15 + idx * 0.05 }}
               onClick={() => handleSelect(stream.name)}
-              className="group relative bg-card border border-border rounded-2xl p-6 text-left overflow-hidden transition-all hover:shadow-xl hover:shadow-primary/5 hover:border-primary/30"
+              className="card-interactive group p-5 text-left cursor-pointer"
             >
-              <div className={`absolute inset-0 bg-gradient-to-br ${stream.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-
-              <div className="relative z-10 flex items-start gap-5">
-                <div className={`p-3 rounded-xl bg-background border border-border shadow-sm ${stream.iconColor} group-hover:scale-110 transition-transform duration-300`}>
-                  <Icon className="w-6 h-6" />
+              <div className="flex items-start gap-4 min-w-0">
+                <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${stream.chip}`}>
+                  <Icon className="h-5 w-5" />
                 </div>
-                <div>
-                  <h3 className="text-xl font-medium tracking-tight mb-1 font-heading">{stream.name}</h3>
+                <div className="min-w-0">
+                  <h3 className="font-heading text-base font-medium tracking-tight mb-1 truncate">{stream.name}</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">{stream.description}</p>
                 </div>
               </div>

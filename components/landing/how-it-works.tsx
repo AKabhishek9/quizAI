@@ -56,7 +56,7 @@ export function HowItWorks() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 + 0.15, duration: 0.5 }}
-              className="relative rounded-2xl p-6 card-interactive"
+              className="relative p-6 card-interactive"
             >
               {/* Step label */}
               <span className="text-[10px] font-bold tracking-widest text-primary uppercase mb-4 block">

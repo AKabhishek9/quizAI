@@ -139,7 +139,7 @@ export default function ReviewPage({ params }: ReviewPageProps) {
       <motion.div 
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-2xl border border-border bg-card/50 backdrop-blur-md p-8 elevated mb-10 overflow-hidden relative"
+        className="relative mb-10 overflow-hidden p-6 card-base sm:p-8"
       >
         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl" />
         <div className="absolute bottom-0 left-0 w-24 h-24 bg-success/5 rounded-full -ml-12 -mb-12 blur-2xl" />
@@ -150,7 +150,7 @@ export default function ReviewPage({ params }: ReviewPageProps) {
                 <Target className="h-4 w-4" />
                 <span className="text-[11px] font-bold uppercase tracking-wider">Final Score</span>
              </div>
-             <div className="text-5xl font-black tracking-tighter">
+             <div className="text-4xl font-semibold tracking-tight stat-number">
                 {attempt.score}%
              </div>
              <p className="text-xs text-muted-foreground mt-2">
@@ -200,8 +200,8 @@ export default function ReviewPage({ params }: ReviewPageProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.05 }}
             className={cn(
-                "rounded-xl border bg-card p-6 elevated-sm transition-all relative overflow-hidden",
-                answer.isCorrect ? "border-success/20" : "border-destructive/20"
+                "relative overflow-hidden p-5 transition-all card-base sm:p-6",
+                answer.isCorrect ? "border-success/30" : "border-destructive/30"
             )}
           >
             {/* Status indicator line */}
@@ -242,32 +242,32 @@ export default function ReviewPage({ params }: ReviewPageProps) {
                 const isCorrectAnswer = (answer.question?.answer ?? -1) === optIdx;
                 
                 return (
-                  <div 
+                  <div
                     key={optIdx}
                     className={cn(
-                        "text-sm p-3.5 rounded-lg border transition-all flex items-center justify-between",
-                        isCorrectAnswer 
-                            ? "bg-success border-success/60 text-white font-semibold" 
+                        "flex items-center justify-between rounded-xl border p-3.5 text-sm transition-all",
+                        isCorrectAnswer
+                            ? "border-success/40 bg-success/10 font-semibold text-success"
                             : isSelected && !answer.isCorrect
-                                ? "bg-destructive border-destructive/40 text-white"
-                                : "bg-background border-border text-muted-foreground hover:border-foreground/20"
+                                ? "border-destructive/40 bg-destructive/10 font-medium text-destructive"
+                                : "border-border bg-background text-muted-foreground hover:border-foreground/20"
                     )}
                   >
                     <div className="flex items-center gap-3">
                         <span className={cn(
-                            "w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-bold shadow-sm",
-                            isCorrectAnswer ? "bg-gradient-to-br from-success to-success/80 text-white" : 
-                            isSelected ? "bg-gradient-to-br from-destructive to-destructive/80 text-white" : "bg-secondary text-secondary-foreground"
+                            "flex h-6 w-6 items-center justify-center rounded-lg text-[10px] font-bold",
+                            isCorrectAnswer ? "bg-success text-success-foreground" :
+                            isSelected && !answer.isCorrect ? "bg-destructive text-destructive-foreground" : "bg-muted text-muted-foreground"
                         )}>
                             {String.fromCharCode(65 + optIdx)}
                         </span>
                         {opt}
                     </div>
                     {isCorrectAnswer && (
-                        <CheckCircle2 className="h-4 w-4 text-white" />
+                        <CheckCircle2 className="h-4 w-4 text-success shrink-0" />
                     )}
                     {isSelected && !answer.isCorrect && (
-                        <span className="text-[10px] uppercase font-bold text-white">Your Choice</span>
+                        <span className="text-[10px] uppercase font-bold text-destructive shrink-0">Your Choice</span>
                     )}
                   </div>
                 );

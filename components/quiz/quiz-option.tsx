@@ -41,10 +41,10 @@ export function QuizOption({
       onClick={() => !disabled && onSelect(option.id)}
       disabled={disabled}
       className={cn(
-        "w-full flex items-center gap-3 py-2 px-3 rounded-lg border text-left transition-all duration-150 cursor-pointer overflow-hidden leading-tight",
+        "flex w-full cursor-pointer items-center gap-3 overflow-hidden rounded-xl border px-3.5 py-3 text-left leading-tight transition-all duration-150",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         // Default
-        !isSelected && !isRevealed && "border-border bg-card hover:bg-accent hover:border-border",
+        !isSelected && !isRevealed && "border-border bg-card hover:border-primary/40 hover:bg-accent",
         // Selected
         isSelected && !isRevealed && "border-primary bg-primary/10",
         // Correct
@@ -64,7 +64,7 @@ export function QuizOption({
         animate={{ scale: 1 }}
         transition={{ duration: 0.12 }}
         className={cn(
-          "flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-xs font-semibold transition-colors duration-150",
+          "flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-semibold transition-colors duration-150",
           !isSelected && !isRevealed && "bg-muted text-muted-foreground",
           isSelected && !isRevealed && "bg-primary text-primary-foreground",
           isThisCorrectAnswer && "bg-success text-success-foreground",

@@ -46,7 +46,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8 pb-20">
+    <div className="max-w-3xl mx-auto space-y-6 pb-20">
       <div className="space-y-1">
         <h1 className="text-2xl font-bold tracking-tight text-foreground font-heading">Settings</h1>
         <p className="text-sm text-muted-foreground">Manage your profile, appearance, and account.</p>
@@ -55,7 +55,7 @@ export default function SettingsPage() {
       {/* Profile */}
       <section className="card-base p-6 space-y-5">
         <div>
-          <h2 className="text-base font-semibold text-foreground font-heading">Profile</h2>
+          <h2 className="font-heading text-sm font-medium text-foreground">Profile</h2>
           <p className="text-xs text-muted-foreground mt-0.5">How your name appears across QuizAI.</p>
         </div>
         <div className="flex flex-col sm:flex-row sm:items-end gap-5">
@@ -91,7 +91,7 @@ export default function SettingsPage() {
       {/* Appearance */}
       <section className="card-base p-6 space-y-5">
         <div>
-          <h2 className="text-base font-semibold text-foreground font-heading">Appearance</h2>
+          <h2 className="font-heading text-sm font-medium text-foreground">Appearance</h2>
           <p className="text-xs text-muted-foreground mt-0.5">Choose how QuizAI looks on this device.</p>
         </div>
         <div
@@ -130,7 +130,7 @@ export default function SettingsPage() {
       {/* Account */}
       <section className="card-base p-6 space-y-5">
         <div>
-          <h2 className="text-base font-semibold text-foreground font-heading">Account</h2>
+          <h2 className="font-heading text-sm font-medium text-foreground">Account</h2>
           <p className="text-xs text-muted-foreground mt-0.5">Your sign-in details.</p>
         </div>
         <div className="space-y-2">
@@ -158,7 +158,7 @@ export default function SettingsPage() {
       {/* About / Trust */}
       <section className="card-base p-6 space-y-4">
         <div>
-          <h2 className="text-base font-semibold text-foreground font-heading">About QuizAI</h2>
+          <h2 className="font-heading text-sm font-medium text-foreground">About QuizAI</h2>
         </div>
         <ul className="space-y-3 text-sm">
           <li className="flex items-start gap-3">

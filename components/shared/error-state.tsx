@@ -21,7 +21,7 @@ export function ErrorState({
       animate={{ opacity: 1, scale: 1 }}
       className="flex flex-col items-center justify-center py-16 px-4 text-center"
     >
-      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-destructive/10 mb-4">
+      <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-destructive/10 mb-4">
         <AlertTriangle className="h-7 w-7 text-destructive" />
       </div>
       <h3 className="text-lg font-semibold font-heading mb-1">{title}</h3>

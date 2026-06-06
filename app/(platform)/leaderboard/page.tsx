@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trophy, Medal, TrendingUp, TrendingDown, Minus, Search } from "lucide-react";
 import { getLeaderboard } from "@/lib/api-client";
-import { Card, CardContent } from "@/components/ui/card";
+import { CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
@@ -61,13 +61,15 @@ export default function LeaderboardPage() {
       {loading ? (
         <LeaderboardSkeleton />
       ) : users.length === 0 ? (
-        <Card className="border-dashed border-2 border-border bg-card/50">
-          <CardContent className="flex flex-col items-center justify-center py-20 text-center">
-            <Trophy className="h-12 w-12 text-muted-foreground/50 mb-4" />
-            <h3 className="text-xl font-bold tracking-tight text-foreground mb-1">No leaders yet</h3>
+        <div className="card-base">
+          <div className="flex flex-col items-center justify-center py-16 text-center px-6">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/15 text-primary mb-4">
+              <Trophy className="h-6 w-6" />
+            </div>
+            <h3 className="font-heading text-base font-semibold tracking-tight text-foreground mb-1">No leaders yet</h3>
             <p className="text-sm text-muted-foreground">Be the first to complete a quiz and claim the top spot!</p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       ) : (
         <>
           {/* Podium (Top 3) */}
@@ -143,8 +145,8 @@ export default function LeaderboardPage() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.04 }}
                             className={cn(
-                              "hover:bg-primary/[0.06] transition-colors",
-                              user.rank === 1 && "bg-warning/[0.04]",
+                              "hover:bg-muted/40 transition-colors",
+                              user.rank === 1 && "bg-primary/[0.04]",
                               user.userId === currentUser?.uid && "bg-primary/5 border-l-2 border-primary"
                             )}
                           >
@@ -152,13 +154,11 @@ export default function LeaderboardPage() {
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-2">
                               {user.rank === 1 ? (
-                                <span className="w-6 h-6 rounded-full bg-warning/20 text-warning text-xs font-black flex items-center justify-center">1</span>
-                              ) : user.rank === 2 ? (
-                                <span className="w-6 h-6 rounded-full bg-muted text-muted-foreground text-xs font-black flex items-center justify-center">2</span>
-                              ) : user.rank === 3 ? (
-                                <span className="w-6 h-6 rounded-full bg-primary/15 text-primary text-xs font-black flex items-center justify-center">3</span>
+                                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/15 text-primary text-xs font-semibold stat-number">1</span>
+                              ) : user.rank <= 3 ? (
+                                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-muted text-muted-foreground text-xs font-semibold stat-number">{user.rank}</span>
                               ) : (
-                                <span className="text-sm font-bold text-muted-foreground tabular-nums">
+                                <span className="text-sm font-medium text-muted-foreground stat-number">
                                   {user.rank}
                                 </span>
                               )}
@@ -168,30 +168,30 @@ export default function LeaderboardPage() {
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-3">
                               <Avatar className="h-8 w-8 border border-border">
-                                <AvatarFallback className="text-[10px] font-bold">
+                                <AvatarFallback className="text-[10px] font-semibold">
                                   {user.name.substring(0, 2).toUpperCase()}
                                 </AvatarFallback>
                               </Avatar>
-                              <span className="text-sm font-semibold tracking-tight">{user.name}</span>
+                              <span className="text-sm font-medium tracking-tight truncate">{user.name}</span>
                             </div>
                           </td>
                           {/* Level */}
                           <td className="px-6 py-4 text-center">
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-[11px] font-bold">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-muted text-muted-foreground text-[11px] font-medium">
                               Lvl {user.level}
                             </span>
                           </td>
                           {/* Score */}
                           <td className="px-6 py-4 text-center">
                             <div className="flex flex-col items-center">
-                              <span className="text-sm font-bold tabular-nums">{user.totalScore}</span>
+                              <span className="stat-number text-sm text-foreground">{user.totalScore}</span>
                               <span className="text-[10px] text-muted-foreground">{user.totalQuizzes} {user.totalQuizzes === 1 ? "Quiz" : "Quizzes"}</span>
                             </div>
                           </td>
                           {/* Accuracy — color + matching icon (non-color cue) */}
                           <td className="px-6 py-4 text-right">
                             <div
-                              className={cn("flex items-center justify-end gap-1.5 font-bold text-sm tabular-nums",
+                              className={cn("flex items-center justify-end gap-1.5 font-semibold text-sm stat-number",
                                 user.avgAccuracy >= 70 ? "text-success" :
                                 user.avgAccuracy >= 50 ? "text-warning" : "text-destructive"
                               )}
@@ -228,21 +228,21 @@ function PodiumItem({ user, position }: { user?: LeaderboardUser; position: numb
 
   const config = {
     1: {
-      icon: <Trophy className="h-5 w-5 text-warning" />,
-      cardColor: "border-warning/30 bg-warning/5",
-      badgeColor: "bg-warning/20 text-warning border-warning/30",
-      avatarRing: "ring-2 ring-warning/30",
+      icon: <Trophy className="h-4 w-4" />,
+      chip: "bg-primary/15 text-primary",
+      badge: "bg-primary/15 text-primary",
+      avatarRing: "ring-2 ring-primary/40",
     },
     2: {
-      icon: <Medal className="h-5 w-5 text-muted-foreground" />,
-      cardColor: "border-border bg-card",
-      badgeColor: "bg-muted text-muted-foreground border-border",
+      icon: <Medal className="h-4 w-4" />,
+      chip: "bg-muted text-muted-foreground",
+      badge: "bg-muted text-muted-foreground",
       avatarRing: "",
     },
     3: {
-      icon: <Medal className="h-5 w-5 text-primary" />,
-      cardColor: "border-primary/20 bg-card",
-      badgeColor: "bg-muted text-muted-foreground border-border",
+      icon: <Medal className="h-4 w-4" />,
+      chip: "bg-muted text-muted-foreground",
+      badge: "bg-muted text-muted-foreground",
       avatarRing: "",
     },
   }[position as 1 | 2 | 3];
@@ -255,21 +255,23 @@ function PodiumItem({ user, position }: { user?: LeaderboardUser; position: numb
     >
       <div
         className={cn(
-          "w-full flex flex-col items-center justify-center gap-3 p-5 rounded-xl transition-colors card-base",
-          isFirst ? "border-warning/45 bg-warning/10 shadow-sm shadow-warning/5 md:min-h-[16rem]" : "md:min-h-[13rem]"
+          "w-full flex flex-col items-center justify-center gap-3 p-5 transition-colors card-base",
+          isFirst ? "border-primary/40 bg-primary/[0.04] md:min-h-[16rem]" : "md:min-h-[13rem]"
         )}
       >
-        {/* Trophy icon */}
-        <div>{config.icon}</div>
+        {/* Rank icon chip */}
+        <span className={cn("flex h-8 w-8 items-center justify-center rounded-lg", config.chip)}>
+          {config.icon}
+        </span>
 
         {/* Avatar */}
         <Avatar className={cn("h-14 w-14 border-2 border-card bg-muted", config.avatarRing)}>
-          <AvatarFallback className="text-lg font-bold">{user.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+          <AvatarFallback className="text-lg font-semibold">{user.name.substring(0, 2).toUpperCase()}</AvatarFallback>
         </Avatar>
 
         {/* Info */}
-        <div className="text-center">
-          <h3 className="text-sm font-bold tracking-tight truncate max-w-[140px]">{user.name}</h3>
+        <div className="text-center min-w-0 w-full px-2">
+          <h3 className="text-sm font-semibold tracking-tight truncate">{user.name}</h3>
           <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-0.5">
             Level {user.level}
           </p>
@@ -277,12 +279,12 @@ function PodiumItem({ user, position }: { user?: LeaderboardUser; position: numb
 
         {/* Score */}
         <div className="flex items-baseline gap-1">
-          <span className="text-xl font-black tabular-nums">{user.totalScore}</span>
-          <span className="text-[10px] font-bold text-muted-foreground uppercase">Pts</span>
+          <span className="stat-number text-2xl text-foreground">{user.totalScore}</span>
+          <span className="text-[10px] font-medium text-muted-foreground uppercase">Pts</span>
         </div>
 
         {/* Rank badge */}
-        <span className={cn("px-3 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider border", config.badgeColor)}>
+        <span className={cn("px-3 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider", config.badge)}>
           Rank #{position}
         </span>
       </div>
@@ -299,7 +301,7 @@ function LeaderboardSkeleton() {
         ))}
       </div>
       <Skeleton className="h-10 w-full rounded-xl" />
-      <div className="bg-card rounded-xl border border-border overflow-hidden">
+      <div className="card-base overflow-hidden">
         <div className="border-b border-border bg-muted/20 h-12" />
         {[1, 2, 3, 4, 5].map((i) => (
           <div key={i} className="border-b border-border/50 h-16 flex items-center px-6">

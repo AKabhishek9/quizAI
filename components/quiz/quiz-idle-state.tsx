@@ -50,39 +50,39 @@ export function QuizIdleState({
           </Button>
         )}
 
-        <div className="rounded-lg border border-border bg-card p-4">
+        <div className="card-base p-6">
           <div className={cn(
-            "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium uppercase tracking-wider mb-4 bg-primary/10 text-primary border border-primary/20",
+            "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-medium uppercase tracking-wider mb-4 bg-primary/15 text-primary",
           )}>
             <Flame className="h-2.5 w-2.5" />
             Daily Quest
           </div>
-          
-          <h1 className="text-lg font-semibold tracking-tight mb-1.5 font-heading">
+
+          <h1 className="font-heading text-lg font-semibold tracking-tight mb-1.5">
             {title}
           </h1>
           <p className="text-sm text-muted-foreground mb-5 max-w-xs mx-auto">
             {description}
           </p>
-          
+
           <div className="flex justify-center gap-4 text-xs text-muted-foreground mb-6 divide-x divide-border">
             <div className="text-center pr-4">
-              <p className="text-foreground font-medium tabular-nums">{questionCount}</p>
+              <p className="stat-number text-foreground font-medium">{questionCount}</p>
               <p>Questions</p>
             </div>
             <div className="text-center px-4">
-              <p className="text-foreground font-medium tabular-nums">{timePerQuestion}s</p>
+              <p className="stat-number text-foreground font-medium">{timePerQuestion}s</p>
               <p>Timer</p>
             </div>
             <div className="text-center pl-4">
-              <p className="text-foreground font-medium tabular-nums">+{xpReward}</p>
+              <p className="stat-number text-foreground font-medium">+{xpReward}</p>
               <p>XP Reward</p>
             </div>
           </div>
 
           <Button
             onClick={onStart}
-            className="w-full cursor-pointer h-9 px-4 py-2 text-sm font-medium rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 border-0"
+            className="w-full cursor-pointer"
           >
             Start Challenge
             <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
@@ -99,9 +99,9 @@ export function QuizIdleState({
       animate={{ opacity: 1, y: 0 }}
       className="max-w-2xl mx-auto text-center py-16"
     >
-      <div className="rounded-lg border border-border bg-card p-4">
+      <div className="card-base p-6">
         <DifficultyBadge difficulty={difficulty || "medium"} className="mb-3" />
-        <h1 className="text-lg font-semibold tracking-tight mb-1 font-heading">
+        <h1 className="font-heading text-lg font-semibold tracking-tight mb-1">
           {title}
         </h1>
         <p className="text-sm text-muted-foreground mt-2 mb-5">
@@ -113,7 +113,7 @@ export function QuizIdleState({
         </div>
         <Button
           onClick={onStart}
-          className="cursor-pointer h-9 px-4 py-2 text-sm font-medium w-full rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 border-0"
+          className="cursor-pointer w-full"
         >
           Start quiz
           <ArrowRight className="ml-1.5 h-3.5 w-3.5" />

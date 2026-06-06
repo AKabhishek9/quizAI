@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/sheet";
 import { ThemeToggle } from "./theme-toggle";
 import { cn } from "@/lib/utils";
-import { sidebarLinks } from "./sidebar";
+import { platformNavLinks as sidebarLinks } from "./nav-config";
 import { useAuth } from "@/components/providers/auth-provider";
 import { Container } from "./container";
 

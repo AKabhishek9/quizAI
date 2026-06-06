@@ -181,8 +181,8 @@ export default function DailyQuizPlayPage({
 
   if (!quiz) {
     return (
-      <div className="text-center py-20">
-        <h2 className="text-lg font-semibold font-heading">Quest not found</h2>
+      <div className="card-base max-w-md mx-auto text-center py-12 px-6 mt-12">
+        <h2 className="font-heading text-base font-medium text-foreground">Quest not found</h2>
         <p className="text-xs text-muted-foreground mt-1">
           This daily quest has expired or doesn&apos;t exist.
         </p>
@@ -191,7 +191,7 @@ export default function DailyQuizPlayPage({
             Next daily refresh in {refreshCountdown}.
           </p>
         )}
-        <div className="mt-4 flex flex-col sm:flex-row justify-center gap-2">
+        <div className="mt-5 flex flex-col sm:flex-row justify-center gap-2">
           <Button
             onClick={() => setRetryNonce((value) => value + 1)}
             size="sm"

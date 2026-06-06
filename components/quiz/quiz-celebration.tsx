@@ -9,11 +9,12 @@ import { useReducedMotion, motion } from "framer-motion";
  * Purely decorative — pointer-events disabled, aria-hidden.
  */
 
+// Orange-leaning palette: primary accent dominates, with subtle supporting hues.
 const COLORS = [
+  "var(--primary)",
   "var(--primary)",
   "var(--success)",
   "var(--warning)",
-  "var(--destructive)",
 ];
 
 // Deterministic pseudo-spread so we don't need Math.random (and SSR-safe).

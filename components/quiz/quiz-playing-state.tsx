@@ -107,14 +107,14 @@ export function QuizPlayingState({
           exit={{ opacity: 0, x: -12 }}
           transition={{ duration: 0.2 }}
           className={cn(
-            "rounded-lg border border-border bg-card w-full",
-            isDaily ? "p-4 min-h-[300px] flex flex-col" : "p-4"
+            "w-full card-base",
+            isDaily ? "flex min-h-[300px] flex-col p-5 sm:p-6" : "p-5 sm:p-6"
           )}
         >
 
           <h2 className={cn(
-            "font-semibold leading-relaxed mb-4 text-foreground font-heading",
-            isDaily ? "text-lg mb-6 relative z-10" : "text-lg"
+            "mb-5 font-heading text-lg font-semibold leading-relaxed text-foreground sm:text-xl",
+            isDaily && "relative z-10 mb-6"
           )}>
             {currentQuestion?.text}
           </h2>

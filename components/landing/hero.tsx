@@ -56,7 +56,7 @@ export function Hero() {
               <Button
                 size="lg"
                 variant="outline"
-                className="w-full sm:w-auto transition-all duration-200 hover:-translate-y-0.5 border-border/40 bg-card/30 glass-card backdrop-blur-sm"
+                className="w-full sm:w-auto transition-all duration-200 hover:-translate-y-0.5"
               >
                 See How It Works
               </Button>

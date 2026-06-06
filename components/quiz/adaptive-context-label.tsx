@@ -10,7 +10,7 @@ import { Target } from "lucide-react";
 export function AdaptiveContextLabel({ topic }: { topic?: string }) {
   if (!topic) return null;
   return (
-    <div className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-medium text-primary">
+    <div className="inline-flex items-center gap-1.5 rounded-full bg-primary/15 px-2.5 py-1 text-xs font-medium text-primary">
       <Target className="h-3 w-3 shrink-0" aria-hidden="true" />
       <span>
         Targeting <span className="font-semibold">{topic}</span>

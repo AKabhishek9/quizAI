@@ -19,15 +19,17 @@ export function LevelProgressBanner({ profile, stats }: LevelProgressBannerProps
   const xpLeft = profile.xpToNextLevel - profile.xp;
 
   return (
-    <div className="p-4 flex flex-col sm:flex-row sm:items-center gap-4 card-base">
+    <div className="flex flex-col gap-3 card-base p-4 sm:flex-row sm:items-center sm:gap-4">
       {/* Level badge */}
-      <div className="flex items-center gap-3 shrink-0">
-        <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10 text-primary text-xs font-semibold">
+      <div className="flex shrink-0 items-center gap-3">
+        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-sm font-bold text-primary-foreground">
           L{profile.level}
         </div>
         <div>
-          <p className="text-sm font-medium text-foreground leading-none">Level {profile.level}</p>
-          <p className="text-xs text-muted-foreground mt-0.5">{xpLeft} XP to next</p>
+          <p className="text-sm font-semibold leading-none text-foreground">
+            Level {profile.level}
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">{xpLeft} XP to next</p>
         </div>
       </div>
 
@@ -42,13 +44,13 @@ export function LevelProgressBanner({ profile, stats }: LevelProgressBannerProps
       </div>
 
       {/* XP + Streak */}
-      <div className="flex items-center gap-4 shrink-0 text-right">
-        <div>
-          <p className="text-sm font-semibold tabular-nums text-foreground">{profile.xp.toLocaleString()}</p>
-          <p className="text-xs text-muted-foreground">Total XP</p>
-        </div>
+      <div className="flex shrink-0 items-center justify-between gap-4 sm:justify-end">
+        <p className="text-sm font-semibold tabular-nums text-foreground">
+          {profile.xp.toLocaleString()}{" "}
+          <span className="text-muted-foreground">/ {profile.xpToNextLevel.toLocaleString()} XP</span>
+        </p>
         {stats !== undefined && (
-          <div className="flex items-center gap-1.5 text-muted-foreground">
+          <div className="flex items-center gap-1.5 text-primary">
             <TrendingUp className="h-3.5 w-3.5" />
             <span className="text-sm font-medium tabular-nums">{stats.currentStreak}d</span>
           </div>

@@ -36,25 +36,22 @@ export function SkillEquilibrium({ stats }: SkillEquilibriumProps) {
               initial={{ opacity: 0, x: -4 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: idx * 0.04 }}
-              className="flex flex-col gap-1"
+              className="flex flex-col gap-1.5"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-foreground">{cat.category}</span>
-                <span className="text-[11px] text-muted-foreground tabular-nums">
-                  Avg {cat.percentage}%
+                <span className="truncate text-xs font-medium text-foreground">{cat.category}</span>
+                <span className="shrink-0 text-[11px] tabular-nums text-muted-foreground">
+                  {cat.percentage}%
                 </span>
               </div>
-              <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+              <div className="h-1.5 overflow-hidden rounded-full bg-muted">
                 <motion.div
-                  className="h-full bg-primary rounded-full"
+                  className="h-full rounded-full bg-primary"
                   initial={{ width: 0 }}
                   animate={{ width: `${cat.percentage}%` }}
                   transition={{ duration: 0.6, delay: idx * 0.05, ease: "easeOut" }}
                 />
               </div>
-              <span className="text-[10px] text-muted-foreground/70 tabular-nums self-end">
-                {cat.percentage}%
-              </span>
             </motion.div>
           ))}
         </div>

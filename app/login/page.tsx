@@ -129,11 +129,11 @@ export default function LoginPage() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.05 }}
-        className="w-full max-w-sm p-8 shadow-2xl shadow-black/[0.03] dark:shadow-black/20 glass-card relative z-10"
+        className="w-full max-w-sm p-8 shadow-2xl shadow-black/[0.03] dark:shadow-black/20 card-base relative z-10"
       >
         {/* Heading */}
         <div className="text-center mb-7">
-          <h1 className="text-3xl font-black tracking-tight text-foreground leading-tight mb-2 font-heading">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground leading-tight mb-2 font-heading">
             {isLogin ? "Welcome Back!" : "Create your QuizAI account"}
           </h1>
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
@@ -162,8 +162,8 @@ export default function LoginPage() {
                 onChange={(e) => setName(e.target.value)}
                 required={!isLogin}
                 className={cn(
-                  "w-full border-0 border-b-2 border-border bg-transparent pb-2 pt-1 text-sm text-foreground placeholder:text-muted-foreground/50",
-                  "focus:outline-none focus:border-primary transition-colors"
+                  "w-full rounded-lg border border-border bg-muted/40 px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/50",
+                  "focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 transition-colors"
                 )}
               />
             </div>
@@ -186,8 +186,8 @@ export default function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               className={cn(
-                "w-full border-0 border-b-2 border-border bg-transparent pb-2 pt-1 text-sm text-foreground placeholder:text-muted-foreground/50",
-                "focus:outline-none focus:border-primary transition-colors"
+                "w-full rounded-lg border border-border bg-muted/40 px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/50",
+                "focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 transition-colors"
               )}
             />
           </div>
@@ -220,8 +220,8 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               className={cn(
-                "w-full border-0 border-b-2 border-border bg-transparent pb-2 pt-1 text-sm text-foreground placeholder:text-muted-foreground/50",
-                "focus:outline-none focus:border-primary transition-colors tracking-widest"
+                "w-full rounded-lg border border-border bg-muted/40 px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/50",
+                "focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 transition-colors tracking-widest"
               )}
             />
           </div>
@@ -243,7 +243,7 @@ export default function LoginPage() {
           {/* Submit */}
           <Button
             disabled={isLoading}
-            className="w-full h-11 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-sm cursor-pointer mt-1"
+            className="w-full h-11 rounded-lg bg-primary hover:bg-primary-hover text-primary-foreground font-semibold text-sm cursor-pointer mt-1"
           >
             {isLoading ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -258,10 +258,10 @@ export default function LoginPage() {
         {/* Divider */}
         <div className="relative my-5">
           <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-border/20" />
+            <span className="w-full border-t border-border" />
           </div>
           <div className="relative flex justify-center">
-            <span className="bg-background/80 backdrop-blur-sm px-3.5 py-0.5 rounded-full border border-border/20 text-xs text-muted-foreground select-none">or</span>
+            <span className="bg-card px-3.5 py-0.5 rounded-full border border-border text-xs text-muted-foreground select-none">or</span>
           </div>
         </div>
 
@@ -271,7 +271,7 @@ export default function LoginPage() {
           variant="outline"
           disabled={isLoading}
           onClick={handleGoogleLogin}
-          className="w-full h-11 rounded-xl border-border font-medium text-sm cursor-pointer"
+          className="w-full h-11 rounded-lg border-border font-medium text-sm cursor-pointer"
           aria-label={isLogin ? "Sign in with Google" : "Sign up with Google"}
         >
           <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" aria-hidden="true" focusable="false">

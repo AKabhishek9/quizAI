@@ -15,7 +15,7 @@ export function CtaSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="mx-auto max-w-3xl rounded-2xl p-10 text-center md:p-14 card-base"
+          className="mx-auto max-w-3xl p-10 text-center md:p-14 card-base"
         >
           <span className="text-[11px] font-semibold tracking-widest text-primary uppercase mb-4 block">
             Start free today

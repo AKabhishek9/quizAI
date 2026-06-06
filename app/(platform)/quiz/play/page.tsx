@@ -261,7 +261,7 @@ function PlayQuizEngine() {
           </p>
         </div>
 
-        <div className="rounded-xl border border-border bg-card p-6 grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 p-6 card-base sm:grid-cols-3">
           <div className="text-center sm:text-left sm:border-r border-border sm:pr-6">
             <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">
               Accuracy
@@ -418,14 +418,14 @@ function PlayQuizEngine() {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -12 }}
           transition={{ duration: 0.2 }}
-          className="rounded-xl border border-border bg-card p-5"
+          className="card-base p-5 sm:p-6"
         >
           {currentQuestion?.topic && (
             <div className="mb-4">
               <AdaptiveContextLabel topic={currentQuestion.topic} />
             </div>
           )}
-          <h2 className="text-[15px] font-medium leading-relaxed mb-5 font-heading">{currentQuestion?.text}</h2>
+          <h2 className="mb-5 font-heading text-lg font-semibold leading-relaxed sm:text-xl">{currentQuestion?.text}</h2>
 
           <div className="space-y-2" role="radiogroup" aria-label="Answer options">
             {currentQuestion?.options.map((option) => (

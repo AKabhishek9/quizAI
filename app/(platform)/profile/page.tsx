@@ -49,8 +49,8 @@ export default function ProfilePage() {
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center h-[50vh] space-y-4">
-        <div role="alert" className="rounded-xl border border-destructive/20 bg-destructive/5 p-8 text-center max-w-md">
-          <h2 className="text-base font-semibold mb-2 font-heading">Could not load profile</h2>
+        <div role="alert" className="card-base border-destructive/20 bg-destructive/5 p-8 text-center max-w-md">
+          <h2 className="font-heading text-base font-semibold mb-2">Could not load profile</h2>
           <p className="text-sm text-muted-foreground mb-4">
             We couldn&apos;t load your profile right now. Please check your connection and try again.
           </p>
@@ -72,9 +72,9 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8 pb-20 min-w-0">
+    <div className="max-w-5xl mx-auto space-y-6 pb-20 min-w-0">
       {/* ── Profile Header Card ── */}
-      <div className="rounded-2xl border border-border bg-card p-6 md:p-8 shadow-sm min-w-0">
+      <div className="card-base p-6 min-w-0">
         <div className="flex flex-col md:flex-row md:items-center gap-6">
           {/* Avatar with level badge */}
           <div className="relative shrink-0 self-center md:self-start">
@@ -157,22 +157,26 @@ export default function ProfilePage() {
 
           {/* Mastery XP — right side */}
           {profile && (
-            <div className="shrink-0 w-full md:w-64 border border-border rounded-2xl p-5 bg-muted/30">
+            <div className="shrink-0 w-full md:w-64 rounded-xl border border-border bg-muted/30 p-5">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold text-foreground">Mastery XP</span>
-                <span className="text-xs tabular-nums text-muted-foreground">
-                  {profile.xp} / {profile.xpToNextLevel} XP
-                </span>
+                <span className="text-xs font-medium text-foreground">Mastery XP</span>
+                {stats && stats.currentStreak > 0 && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-medium text-primary">
+                    <Flame className="h-3 w-3" />
+                    {stats.currentStreak}d streak
+                  </span>
+                )}
               </div>
               <ProgressBar
                 value={(profile.xp / profile.xpToNextLevel) * 100}
                 size="sm"
-                className="bg-muted h-2"
                 showPercentage={false}
               />
               <div className="flex items-center justify-between mt-1.5">
                 <span className="text-[10px] text-muted-foreground">Level {profile.level}</span>
-                <span className="text-[10px] text-muted-foreground">Level {profile.level + 1}</span>
+                <span className="text-[10px] tabular-nums text-muted-foreground">
+                  {profile.xp} / {profile.xpToNextLevel} XP
+                </span>
               </div>
             </div>
           )}
@@ -182,7 +186,7 @@ export default function ProfilePage() {
       {/* ── Detailed Stats Grid ── */}
       {stats && (
         <div className="space-y-4 min-w-0">
-          <h2 className="text-lg font-bold text-foreground font-heading">Your Performance</h2>
+          <h2 className="font-heading text-sm font-medium text-foreground">Your Performance</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-4">
             <StatsCard title="Quizzes" value={stats.totalQuizzes} icon={BookOpen} />
             <StatsCard title="Avg. Score" value={`${stats.averageScore}%`} icon={Target} />
@@ -190,7 +194,7 @@ export default function ProfilePage() {
               title="Current Streak"
               value={`${stats.currentStreak}d`}
               icon={Flame}
-              className={cn(stats.currentStreak > 0 && "border-warning/30")}
+              accent={stats.currentStreak > 0}
             />
             <StatsCard title="Best Streak" value={`${stats.bestStreak}d`} icon={Trophy} />
             <StatsCard title="Global Rank" value={`#${stats.rank}`} icon={Trophy} />
@@ -210,16 +214,16 @@ export default function ProfilePage() {
 
         {/* Quiz History Table */}
         <TabsContent value="history">
-          <div className="rounded-2xl border border-border bg-card overflow-x-auto shadow-sm">
+          <div className="card-base relative scroll-fade-x overflow-x-auto">
             {/* Table */}
             <table className="w-full min-w-[720px] text-left">
               <thead>
-                <tr className="border-b border-border bg-muted/30">
-                  <th className="px-6 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Quiz</th>
-                  <th className="px-6 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Score</th>
-                  <th className="px-6 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Difficulty</th>
-                  <th className="px-6 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Topics</th>
-                  <th className="px-6 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Date</th>
+                <tr className="border-b border-border bg-muted/20">
+                  <th className="px-6 py-3 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Quiz</th>
+                  <th className="px-6 py-3 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Score</th>
+                  <th className="px-6 py-3 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Difficulty</th>
+                  <th className="px-6 py-3 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Topics</th>
+                  <th className="px-6 py-3 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Date</th>
                 </tr>
               </thead>
               <tbody>
@@ -229,13 +233,13 @@ export default function ProfilePage() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: index * 0.02 }}
-                    className="border-b border-border last:border-0 hover:bg-muted/20 transition-colors"
+                    className="border-b border-border last:border-0 hover:bg-muted/40 transition-colors"
                   >
                     <td className="px-6 py-3.5">
                       <span className="text-sm font-medium text-foreground">{attempt.quizTitle}</span>
                     </td>
                     <td className="px-6 py-3.5">
-                      <span className="text-sm text-foreground tabular-nums">{attempt.score}%</span>
+                      <span className="stat-number text-sm text-foreground">{attempt.score}%</span>
                     </td>
                     <td className="px-6 py-3.5">
                       <DifficultyBadge difficulty={attempt.difficulty} />
@@ -264,21 +268,21 @@ export default function ProfilePage() {
         {/* Detailed Analytics */}
         <TabsContent value="analytics">
           {stats ? (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 min-w-0">
-              <div className="rounded-2xl border border-border bg-card p-6 shadow-sm flex flex-col min-w-0 lg:col-span-2">
-                <h3 className="text-base font-semibold mb-6 text-foreground font-heading">Performance Trend</h3>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 min-w-0">
+              <div className="card-base p-6 flex flex-col min-w-0 lg:col-span-2">
+                <h3 className="font-heading text-sm font-medium mb-6 text-foreground">Performance Trend</h3>
                 <div className="relative w-full" style={{ height: 300 }}>
                   {stats.weeklyScores && stats.weeklyScores.length > 0 ? (
                     <PerformanceChart data={stats.weeklyScores} />
                   ) : (
-                    <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-sm border-2 border-dashed border-border rounded-xl">
+                    <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-sm rounded-xl bg-muted/20">
                       No performance data available yet
                     </div>
                   )}
                 </div>
               </div>
-              <div className="rounded-2xl border border-border bg-card p-6 shadow-sm flex flex-col min-w-0 lg:col-span-1">
-                <h3 className="text-base font-semibold mb-6 text-foreground font-heading">Category Performance</h3>
+              <div className="card-base p-6 flex flex-col min-w-0 lg:col-span-1">
+                <h3 className="font-heading text-sm font-medium mb-6 text-foreground">Category Performance</h3>
                 <div className="space-y-5 min-h-[300px] max-h-[300px] overflow-y-auto pr-2">
                   {stats.categoryPerformance && stats.categoryPerformance.length > 0 ? (
                     stats.categoryPerformance.map((cat) => (
@@ -295,7 +299,7 @@ export default function ProfilePage() {
                       />
                     ))
                   ) : (
-                    <div className="h-full flex items-center justify-center text-muted-foreground text-sm border-2 border-dashed border-border rounded-xl">
+                    <div className="h-full flex items-center justify-center text-muted-foreground text-sm rounded-xl bg-muted/20">
                       No category data available yet
                     </div>
                   )}
@@ -332,17 +336,17 @@ export default function ProfilePage() {
                     <div
                       key={ach.id}
                       className={cn(
-                        "rounded-2xl border bg-card p-5 flex flex-col items-center text-center gap-3 transition-colors shadow-sm min-w-0",
-                        unlocked ? "border-success/40 bg-success/5" : "border-border"
+                        "card-base p-5 flex flex-col items-center text-center gap-3 transition-colors min-w-0",
+                        unlocked && "border-success/40 bg-success/5"
                       )}
                     >
                       <div
                         className={cn(
                           "h-11 w-11 shrink-0 rounded-full flex items-center justify-center",
-                          unlocked ? "bg-success/15" : "bg-muted"
+                          unlocked ? "bg-success/15 text-success" : "bg-muted text-muted-foreground"
                         )}
                       >
-                        <ach.Icon className={cn("h-5 w-5", unlocked ? "text-success" : "text-muted-foreground")} />
+                        <ach.Icon className="h-5 w-5" />
                       </div>
                       <div className="min-w-0 w-full">
                         <h4 className="text-sm font-semibold text-foreground truncate">{ach.name}</h4>
