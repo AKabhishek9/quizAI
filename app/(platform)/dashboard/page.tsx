@@ -9,7 +9,6 @@ import { DashboardStats } from "@/components/dashboard/dashboard-stats";
 import { PerformanceChart } from "@/components/dashboard/performance-chart";
 import { RecentActivity } from "@/components/dashboard/recent-activity";
 import { DailyQuizWidget } from "@/components/dashboard/daily-quiz-widget";
-import { SkillEquilibrium } from "@/components/dashboard/skill-equilibrium";
 import StatsSkeleton from "@/components/dashboard/stats-skeleton";
 import {
   SkeletonChart,
@@ -79,7 +78,12 @@ export default function DashboardPage() {
         <DashboardStats stats={stats} weeklyEvolution={weeklyEvolution} />
       ) : null}
 
-      {/* ── Row 3 · Chart (left) + Activity (right) ── */}
+      {/* ── Row 3 · Quests ── */}
+      <div>
+        <DailyQuizWidget />
+      </div>
+
+      {/* ── Row 4 · Chart (left) + Activity (right) ── */}
       <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,55fr)_minmax(0,45fr)] gap-3">
         <div className="p-3 flex flex-col gap-2 card-base">
           <div className="flex items-center justify-between">
@@ -108,12 +112,6 @@ export default function DashboardPage() {
             Activity appears after your first quiz.
           </div>
         )}
-      </div>
-
-      {/* ── Row 4 · Quests (left) + Topic Progress (right) ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-        <DailyQuizWidget />
-        {stats && <SkillEquilibrium stats={stats} />}
       </div>
     </div>
   );

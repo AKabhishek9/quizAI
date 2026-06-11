@@ -56,8 +56,12 @@ export function DailyQuizWidget() {
   }, [quizzes]);
 
   return (
-    <section className="p-3 flex flex-col card-base h-full">
-      <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+    <section className="p-3 flex flex-col card-base h-full relative overflow-hidden">
+      {/* Shimmer reflection */}
+      <div className="absolute inset-0 -translate-x-[150%] bg-gradient-to-r from-transparent via-white/10 to-transparent w-full h-full skew-x-[-15deg] animate-shimmer pointer-events-none" />
+
+      <div className="relative z-10 flex flex-col h-full flex-1">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
         <div className="flex items-center gap-1.5">
           <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse inline-block" />
           <h2 className="text-sm font-medium text-foreground font-heading">Daily Quests</h2>
@@ -71,7 +75,7 @@ export function DailyQuizWidget() {
       </div>
 
       {isLoading ? (
-        <div className="grid grid-cols-2 gap-2 flex-1">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 flex-1">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="h-14 rounded-lg bg-muted/40 animate-pulse" />
           ))}
@@ -82,7 +86,7 @@ export function DailyQuizWidget() {
           <p className="text-[10px] text-muted-foreground">Daily quests generating…</p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-2 flex-1">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 flex-1">
           {quizzes.map((quiz, index) => {
             const config = CATEGORY_MAP[quiz.type] ?? { icon: Brain, label: quiz.type };
             const Icon = config.icon;
@@ -110,6 +114,7 @@ export function DailyQuizWidget() {
           })}
         </div>
       )}
+      </div>
     </section>
   );
 }

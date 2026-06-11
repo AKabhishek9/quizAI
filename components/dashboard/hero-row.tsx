@@ -108,7 +108,7 @@ export function HeroRow({ profile, stats }: HeroRowProps) {
         className="group relative overflow-hidden flex items-center gap-3 rounded-xl bg-primary/10 border border-primary/20 px-4 py-3 transition-colors hover:bg-primary/15 shrink-0 cursor-pointer"
       >
         {/* Shimmer reflection */}
-        <div className="absolute inset-0 -translate-x-[150%] bg-gradient-to-r from-transparent via-white/30 to-transparent w-1/2 h-full skew-x-[-15deg] animate-shimmer pointer-events-none" />
+        <div className="absolute inset-0 -translate-x-[150%] bg-gradient-to-r from-transparent via-white/30 to-transparent w-1/2 h-full skew-x-[-15deg] animate-shimmer-fast pointer-events-none" />
 
         <div className="min-w-0 relative z-10">
           <p className="text-sm font-semibold text-foreground leading-tight">Start Quiz</p>

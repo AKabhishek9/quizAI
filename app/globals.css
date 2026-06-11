@@ -53,6 +53,7 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) * 1.4);
 
+  --animate-shimmer-fast: shimmer 2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
   --animate-shimmer: shimmer 4s cubic-bezier(0.65, 0, 0.35, 1) infinite;
   
   @keyframes shimmer {
