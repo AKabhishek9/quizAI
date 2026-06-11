@@ -32,7 +32,7 @@ export default function PlatformLayout({
         <main id="platform-main" className="relative">
           <Container
             className={cn(
-              immersive ? "py-6" : "pt-24 pb-28 lg:pt-28 lg:pb-12"
+              immersive ? "py-6" : "pt-20 pb-24 lg:pt-[72px] lg:pb-6"
             )}
           >
             <PageTransition>{children}</PageTransition>

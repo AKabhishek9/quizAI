@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpen, Target, Trophy, Flame, type LucideIcon } from "lucide-react";
+import { BookOpen, Target, Flame, Trophy, type LucideIcon } from "lucide-react";
 import { motion } from "framer-motion";
 import { StatsCard } from "@/components/dashboard/stats-card";
 
@@ -20,22 +20,17 @@ export function DashboardStats({ stats, weeklyEvolution }: DashboardStatsProps) 
       title: "Quizzes Completed",
       value: stats.totalQuizzes,
       icon: BookOpen as unknown as LucideIcon,
-      trend: { value: weeklyEvolution, isPositive: weeklyEvolution >= 0 },
-      description: "Total sessions",
+      trend: weeklyEvolution !== 0 ? { value: weeklyEvolution, isPositive: weeklyEvolution >= 0 } : undefined,
     },
     {
       title: "Average Score",
       value: `${stats.averageScore}%`,
       icon: Target as unknown as LucideIcon,
-      description: "Global accuracy",
     },
     {
-      // Current streak — the dominant, always-actionable metric (Duolingo lesson).
-      // The one card that earns the orange accent.
       title: "Current Streak",
       value: `${stats.currentStreak}d`,
       icon: Flame as unknown as LucideIcon,
-      description: stats.currentStreak > 0 ? "Keep it going!" : "Start today",
       accent: true,
       className: "border-primary/30",
     },
@@ -43,18 +38,17 @@ export function DashboardStats({ stats, weeklyEvolution }: DashboardStatsProps) 
       title: "Ranking",
       value: `#${stats.rank}`,
       icon: Trophy as unknown as LucideIcon,
-      description: "Current position",
     },
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
       {cards.map((card, index) => (
         <motion.div
           key={card.title}
-          initial={{ opacity: 0, y: 8 }}
+          initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: index * 0.06 }}
+          transition={{ delay: index * 0.04 }}
         >
           <StatsCard {...card} />
         </motion.div>

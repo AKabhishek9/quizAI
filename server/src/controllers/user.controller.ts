@@ -31,15 +31,22 @@ interface UserStatsResponse {
 const rankCache = new Map<string, { rank: number; ts: number }>();
 const RANK_TTL = 5 * 60 * 1000;
 
-async function getUserRank(userId: string, totalScore: number): Promise<number> {
+async function getUserRank(userId: string): Promise<number> {
   const cached = rankCache.get(userId);
   if (cached && Date.now() - cached.ts < RANK_TTL) return cached.rank;
 
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  
+  const userAgg = await QuizAttemptModel.aggregate([
+    { $match: { userId, createdAt: { $gte: sevenDaysAgo } } },
+    { $group: { _id: null, totalScore: { $sum: "$score" } } }
+  ]);
+  const userScore = userAgg[0]?.totalScore || 0;
+
   const agg = await QuizAttemptModel.aggregate([
     { $match: { createdAt: { $gte: sevenDaysAgo } } },
     { $group: { _id: "$userId", s: { $sum: "$score" } } },
-    { $match: { s: { $gt: totalScore } } },
+    { $match: { s: { $gt: userScore } } },
     { $count: "n" }
   ]);
   const rank = agg[0]?.n + 1 || 1;
@@ -72,6 +79,23 @@ export const getUserDashboard = async (
       },
       { upsert: true, new: true }
     );
+
+    // Reset streak if inactive for more than a day
+    const today = new Date();
+    const todayStr = today.toISOString().split("T")[0];
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().split("T")[0];
+
+    if (
+      user.lastActiveDate &&
+      user.lastActiveDate !== todayStr &&
+      user.lastActiveDate !== yesterdayStr &&
+      user.currentStreak > 0
+    ) {
+      user.currentStreak = 0;
+      await user.save();
+    }
 
     const attempts = await QuizAttemptModel.find({ userId })
       .sort({ createdAt: -1 })
@@ -126,7 +150,7 @@ export const getUserDashboard = async (
     const totalCorrect = Array.from(user.conceptStats.values()).reduce((sum, stat) => sum + stat.correct, 0);
 
     // Calculate actual global rank dynamically
-    const rank = await getUserRank(userId, totalScore);
+    const rank = await getUserRank(userId);
 
     const stats: UserStatsResponse = {
       totalQuizzes: attempts.length,

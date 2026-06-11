@@ -28,11 +28,11 @@ export function PerformanceChart({ data }: PerformanceChartProps) {
   const primaryColor = "var(--primary)";
 
   if (!isMounted) {
-    return <div className="h-64 w-full bg-card/50 rounded-xl animate-pulse" />;
+    return <div className="h-[180px] w-full bg-card/50 rounded-xl animate-pulse" />;
   }
 
   return (
-    <div className="h-64 w-full">
+    <div className="h-[180px] w-full">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart
           data={data}

@@ -41,13 +41,13 @@ export function DailyQuizWidget() {
       const distance = expiresAt - now;
 
       if (distance < 0) {
-        setTimeLeft("Refreshing shortly...");
+        setTimeLeft("Refreshing…");
         return;
       }
 
       const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      setTimeLeft(`Refreshes in ${hours}h ${minutes}m`);
+      setTimeLeft(`${hours}h ${minutes}m`);
     };
 
     updateCountdown();
@@ -56,55 +56,53 @@ export function DailyQuizWidget() {
   }, [quizzes]);
 
   return (
-    <section className="p-4 h-full flex flex-col card-base">
-      <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-        <div className="flex items-center gap-2">
+    <section className="p-3 flex flex-col card-base h-full">
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+        <div className="flex items-center gap-1.5">
           <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse inline-block" />
           <h2 className="text-sm font-medium text-foreground font-heading">Daily Quests</h2>
         </div>
         {timeLeft && (
-          <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground bg-muted/30 px-2 py-0.5 rounded-md border border-border/10">
-            <Clock className="w-3.5 h-3.5" />
+          <div className="flex items-center gap-1 text-[10px] font-semibold text-muted-foreground">
+            <Clock className="w-3 h-3" />
             <span>{timeLeft}</span>
           </div>
         )}
       </div>
 
       {isLoading ? (
-        <div className="grid grid-cols-2 gap-3 flex-1">
+        <div className="grid grid-cols-2 gap-2 flex-1">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-20 rounded-lg bg-muted/40 animate-pulse" />
+            <div key={i} className="h-14 rounded-lg bg-muted/40 animate-pulse" />
           ))}
         </div>
       ) : quizzes.length === 0 ? (
-        <div className="flex-1 flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border/20 bg-muted/20 p-6 text-center">
-          <Clock className="h-5 w-5 text-muted-foreground" />
-          <p className="text-xs text-muted-foreground">Daily quests are being generated. Check back soon.</p>
+        <div className="flex-1 flex flex-col items-center justify-center gap-1.5 rounded-lg border border-dashed border-border/20 bg-muted/20 p-4 text-center">
+          <Clock className="h-4 w-4 text-muted-foreground" />
+          <p className="text-[10px] text-muted-foreground">Daily quests generating…</p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-3 flex-1">
+        <div className="grid grid-cols-2 gap-2 flex-1">
           {quizzes.map((quiz, index) => {
             const config = CATEGORY_MAP[quiz.type] ?? { icon: Brain, label: quiz.type };
             const Icon = config.icon;
             return (
               <motion.div
                 key={quiz.id}
-                initial={{ opacity: 0, y: 6 }}
+                initial={{ opacity: 0, y: 4 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
+                transition={{ delay: index * 0.04 }}
               >
                 <Link href={`/quiz/daily/${quiz.type}`}>
-                  <div className="group flex flex-col gap-2 p-3 rounded-lg cursor-pointer card-interactive bg-muted/20">
-                    <div className="flex items-center justify-between">
-                      <Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                      <ArrowRight className="h-3 w-3 text-muted-foreground/40 transition-transform group-hover:text-primary group-hover:translate-x-0.5" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-foreground tracking-tight">{config.label}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        {quiz.questions?.length || 10} questions
+                  <div className="group flex items-center gap-2 p-2.5 rounded-lg cursor-pointer card-interactive bg-muted/20">
+                    <Icon className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-primary transition-colors" />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-semibold text-foreground tracking-tight leading-tight truncate">{config.label}</p>
+                      <p className="text-[10px] text-muted-foreground leading-none mt-0.5">
+                        {quiz.questions?.length || 10}q
                       </p>
                     </div>
+                    <ArrowRight className="h-3 w-3 shrink-0 text-muted-foreground/40 transition-transform group-hover:text-primary group-hover:translate-x-0.5" />
                   </div>
                 </Link>
               </motion.div>

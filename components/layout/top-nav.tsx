@@ -47,7 +47,7 @@ export function TopNav() {
       )}
     >
       {/* ── Desktop: floating centered pill ── */}
-      <div className="relative mx-auto hidden h-20 max-w-[1600px] items-center px-6 lg:flex">
+      <div className="relative mx-auto hidden h-16 max-w-[1600px] items-center px-6 lg:flex">
         <Brand />
 
         <nav
