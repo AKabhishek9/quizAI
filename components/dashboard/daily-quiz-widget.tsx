@@ -58,7 +58,7 @@ export function DailyQuizWidget() {
   return (
     <section className="p-3 flex flex-col card-base h-full relative overflow-hidden">
       {/* Shimmer reflection */}
-      <div className="absolute inset-0 -translate-x-[150%] bg-gradient-to-r from-transparent via-white/10 to-transparent w-full h-full skew-x-[-15deg] animate-shimmer pointer-events-none" />
+      <div className="absolute inset-0 -translate-x-[150%] bg-gradient-to-r from-transparent via-black/15 dark:via-white/20 to-transparent w-full h-full skew-x-[-15deg] animate-shimmer pointer-events-none" />
 
       <div className="relative z-10 flex flex-col h-full flex-1">
         <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
