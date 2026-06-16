@@ -11,10 +11,19 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (!loading && !user) {
-      // Store the current path to redirect back after login
-      const returnUrl = encodeURIComponent(pathname);
-      router.push(`/login?returnUrl=${returnUrl}`);
+    if (!loading) {
+      if (!user) {
+        // Not logged in at all
+        const returnUrl = encodeURIComponent(pathname);
+        router.push(`/login?returnUrl=${returnUrl}`);
+      } else {
+        // Logged in, but is it an unverified email/password account?
+        const isPasswordProvider = user.providerData.some((p: any) => p.providerId === "password");
+        if (isPasswordProvider && !user.emailVerified) {
+          // Send them back to login to see the "Please verify" message
+          router.push("/login");
+        }
+      }
     }
   }, [user, loading, router, pathname]);
 

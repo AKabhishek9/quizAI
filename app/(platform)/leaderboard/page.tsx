@@ -25,23 +25,30 @@ export default function LeaderboardPage() {
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState<LeaderboardUser[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [fetchError, setFetchError] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
     async function fetchLeaderboard() {
+      setFetchError(false);
+      setLoading(true);
       try {
         const data = await getLeaderboard();
-        const rankedData = data.map((u, i) => ({
-          ...u,
-          rank: i + 1,
-        })) as LeaderboardUser[];
-        setUsers(rankedData);
-      } catch (error) {
-        console.error("Failed to load leaderboard:", error);
+        if (!cancelled) {
+          const rankedData = data.map((u, i) => ({
+            ...u,
+            rank: i + 1,
+          })) as LeaderboardUser[];
+          setUsers(rankedData);
+        }
+      } catch {
+        if (!cancelled) setFetchError(true);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     }
     fetchLeaderboard();
+    return () => { cancelled = true; };
   }, []);
 
   const filteredUsers = users.filter((u) =>
@@ -60,6 +67,22 @@ export default function LeaderboardPage() {
 
       {loading ? (
         <LeaderboardSkeleton />
+      ) : fetchError ? (
+        <div className="card-base">
+          <div className="flex flex-col items-center justify-center py-16 text-center px-6">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-destructive/10 text-destructive mb-4">
+              <Trophy className="h-6 w-6" />
+            </div>
+            <h3 className="font-heading text-base font-semibold tracking-tight text-foreground mb-1">Couldn&apos;t load leaderboard</h3>
+            <p className="text-sm text-muted-foreground mb-4">The server may be waking up. Please try again in a moment.</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 text-xs font-semibold rounded-xl bg-primary text-white hover:bg-primary/90 transition-colors"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
       ) : users.length === 0 ? (
         <div className="card-base">
           <div className="flex flex-col items-center justify-center py-16 text-center px-6">

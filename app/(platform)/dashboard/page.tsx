@@ -24,6 +24,9 @@ export default function DashboardPage() {
     queryKey: ["dashboard"],
     queryFn: getUserDashboard,
     enabled: !authLoading && !!user,
+    retry: false,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
   const stats = data?.stats;
@@ -36,7 +39,50 @@ export default function DashboardPage() {
         stats.weeklyScores[stats.weeklyScores.length - 2].score
       : 0;
 
-  if (error) {
+  // For new users, the backend might 404/fail because no profile exists yet.
+  // Show a graceful empty dashboard rather than a hard error screen.
+  if (error && !isLoading) {
+    const isNetworkOrNew =
+      error instanceof Error &&
+      (error.message.includes("fetch") ||
+        error.message.includes("404") ||
+        error.message.includes("not found") ||
+        error.message.includes("Failed"));
+
+    if (isNetworkOrNew) {
+      // Render an empty-state dashboard — don't block the user
+      return (
+        <div className="flex flex-col gap-3">
+          <HeroRow profile={undefined} stats={undefined} />
+          <div className="p-5 rounded-xl border border-primary/20 bg-primary/5">
+            <h3 className="text-sm font-semibold text-foreground mb-1 font-heading">
+              Welcome to QuizAI! 🎉
+            </h3>
+            <p className="text-xs text-muted-foreground mb-3">
+              Your account is ready. Take your first quiz to start tracking your progress.
+            </p>
+            <Link href="/quiz/stream">
+              <Button size="sm" className="cursor-pointer h-7 text-xs">
+                Take Your First Quiz
+              </Button>
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,55fr)_minmax(0,45fr)] gap-3">
+            <div className="p-3 flex flex-col gap-2 card-base">
+              <h2 className="text-sm font-medium text-foreground font-heading">Performance Trend</h2>
+              <div className="h-[180px] flex items-center justify-center text-xs text-muted-foreground border border-dashed border-border/30 rounded-lg">
+                No data yet — complete a quiz to see your trend
+              </div>
+            </div>
+            <div className="p-4 text-xs text-muted-foreground card-base flex items-center justify-center border-dashed">
+              Activity appears after your first quiz.
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Real unexpected error
     return (
       <div className="flex flex-col items-center justify-center min-h-[40vh]">
         <div className="border border-border rounded-lg p-8 text-center max-w-sm bg-card">

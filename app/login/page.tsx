@@ -9,6 +9,8 @@ import {
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
   updateProfile,
+  sendEmailVerification,
+  signOut,
 } from "firebase/auth";
 import { auth, googleProvider } from "@/lib/firebase";
 import type { Auth, GoogleAuthProvider } from "firebase/auth";
@@ -84,7 +86,10 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (user) router.push("/dashboard");
+    // Only auto-redirect if the user is verified, or if they signed in via Google (which auto-verifies)
+    if (user && (user.emailVerified || !user.providerData.some((p: any) => p.providerId === "password"))) {
+      router.push("/dashboard");
+    }
   }, [user, router]);
 
   if (user) return null;
@@ -100,14 +105,50 @@ export default function LoginPage() {
     try {
       const safeAuth = auth as unknown as Auth;
       if (isLogin) {
-        await signInWithEmailAndPassword(safeAuth, email, password);
+        const result = await signInWithEmailAndPassword(safeAuth, email, password);
+        // Block unverified email/password users
+        if (!result.user.emailVerified && result.user.providerData.some((p: any) => p.providerId === "password")) {
+          await signOut(safeAuth);
+          throw new Error("Please verify your email address before signing in. Check your inbox for the verification link.");
+        }
+        toast.success("Signed in successfully!");
+        router.push("/dashboard");
       } else {
         const result = await createUserWithEmailAndPassword(safeAuth, email, password);
         if (name) await updateProfile(result.user, { displayName: name });
+        // Send native Firebase verification email
+        await sendEmailVerification(result.user);
+        // Sign out immediately so they can't bypass the verification
+        await signOut(safeAuth);
+
+        toast.success("Account created successfully!", {
+          description: (
+            <span>
+              Please check your inbox and <span className="font-bold text-destructive animate-pulse text-[13px] tracking-wide">SPAM FOLDER</span> for a verification link.
+            </span>
+          ),
+          duration: Number.POSITIVE_INFINITY
+        });
+        setIsLogin(true); // Switch to sign-in view
+        // Do not push to dashboard yet
       }
-      router.push("/dashboard");
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
+      const msg = err instanceof Error ? err.message : "Something went wrong";
+      // Firebase throws 'auth/invalid-credential' or similar. We can make the generic error more helpful
+      if (msg.includes("verify your email")) {
+        setError("Please verify your email address.");
+        toast.error("Email not verified", {
+          description: (
+            <span>
+              Please check your inbox and your <span className="font-bold text-destructive animate-pulse text-[13px] tracking-wide">SPAM FOLDER</span> for the verification link.
+            </span>
+          ),
+          duration: Number.POSITIVE_INFINITY
+        });
+      } else {
+        setError(msg);
+        toast.error(msg);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -142,7 +183,7 @@ export default function LoginPage() {
     }
   };
 
-  const inputClass = "w-full rounded-xl border border-white/8 bg-[#161616] pl-9 pr-3 py-2.5 text-sm text-[#ededed] placeholder:text-[#a0a0a0]/40 focus:outline-none focus:border-primary/50 transition-colors";
+  const inputClass = "w-full rounded-xl border border-white/8 bg-[#161616] pl-9 pr-3 py-2 text-sm text-[#ededed] placeholder:text-[#a0a0a0]/40 focus:outline-none focus:border-primary/50 transition-colors";
 
   return (
     <div className="h-screen bg-[#0a0a0a] flex flex-col overflow-hidden relative select-none font-sans">
@@ -190,7 +231,7 @@ export default function LoginPage() {
           style={{ backdropFilter: "blur(20px)" }}
         >
           {/* Inner padding */}
-          <div className="p-5 sm:p-6">
+          <div className="px-4 py-4 sm:px-5 sm:py-5">
             {/* Header */}
             <AnimatePresence mode="wait">
               <motion.div
@@ -199,9 +240,9 @@ export default function LoginPage() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.2 }}
-                className="mb-4"
+                className="mb-3"
               >
-                <h1 className="text-xl font-bold text-white tracking-tight font-heading">
+                <h1 className="text-lg font-bold text-white tracking-tight font-heading">
                   {isLogin ? "Welcome back 👋" : "Create account 🚀"}
                 </h1>
                 <p className="text-[11px] text-[#a0a0a0] mt-0.5">
@@ -210,7 +251,7 @@ export default function LoginPage() {
               </motion.div>
             </AnimatePresence>
 
-            <form onSubmit={handleEmailAuth} className="space-y-2.5">
+            <form onSubmit={handleEmailAuth} className="space-y-2">
               {/* Name (signup) */}
               <AnimatePresence mode="popLayout">
                 {!isLogin && (
@@ -297,17 +338,23 @@ export default function LoginPage() {
               {/* Error */}
               <AnimatePresence>
                 {error && (
-                  <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                  <motion.div
+                    key="error"
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
                     className="flex items-start gap-2 bg-destructive/10 border border-destructive/20 text-destructive text-[11px] px-3 py-2 rounded-xl">
                     <AlertCircle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
-                    <p>{error}</p>
+                    <p className="break-all">{error}</p>
                   </motion.div>
                 )}
               </AnimatePresence>
 
               {/* Submit */}
-              <Button disabled={isLoading}
-                className="w-full h-10 rounded-xl bg-[#c9823a] hover:bg-primary text-white font-semibold text-sm shadow-[0_0_18px_rgba(201,130,58,0.25)] border-none">
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="w-full h-10 rounded-xl bg-[#c9823a] hover:bg-primary text-white font-semibold text-sm shadow-[0_0_18px_rgba(201,130,58,0.25)] border-none mt-1">
                 {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : isLogin ? "Sign In" : "Sign Up"}
               </Button>
             </form>
@@ -337,9 +384,9 @@ export default function LoginPage() {
             )}
 
             {/* Toggle */}
-            <p className="text-center mt-3 text-[11px] text-[#a0a0a0]">
+            <p className="text-center mt-2 text-[11px] text-[#a0a0a0]">
               {isLogin ? "Don't have an account? " : "Already have an account? "}
-              <button onClick={() => { setIsLogin(!isLogin); setError(null); }}
+              <button type="button" onClick={() => { setIsLogin(!isLogin); setError(null); }}
                 className="text-[#c9823a] font-semibold hover:text-primary transition-colors">
                 {isLogin ? "Sign up" : "Sign in"}
               </button>
