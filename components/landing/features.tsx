@@ -1,46 +1,57 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Brain, BarChart3, Target, Timer, Layers, Zap } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Brain, BarChart3, Trophy, Layers, Flame, Zap } from "lucide-react";
 import { Container } from "@/components/layout/container";
 
 const features = [
   {
     icon: Brain,
-    title: "Adaptive Questions",
+    title: "AI Quiz Generation",
     description:
-      "Questions evolve based on your accuracy, pushing your limits without frustration.",
+      "Generate quizzes from any topic in seconds using the power of AI.",
+    iconBg: "bg-primary/15",
+    iconColor: "text-primary",
   },
   {
     icon: BarChart3,
-    title: "Performance Analytics",
+    title: "Smart Analytics",
     description:
-      "Granular breakdowns of your speed, accuracy, and improvement over time.",
+      "Track your performance with detailed analytics and improve consistently.",
+    iconBg: "bg-primary/15",
+    iconColor: "text-primary",
   },
   {
-    icon: Target,
-    title: "Weak Spot Detection",
+    icon: Trophy,
+    title: "Leaderboards",
     description:
-      "Our engine pinpoints exactly which sub-topics need more of your attention.",
-  },
-  {
-    icon: Timer,
-    title: "Timed Challenges",
-    description:
-      "Simulate real exam pressure with timed mock tests and focused practice rounds.",
+      "Compete with other learners and climb the leaderboard.",
+    iconBg: "bg-primary/15",
+    iconColor: "text-primary",
   },
   {
     icon: Layers,
-    title: "Difficulty Levels",
+    title: "Multiple Difficulty Levels",
     description:
-      "From beginner to advanced. Choose your level and master each subject step by step.",
+      "Choose the right difficulty for you. Easy, Medium, Hard or Expert.",
+    iconBg: "bg-emerald-500/15",
+    iconColor: "text-emerald-500",
+  },
+  {
+    icon: Flame,
+    title: "Streak & XP System",
+    description:
+      "Stay consistent, earn XP and level up your learning journey.",
+    iconBg: "bg-primary/15",
+    iconColor: "text-primary",
   },
   {
     icon: Zap,
     title: "Instant Feedback",
     description:
-      "Don't just see the answer. Get detailed technical explanations for every choice.",
+      "Get instant results and explanations for every question.",
+    iconBg: "bg-amber-400/15",
+    iconColor: "text-amber-400",
   },
 ];
 
@@ -64,7 +75,10 @@ export function Features() {
             transition={{ delay: 0.1 }}
             className="text-section text-foreground"
           >
-            Built for real learning.
+            Everything you need to learn{" "}
+            <span className="bg-gradient-to-r from-primary via-[#d4943f] to-primary bg-clip-text text-transparent">
+              better
+            </span>
           </motion.h2>
         </div>
 
@@ -79,8 +93,10 @@ export function Features() {
               className="group relative p-6 card-interactive"
             >
               {/* Icon */}
-              <div className="w-10 h-10 rounded-lg bg-muted border border-border flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-105">
-                <feature.icon className="h-5 w-5 text-foreground" />
+              <div
+                className={`w-11 h-11 rounded-xl ${feature.iconBg} flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-105`}
+              >
+                <feature.icon className={`h-5 w-5 ${feature.iconColor}`} />
               </div>
 
               <h3 className="text-[15px] font-semibold tracking-tight text-foreground mb-2 font-heading">

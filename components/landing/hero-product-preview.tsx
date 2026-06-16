@@ -2,272 +2,194 @@
 
 import { motion } from "framer-motion";
 import {
-  Brain,
-  Globe,
-  Zap,
-  Calculator,
+  LayoutDashboard,
   Flame,
-  BarChart3,
+  TrendingUp,
   Trophy,
-  Clock,
-  CheckCircle2,
-  Circle,
+  ArrowRight,
+  BarChart3,
 } from "lucide-react";
 
 /* ─────────────────────────────────────────────
  *  Hero Product Preview
  *
- *  A purely decorative, self-contained dashboard
- *  mockup rendered in React. Zero real data, zero
- *  API calls — static visuals only.
+ *  A decorative dashboard mockup matching the
+ *  reference design. Static visuals only.
  * ───────────────────────────────────────────── */
 
-const CATEGORIES = [
-  { name: "General Knowledge", pct: 82, icon: Globe },
-  { name: "Tech", pct: 74, icon: Brain },
-  { name: "Aptitude", pct: 68, icon: Zap },
-  { name: "Mathematics", pct: 91, icon: Calculator },
+const STATS = [
+  { label: "Quizzes Completed", value: "15", change: "↑ 10%", positive: true },
+  { label: "Average Score", value: "58%", change: "↑ 8%", positive: true },
+  { label: "Current Streak", value: "1d", change: "Keep it going!", positive: true },
+  { label: "Ranking", value: "#1", change: "Top 1%", positive: true },
 ];
 
-const QUESTS = [
-  { label: "General Knowledge", qs: 10, icon: Globe },
-  { label: "Tech", qs: 10, icon: Brain },
-  { label: "Aptitude", qs: 10, icon: Zap },
-  { label: "Maths", qs: 10, icon: Calculator },
+/* SVG performance chart points */
+const CHART_POINTS = [
+  { x: 0, y: 65 },
+  { x: 1, y: 55 },
+  { x: 2, y: 70 },
+  { x: 3, y: 45 },
+  { x: 4, y: 60 },
+  { x: 5, y: 35 },
+  { x: 6, y: 50 },
+  { x: 7, y: 30 },
+  { x: 8, y: 40 },
+  { x: 9, y: 25 },
 ];
 
-const ACTIVITIES = [
-  {
-    title: "Data Structures Quiz",
-    status: "Completed quiz",
-    dot: "bg-primary text-primary-foreground",
-  },
-  {
-    title: "General Knowledge",
-    status: "Completed quiz",
-    dot: "bg-success text-success-foreground",
-  },
-  {
-    title: "React Fundamentals",
-    status: "Mixed",
-    dot: "bg-warning text-warning-foreground",
-  },
-];
+function buildPath(points: { x: number; y: number }[], width: number, height: number) {
+  const xStep = width / (points.length - 1);
+  return points
+    .map((p, i) => {
+      const x = i * xStep;
+      const y = (p.y / 100) * height;
+      return `${i === 0 ? "M" : "L"} ${x} ${y}`;
+    })
+    .join(" ");
+}
 
 export function HeroProductPreview() {
+  const chartW = 320;
+  const chartH = 80;
+  const linePath = buildPath(CHART_POINTS, chartW, chartH);
+  const areaPath = `${linePath} L ${chartW} ${chartH} L 0 ${chartH} Z`;
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: 40, rotate: 0 }}
+      animate={{ opacity: 1, y: 0, rotate: 1 }}
       transition={{ duration: 1, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      className="relative mt-20 w-full max-w-5xl mx-auto px-4"
+      className="relative w-full max-w-md mx-auto lg:mx-0"
     >
       {/* Glow behind the card */}
-      <div className="absolute -inset-6 rounded-3xl bg-gradient-to-r from-primary/10 via-foreground/5 to-primary/10 blur-3xl pointer-events-none opacity-70 dark:from-primary/5 dark:via-foreground/[0.03] dark:to-primary/5" aria-hidden="true" />
+      <div
+        className="absolute -inset-6 rounded-3xl blur-3xl pointer-events-none opacity-60"
+        style={{
+          background:
+            "radial-gradient(ellipse at center, color-mix(in oklch, var(--primary) 15%, transparent), transparent 70%)",
+        }}
+        aria-hidden="true"
+      />
 
-      {/* Browser frame — solid content surface */}
-      <div className="relative rounded-xl overflow-hidden card-base shadow-2xl shadow-black/[0.03] dark:shadow-black/30">
-        {/* Title bar */}
-        <div className="flex items-center gap-2 px-4 py-2.5 border-b border-border bg-muted/40">
-          <div className="flex gap-1.5" aria-hidden="true">
-            <span className="h-2.5 w-2.5 rounded-full bg-destructive/50" />
-            <span className="h-2.5 w-2.5 rounded-full bg-warning/50" />
-            <span className="h-2.5 w-2.5 rounded-full bg-success/50" />
-          </div>
-          <div className="flex-1 flex justify-center">
-            <div className="h-5 w-48 rounded-md bg-muted/40 flex items-center justify-center border border-border/10">
-              <span className="text-[9px] text-muted-foreground tracking-wide select-none">
-                quizai.app/dashboard
-              </span>
+      {/* Main card */}
+      <div className="relative rounded-2xl overflow-hidden card-base shadow-2xl shadow-black/20 dark:shadow-black/40">
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 pt-5 pb-3">
+          <div className="flex items-center gap-2">
+            <div className="h-7 w-7 rounded-lg bg-primary/15 flex items-center justify-center">
+              <LayoutDashboard className="h-3.5 w-3.5 text-primary" />
             </div>
+            <span className="text-xs font-semibold text-muted-foreground tracking-wide">
+              Dashboard
+            </span>
           </div>
-          <div className="w-12" />
+          <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+            <Flame className="h-3 w-3 text-primary" />
+            <span className="font-medium">1 day streak</span>
+          </div>
         </div>
 
-        {/* Dashboard content */}
-        <div className="p-4 md:p-6 space-y-4 bg-card">
-          {/* ── Row 1: Welcome + stats ── */}
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
-            <div>
-              <p className="text-lg md:text-xl font-bold text-foreground tracking-tight font-heading">
-                Good morning, Alex 👋
-              </p>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                You&apos;ve completed 12 quizzes this week
-              </p>
-            </div>
-            <div className="flex gap-2">
-              {[
-                { label: "Streak", value: "7 days", icon: Flame },
-                { label: "Level", value: "14", icon: Trophy },
-                { label: "XP", value: "2,840", icon: BarChart3 },
-              ].map((s) => (
-                <div
-                  key={s.label}
-                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-muted/40 border border-border"
-                >
-                  <s.icon className="h-3 w-3 text-primary" />
-                  <span className="text-[10px] font-semibold text-foreground tabular-nums">
-                    {s.value}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* ── Row 2: Main grid ── */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Daily Quests panel */}
-            <div className="card-base p-3.5 flex flex-col gap-2.5">
-              <div className="flex items-center gap-2 mb-0.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                <span className="text-xs font-semibold text-foreground">
-                  Daily Quests
-                </span>
-                <span className="ml-auto text-[9px] text-muted-foreground flex items-center gap-1">
-                  <Clock className="h-2.5 w-2.5" /> 18h 24m
-                </span>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                {QUESTS.map((q) => (
-                  <div
-                    key={q.label}
-                    className="flex flex-col gap-1 p-2 rounded-lg bg-muted/20 border border-border/10 hover:bg-muted/30 hover:border-primary/20 transition-all duration-200"
-                  >
-                    <q.icon className="h-3 w-3 text-muted-foreground" />
-                    <span className="text-[11px] font-medium text-foreground leading-tight">
-                      {q.label}
-                    </span>
-                    <span className="text-[9px] text-muted-foreground">
-                      {q.qs} questions
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Category Breakdown panel */}
-            <div className="card-base p-3.5 flex flex-col gap-2.5">
-              <span className="text-xs font-semibold text-foreground">
-                Category Breakdown
-              </span>
-              <div className="space-y-2.5">
-                {CATEGORIES.map((cat) => (
-                  <div key={cat.name} className="space-y-1">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-medium text-foreground flex items-center gap-1.5">
-                        <cat.icon className="h-2.5 w-2.5 text-muted-foreground" />
-                        {cat.name}
-                      </span>
-                      <span className="text-[9px] text-muted-foreground tabular-nums">
-                        {cat.pct}%
-                      </span>
-                    </div>
-                    <div className="h-1 bg-muted/40 rounded-full overflow-hidden">
-                      <motion.div
-                        className="h-full bg-primary rounded-full"
-                        initial={{ width: 0 }}
-                        animate={{ width: `${cat.pct}%` }}
-                        transition={{
-                          duration: 1,
-                          delay: 0.8,
-                          ease: "easeOut",
-                        }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Recent Activity panel */}
-            <div className="card-base p-3.5 flex flex-col gap-2">
-              <span className="text-xs font-semibold text-foreground">
-                Recent Activity
-              </span>
-              {ACTIVITIES.map((a, i) => (
-                <div
-                  key={i}
-                  className="flex items-center gap-2.5 py-1.5 border-b border-border/10 last:border-0"
-                >
-                  <div
-                    className={`h-6 w-6 rounded-md shrink-0 flex items-center justify-center text-[8px] font-bold ${a.dot}`}
-                  >
-                    {a.title[0]}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[11px] font-medium text-foreground truncate leading-tight">
-                      {a.title}
-                    </p>
-                    <p className="text-[9px] text-muted-foreground">
-                      {a.status}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* ── Row 3: Mini quiz player teaser ── */}
-          <div className="card-base p-3.5">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <div className="h-5 w-5 rounded-md bg-primary/10 flex items-center justify-center">
-                  <Brain className="h-3 w-3 text-primary animate-pulse" />
-                </div>
-                <span className="text-xs font-semibold text-foreground">
-                  React Fundamentals
-                </span>
-                <span className="text-[9px] px-1.5 py-0.5 rounded bg-muted/40 text-muted-foreground font-medium border border-border/10">
-                  Q3 / 10
-                </span>
-              </div>
-              <div className="flex items-center gap-1.5 text-[9px] text-muted-foreground">
-                <Clock className="h-2.5 w-2.5" />
-                <span className="tabular-nums">0:24</span>
-              </div>
-            </div>
-
-            {/* Progress bar */}
-            <div className="h-1 bg-muted/30 rounded-full overflow-hidden mb-3">
-              <motion.div
-                className="h-full bg-primary rounded-full"
-                initial={{ width: 0 }}
-                animate={{ width: "30%" }}
-                transition={{ duration: 1, delay: 1.2, ease: "easeOut" }}
-              />
-            </div>
-
-            {/* Question */}
-            <p className="text-[11px] font-semibold text-foreground mb-2.5 leading-relaxed font-heading">
-              Which hook is used to perform side effects in a functional React component?
+        <div className="px-5 pb-4 space-y-4">
+          {/* Greeting */}
+          <div>
+            <p className="text-base font-bold text-foreground tracking-tight font-heading">
+              Good evening, Abhishek 👋
             </p>
+          </div>
 
-            {/* Answer options */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
-              {[
-                { label: "A", text: "useState", selected: false },
-                { label: "B", text: "useEffect", selected: true },
-                { label: "C", text: "useContext", selected: false },
-                { label: "D", text: "useReducer", selected: false },
-              ].map((opt) => (
-                <div
-                  key={opt.label}
-                  className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[10px] border transition-colors ${
-                    opt.selected
-                      ? "border-primary/45 bg-primary/10 text-foreground font-semibold"
-                      : "border-border/10 bg-muted/10 text-muted-foreground"
-                  }`}
-                >
-                  {opt.selected ? (
-                    <CheckCircle2 className="h-3 w-3 text-primary shrink-0" />
-                  ) : (
-                    <Circle className="h-3 w-3 text-muted-foreground/30 shrink-0" />
-                  )}
-                  <span className="font-semibold">{opt.label}.</span>
-                  <span>{opt.text}</span>
-                </div>
-              ))}
+          {/* Level / XP / Action row */}
+          <div className="flex items-center gap-3">
+            {/* Level badge */}
+            <div className="flex items-center justify-center h-11 w-11 rounded-xl bg-muted border border-border">
+              <div className="text-center">
+                <span className="text-[9px] text-muted-foreground leading-none block">Level</span>
+                <span className="text-sm font-bold text-foreground leading-none">8</span>
+              </div>
+            </div>
+
+            {/* XP */}
+            <div className="flex-1">
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-lg font-bold text-foreground tabular-nums">750</span>
+                <span className="text-[10px] text-muted-foreground font-medium">/ 800 xp</span>
+              </div>
+              <div className="mt-1 h-1.5 bg-muted/60 rounded-full overflow-hidden">
+                <motion.div
+                  className="h-full bg-primary rounded-full"
+                  initial={{ width: 0 }}
+                  animate={{ width: "93.75%" }}
+                  transition={{ duration: 1.2, delay: 0.8, ease: "easeOut" }}
+                />
+              </div>
+            </div>
+
+            {/* Start Quiz button */}
+            <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-[11px] font-semibold transition-colors hover:bg-primary-hover shrink-0">
+              Start Quiz
+              <ArrowRight className="h-3 w-3" />
+            </button>
+          </div>
+
+          {/* Stats grid */}
+          <div className="grid grid-cols-4 gap-2">
+            {STATS.map((stat) => (
+              <div
+                key={stat.label}
+                className="p-2 rounded-lg bg-muted/30 border border-border/50 text-center"
+              >
+                <p className="text-[8px] text-muted-foreground leading-tight mb-1 truncate">
+                  {stat.label}
+                </p>
+                <p className="text-sm font-bold text-foreground tabular-nums">{stat.value}</p>
+                <p className="text-[8px] text-primary font-medium mt-0.5">{stat.change}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Performance Trend chart */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-semibold text-foreground flex items-center gap-1.5">
+                <BarChart3 className="h-3 w-3 text-primary" />
+                Performance Trend
+              </span>
+              <span className="text-[9px] text-muted-foreground">Last 10 sessions →</span>
+            </div>
+            <div className="rounded-lg bg-muted/20 border border-border/30 p-2 overflow-hidden">
+              <svg
+                viewBox={`0 0 ${chartW} ${chartH}`}
+                className="w-full h-auto"
+                preserveAspectRatio="none"
+              >
+                {/* Area fill */}
+                <motion.path
+                  d={areaPath}
+                  fill="url(#chartGradient)"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 0.3 }}
+                  transition={{ duration: 1.5, delay: 1 }}
+                />
+                {/* Line */}
+                <motion.path
+                  d={linePath}
+                  fill="none"
+                  stroke="var(--primary)"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  animate={{ pathLength: 1, opacity: 1 }}
+                  transition={{ duration: 2, delay: 0.8, ease: "easeOut" }}
+                />
+                {/* Gradient definition */}
+                <defs>
+                  <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="var(--primary)" stopOpacity="0.4" />
+                    <stop offset="100%" stopColor="var(--primary)" stopOpacity="0" />
+                  </linearGradient>
+                </defs>
+              </svg>
             </div>
           </div>
         </div>
